@@ -43,30 +43,6 @@
 - 🔄 **Réinitialisation et rejeu** — Possibilité de rejouer la simulation depuis le début
 - 🌐 **Backend prévu** — API Express.js pour le traitement côté serveur et la persistance des données
 
----
-
-## 📁 Structure du Projet
-
-```
-cho-dantzig/
-├── public/
-│   └── index.html
-├── src/
-│   ├── components/         # Composants React réutilisables
-│   │   ├── Graph.tsx
-│   │   ├── Matrix.tsx
-│   │   └── Controls.tsx
-│   ├── algorithms/         # Logique de l'algorithme de Dantzig
-│   │   └── dantzig.ts
-│   ├── types/              # Types et interfaces TypeScript
-│   │   └── index.ts
-│   ├── App.tsx
-│   └── main.tsx
-├── tailwind.config.js
-├── tsconfig.json
-├── package.json
-└── README.md
-```
 
 ---
 
