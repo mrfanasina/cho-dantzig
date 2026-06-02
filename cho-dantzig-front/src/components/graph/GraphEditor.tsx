@@ -16,7 +16,8 @@ export default function GraphEditor() {
     setSourceNode,
     resetResult,
   } = useGraphStore();
-
+console.log("nodes =", nodes);
+console.log("isArray =", Array.isArray(nodes));
   const [newNodeId, setNewNodeId] = useState("");
   const [newNodeLabel, setNewNodeLabel] = useState("");
   const [newNodeX, setNewNodeX] = useState("400");

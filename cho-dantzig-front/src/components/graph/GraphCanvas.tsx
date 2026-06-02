@@ -13,6 +13,7 @@ export default function GraphCanvas() {
     isSelectedEdge,
     isNodeInOptimalPath,
     isEdgeInOptimalPath,
+    moveNode,
   } = useGraphStore();
 
   const [dragging, setDragging] = useState<string | null>(null);
@@ -111,39 +112,32 @@ export default function GraphCanvas() {
     [safeNodes]
   );
 
-  const onMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!dragging || !svgRef.current) return;
+const onMouseMove = useCallback(
+  (e: React.MouseEvent) => {
+    if (!dragging || !svgRef.current) return;
 
-      const rect = svgRef.current.getBoundingClientRect();
+    const rect = svgRef.current.getBoundingClientRect();
 
-      setNodes((prev) =>
-        (prev || []).map((n) =>
-          n.id === dragging
-            ? {
-                ...n,
-                x: Math.max(
-                  30,
-                  Math.min(
-                    rect.width - 30,
-                    e.clientX - rect.left - dragOffset.current.x
-                  )
-                ),
-                y: Math.max(
-                  30,
-                  Math.min(
-                    rect.height - 30,
-                    e.clientY - rect.top - dragOffset.current.y
-                  )
-                ),
-              }
-            : n
-        )
-      );
-    },
-    [dragging, setNodes]
-  );
+    const x = Math.max(
+      30,
+      Math.min(
+        rect.width - 30,
+        e.clientX - rect.left - dragOffset.current.x
+      )
+    );
 
+    const y = Math.max(
+      30,
+      Math.min(
+        rect.height - 30,
+        e.clientY - rect.top - dragOffset.current.y
+      )
+    );
+
+    moveNode(dragging, x, y);
+  },
+  [dragging, moveNode]
+);
   const onMouseUp = () => setDragging(null);
 
   const nodeColor = (node: GraphNode): NodeColors => {

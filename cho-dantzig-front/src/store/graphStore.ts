@@ -14,6 +14,7 @@ interface GraphStore {
   updateEdge: (id: string, updates: Partial<GraphEdge>) => void;
   removeNode: (id: string) => void;
   removeEdge: (id: string) => void;
+  moveNode: (id: string, x: number, y: number) => void;
 
   sourceNode: string | null;
   setSourceNode: (id: string | null) => void;
@@ -67,6 +68,14 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   })),
   removeEdge: (id) => set((state) => ({
     edges: state.edges.filter((e) => e.id !== id)
+  })),
+  moveNode: (id, x, y) =>
+  set((state) => ({
+    nodes: state.nodes.map((n) =>
+      n.id === id
+        ? { ...n, x, y }
+        : n
+    ),
   })),
 
   sourceNode: INITIAL_NODES[0]?.id || null,
