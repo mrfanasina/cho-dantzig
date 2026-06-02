@@ -1,56 +1,20 @@
-// components/graph/GraphCanvas.tsx
-
 import { useState, useRef, useCallback } from "react";
-
-type NodeType = "source" | "sink" | "normal";
-
-interface GraphNode {
-  id: string;
-  label: string;
-  x: number;
-  y: number;
-  type: NodeType;
-  lambda?: number;
-}
-
-interface GraphEdge {
-  id: string;
-  from: string;
-  to: string;
-  weight: number;
-  flow: number;
-}
-
-interface NodeColors {
-  fill: string;
-  stroke: string;
-  text: string;
-}
-
-const INITIAL_NODES: GraphNode[] = [
-  { id: "s", label: "S", x: 120, y: 240, type: "source", lambda: 0 },
-  { id: "a", label: "A", x: 300, y: 120, type: "normal", lambda: 4 },
-  { id: "b", label: "B", x: 300, y: 360, type: "normal", lambda: 3 },
-  { id: "c", label: "C", x: 500, y: 120, type: "normal", lambda: 6 },
-  { id: "d", label: "D", x: 500, y: 360, type: "normal", lambda: 9 },
-  { id: "t", label: "T", x: 680, y: 240, type: "sink", lambda: 12 },
-];
-
-const INITIAL_EDGES: GraphEdge[] = [
-  { id: "e1", from: "s", to: "a", weight: 4, flow: 0 },
-  { id: "e2", from: "s", to: "b", weight: 3, flow: 0 },
-  { id: "e3", from: "a", to: "c", weight: 2, flow: 0 },
-  { id: "e4", from: "a", to: "d", weight: 5, flow: 0 },
-  { id: "e5", from: "b", to: "d", weight: 6, flow: 0 },
-  { id: "e6", from: "c", to: "t", weight: 3, flow: 0 },
-  { id: "e7", from: "d", to: "t", weight: 4, flow: 0 },
-  { id: "e8", from: "d", to: "c", weight: 2, flow: 0 },
-
-];
+import { useGraphStore } from "../../store/graphStore";
+import type { GraphNode, GraphEdge, NodeColors } from "../../types/graph";
 
 export default function GraphCanvas() {
-  const [nodes, setNodes] = useState<GraphNode[]>(INITIAL_NODES);
-  const [edges] = useState<GraphEdge[]>(INITIAL_EDGES);
+  const {
+    nodes,
+    edges,
+    setNodes,
+    getNodeLambda,
+    isNodeMarked,
+    isCurrentNode,
+    isSelectedEdge,
+    isNodeInOptimalPath,
+    isEdgeInOptimalPath,
+  } = useGraphStore();
+
   const [dragging, setDragging] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -62,8 +26,16 @@ export default function GraphCanvas() {
     y: 0,
   });
 
+  const safeNodes = (nodes || []).map((node) => ({
+    ...node,
+    x: typeof node.x === 'number' && !isNaN(node.x) ? node.x : 400,
+    y: typeof node.y === 'number' && !isNaN(node.y) ? node.y : 250,
+  }));
+
+  const safeEdges = edges || [];
+
   const getNode = (id: string) =>
-    nodes.find((n) => n.id === id);
+    safeNodes.find((n) => n.id === id);
 
   const getEdgePath = (edge: GraphEdge) => {
     const from = getNode(edge.from);
@@ -75,6 +47,8 @@ export default function GraphCanvas() {
     const dy = to.y - from.y;
 
     const len = Math.sqrt(dx * dx + dy * dy);
+    
+    if (len === 0) return "";
 
     const nx = dx / len;
     const ny = dy / len;
@@ -103,6 +77,8 @@ export default function GraphCanvas() {
     const dy = to.y - from.y;
 
     const len = Math.sqrt(dx * dx + dy * dy);
+    
+    if (len === 0) return { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
 
     const nx = -dy / len;
     const ny = dx / len;
@@ -119,7 +95,7 @@ export default function GraphCanvas() {
 
       setSelected(id);
 
-      const node = nodes.find((n) => n.id === id);
+      const node = safeNodes.find((n) => n.id === id);
 
       if (!node || !svgRef.current) return;
 
@@ -132,7 +108,7 @@ export default function GraphCanvas() {
 
       setDragging(id);
     },
-    [nodes]
+    [safeNodes]
   );
 
   const onMouseMove = useCallback(
@@ -142,7 +118,7 @@ export default function GraphCanvas() {
       const rect = svgRef.current.getBoundingClientRect();
 
       setNodes((prev) =>
-        prev.map((n) =>
+        (prev || []).map((n) =>
           n.id === dragging
             ? {
                 ...n,
@@ -165,25 +141,42 @@ export default function GraphCanvas() {
         )
       );
     },
-    [dragging]
+    [dragging, setNodes]
   );
 
   const onMouseUp = () => setDragging(null);
 
   const nodeColor = (node: GraphNode): NodeColors => {
-    if (node.type === "source")
-      return {
-        fill: "#1d4ed8",
-        stroke: "#93c5fd",
-        text: "#fff",
-      };
+    try {
+      const isOptimal = isNodeInOptimalPath(node.id);
+      const isMarked = isNodeMarked(node.id);
+      const isCurrent = isCurrentNode(node.id);
 
-    if (node.type === "sink")
-      return {
-        fill: "#7c3aed",
-        stroke: "#c4b5fd",
-        text: "#fff",
-      };
+      if (isOptimal) {
+        return {
+          fill: "#1d4ed8",
+          stroke: "#3b82f6",
+          text: "#fff",
+        };
+      }
+
+      if (isCurrent) {
+        return {
+          fill: "#fbbf24",
+          stroke: "#f59e0b",
+          text: "#000",
+        };
+      }
+
+      if (isMarked) {
+        return {
+          fill: "#facc15",
+          stroke: "#eab308",
+          text: "#000",
+        };
+      }
+    } catch (e) {
+    }
 
     return {
       fill: "#fff",
@@ -193,10 +186,21 @@ export default function GraphCanvas() {
   };
 
   const edgeColor = (edge: GraphEdge) => {
-    if (edge.flow > 0) return "#3b82f6";
-    if (hovered === edge.id) return "#64748b";
+    try {
+      const isOptimal = isEdgeInOptimalPath(edge.from, edge.to);
+      if (isOptimal) return "#1d4ed8";
+      if (isSelectedEdge(edge.from, edge.to)) return "#f59e0b";
+      if (hovered === edge.id) return "#64748b";
+    } catch (e) {
+    }
     return "#cbd5e1";
   };
+
+  let lambda: number | null = null;
+  try {
+    lambda = getNodeLambda('dummy');
+  } catch (e) {
+  }
 
   return (
     <svg
@@ -221,6 +225,28 @@ export default function GraphCanvas() {
           <path d="M0,0 L0,6 L8,3 z" fill="#cbd5e1" />
         </marker>
 
+        <marker
+          id="arrow-selected"
+          markerWidth="8"
+          markerHeight="8"
+          refX="6"
+          refY="3"
+          orient="auto"
+        >
+          <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b" />
+        </marker>
+
+        <marker
+          id="arrow-optimal"
+          markerWidth="8"
+          markerHeight="8"
+          refX="6"
+          refY="3"
+          orient="auto"
+        >
+          <path d="M0,0 L0,6 L8,3 z" fill="#1d4ed8" />
+        </marker>
+
         <filter
           id="node-shadow"
           x="-30%"
@@ -238,112 +264,132 @@ export default function GraphCanvas() {
 
       </defs>
 
-      {edges.map((edge) => {
+      {safeEdges.map((edge) => {
+        try {
+          const mid = getMidpoint(edge);
+          const selected = isSelectedEdge(edge.from, edge.to);
+          const optimal = isEdgeInOptimalPath(edge.from, edge.to);
 
-        const mid = getMidpoint(edge);
-
-        return (
-          <g
-            key={edge.id}
-            onMouseEnter={() => setHovered(edge.id)}
-            onMouseLeave={() => setHovered(null)}
-          >
-
-            <path
-              d={getEdgePath(edge)}
-              fill="none"
-              stroke={edgeColor(edge)}
-              strokeWidth={2}
-              markerEnd="url(#arrow)"
-            />
-
-            <rect
-              x={mid.x - 13}
-              y={mid.y - 10}
-              width={26}
-              height={20}
-              rx={6}
-              fill="#f8fafc"
-              stroke="#e2e8f0"
-            />
-
-            <text
-              x={mid.x}
-              y={mid.y + 4}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight="600"
-              fill="#64748b"
+          return (
+            <g
+              key={edge.id}
+              onMouseEnter={() => setHovered(edge.id)}
+              onMouseLeave={() => setHovered(null)}
             >
-              {edge.weight}
-            </text>
 
-          </g>
-        );
+              <path
+                d={getEdgePath(edge)}
+                fill="none"
+                stroke={edgeColor(edge)}
+                strokeWidth={selected || optimal ? 3 : 2}
+                markerEnd={optimal ? "url(#arrow-optimal)" : selected ? "url(#arrow-selected)" : "url(#arrow)"}
+              />
+
+              <rect
+                x={mid.x - 13}
+                y={mid.y - 10}
+                width={26}
+                height={20}
+                rx={6}
+                fill={optimal ? "#dbeafe" : selected ? "#fef3c7" : "#f8fafc"}
+                stroke={optimal ? "#3b82f6" : selected ? "#fbbf24" : "#e2e8f0"}
+              />
+
+              <text
+                x={mid.x}
+                y={mid.y + 4}
+                textAnchor="middle"
+                fontSize={11}
+                fontWeight="600"
+                fill={optimal ? "#1e40af" : selected ? "#92400e" : "#64748b"}
+              >
+                {edge.weight}
+              </text>
+
+            </g>
+          );
+        } catch (e) {
+          return null;
+        }
       })}
 
-      {nodes.map((node) => {
+      {safeNodes.map((node) => {
+        try {
+          const colors = nodeColor(node);
+          let lambdaVal = null;
+          try {
+            lambdaVal = getNodeLambda(node.id);
+          } catch (e) {
+          }
+          const isSel = selected === node.id;
+          let isMarked = false;
+          let isCurrent = false;
+          try {
+            isMarked = isNodeMarked(node.id);
+            isCurrent = isCurrentNode(node.id);
+          } catch (e) {
+          }
 
-        const colors = nodeColor(node);
-
-        const isSel = selected === node.id;
-
-        return (
-          <g
-            key={node.id}
-            transform={`translate(${node.x},${node.y})`}
-            onMouseDown={(e) => onMouseDownNode(e, node.id)}
-            style={{
-              cursor: dragging === node.id ? "grabbing" : "grab",
-            }}
-            filter="url(#node-shadow)"
-          >
-
-            {node.lambda !== undefined && (
-              <g transform="translate(0,-38)">
-
-                <rect
-                  x={-20}
-                  y={-10}
-                  width={40}
-                  height={18}
-                  rx={5}
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                />
-
-                <text
-                  textAnchor="middle"
-                  y="3"
-                  fontSize={11}
-                  fontWeight="600"
-                  fill="#334155"
-                >
-                  λ={node.lambda}
-                </text>
-
-              </g>
-            )}
-
-            <circle
-              r={22}
-              fill={colors.fill}
-              stroke={isSel ? "#3b82f6" : colors.stroke}
-              strokeWidth={2}
-            />
-
-            <text
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize={13}
-              fontWeight="700"
-              fill={colors.text}
+          return (
+            <g
+              key={node.id}
+              transform={`translate(${node.x},${node.y})`}
+              onMouseDown={(e) => onMouseDownNode(e, node.id)}
+              style={{
+                cursor: dragging === node.id ? "grabbing" : "grab",
+              }}
+              filter="url(#node-shadow)"
             >
-              {node.label}
-            </text>
 
-          </g>
-        );
+              {(lambdaVal !== null && lambdaVal !== undefined) && (
+                <g transform="translate(0,-42)">
+
+                  <rect
+                    x={-24}
+                    y={-12}
+                    width={48}
+                    height={22}
+                    rx={6}
+                    fill={isCurrent ? "#fef3c7" : isMarked ? "#fef9c3" : "#f1f5f9"}
+                    stroke={isCurrent ? "#f59e0b" : isMarked ? "#eab308" : "#cbd5e1"}
+                  />
+
+                  <text
+                    textAnchor="middle"
+                    y="3"
+                    fontSize={12}
+                    fontWeight="700"
+                    fontFamily="serif"
+                    fill={isCurrent ? "#92400e" : isMarked ? "#854d0e" : "#334155"}
+                  >
+                    λ={lambdaVal}
+                  </text>
+
+                </g>
+              )}
+
+              <circle
+                r={22}
+                fill={colors.fill}
+                stroke={isSel ? "#3b82f6" : colors.stroke}
+                strokeWidth={isCurrent ? 3 : 2}
+              />
+
+              <text
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={13}
+                fontWeight="700"
+                fill={colors.text}
+              >
+                {node.label}
+              </text>
+
+            </g>
+          );
+        } catch (e) {
+          return null;
+        }
       })}
     </svg>
   );

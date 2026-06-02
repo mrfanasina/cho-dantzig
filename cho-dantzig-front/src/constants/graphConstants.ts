@@ -1,12 +1,12 @@
 import type { GraphNode, GraphEdge } from "../types/graph";
 
 export const INITIAL_NODES: GraphNode[] = [
-  { id: "s", label: "S", type: "source", lambda: 0 },
-  { id: "a", label: "A", type: "normal", lambda: 4 },
-  { id: "b", label: "B", type: "normal", lambda: 3 },
-  { id: "c", label: "C", type: "normal", lambda: 6 },
-  { id: "d", label: "D", type: "normal", lambda: 9 },
-  { id: "t", label: "T", type: "sink", lambda: 12 },
+  { id: "s", label: "S", x: 120, y: 240, type: "source", lambda: 0 },
+  { id: "a", label: "A", x: 300, y: 120, type: "normal", lambda: 4 },
+  { id: "b", label: "B", x: 300, y: 360, type: "normal", lambda: 3 },
+  { id: "c", label: "C", x: 500, y: 120, type: "normal", lambda: 6 },
+  { id: "d", label: "D", x: 500, y: 360, type: "normal", lambda: 9 },
+  { id: "t", label: "T", x: 680, y: 240, type: "sink", lambda: 12 },
 ];
 
 export const INITIAL_EDGES: GraphEdge[] = [

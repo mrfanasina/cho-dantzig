@@ -1,0 +1,29 @@
+{
+  "name": "cho-dantzig",
+  "version": "1.0.0",
+  "description": "API Node.js et Frontend React pour cho-dantzig",
+  "scripts": {
+    "start": "npm start --prefix cho-dantzig-back",
+    "dev:backend": "npm run dev --prefix cho-dantzig-back",
+    "dev:frontend": "npm run dev --prefix cho-dantzig-front",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "install:backend" : "npm install --prefix cho-dantzig-back",
+    "install:frontend" : "npm install --prefix cho-dantzig-front",
+    "install:all": "npm install && npm install --prefix backned && npm install --prefix cho-dantzig-front"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrfanasina/cho-dantzig.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mrfanasina/cho-dantzig/issues"
+  },
+  "homepage": "https://github.com/mrfanasina/cho-dantzig#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
