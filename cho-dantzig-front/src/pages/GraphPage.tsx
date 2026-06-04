@@ -79,7 +79,7 @@ export default function GraphPage() {
           <GraphCanvas />
           
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-            <div className="bg-white/90 backdrop-blur-2xl border border-slate-200 p-2 rounded-2xl shadow-xl flex gap-1">
+            <div className="bg-slate-200 border border-slate-300 p-2 rounded-2xl shadow-xl flex gap-1">
                <GraphControls />
             </div>
           </div>

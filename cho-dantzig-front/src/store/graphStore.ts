@@ -16,6 +16,11 @@ interface GraphStore {
   removeEdge: (id: string) => void;
   moveNode: (id: string, x: number, y: number) => void;
 
+  canvasWidth: number;
+  canvasHeight: number;
+
+  setCanvasSize: (width: number, height: number) => void;
+  
   sourceNode: string | null;
   setSourceNode: (id: string | null) => void;
 
@@ -52,6 +57,15 @@ interface GraphStore {
 export const useGraphStore = create<GraphStore>((set, get) => ({
   nodes: INITIAL_NODES,
   edges: INITIAL_EDGES,
+  canvasWidth: 800,
+  canvasHeight: 600,
+
+  setCanvasSize: (width, height) =>
+    set({
+      canvasWidth: width,
+      canvasHeight: height,
+    }),
+    
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
   addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),

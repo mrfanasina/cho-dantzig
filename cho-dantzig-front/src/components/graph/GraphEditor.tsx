@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useGraphStore } from "../../store/graphStore";
 import type { GraphNode, GraphEdge } from "../../types/graph";
+import AddNodeForm from "../AddNodeForm";
+
 
 export default function GraphEditor() {
   const {
@@ -13,11 +15,14 @@ export default function GraphEditor() {
     removeNode,
     removeEdge,
     sourceNode,
+    setNodes,
+    setEdges,
     setSourceNode,
     resetResult,
   } = useGraphStore();
-console.log("nodes =", nodes);
-console.log("isArray =", Array.isArray(nodes));
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [newNodeId, setNewNodeId] = useState("");
   const [newNodeLabel, setNewNodeLabel] = useState("");
   const [newNodeX, setNewNodeX] = useState("400");
@@ -29,6 +34,7 @@ console.log("isArray =", Array.isArray(nodes));
 
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [editingEdgeId, setEditingEdgeId] = useState<string | null>(null);
+  const [showAddNodeForm, setShowAddNodeForm] = useState(false);
 
   const handleAddNode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,8 +70,50 @@ console.log("isArray =", Array.isArray(nodes));
     resetResult();
   };
 
+
+    const handleImport = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+
+        const data = JSON.parse(content);
+
+        if (!data.nodes || !data.edges) {
+          throw new Error("Format invalide");
+        }
+
+        setNodes(data.nodes);
+        setEdges(data.edges);
+
+        resetResult();
+      } catch (error) {
+        alert("Fichier JSON invalide");
+        console.error(error);
+      }
+    };
+
+    reader.readAsText(file);
+  };
   return (
     <div className="w-80 border-l border-slate-200 bg-white flex flex-col shadow-[4px_0_15px_rgba(0,0,0,0,0.02)]">
+      
+    {showAddNodeForm && (
+      <AddNodeForm
+        onAdd={(node) => {
+          addNode(node);
+          resetResult();
+        }}
+        onClose={() => setShowAddNodeForm(false)}
+      />
+)}
       <div className="p-4 border-b border-slate-100 bg-slate-50/50">
         <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
           <span className="w-2 h-2 bg-blue-500 rounded-full" />
@@ -137,6 +185,13 @@ console.log("isArray =", Array.isArray(nodes));
               className="w-full py-2 px-3 bg-blue-500 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               + Ajouter un nœud
+            </button>
+
+            <button
+              onClick={() => setShowAddNodeForm(!showAddNodeForm)}
+              className="w-full py-2 px-3 bg-blue-500 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              + Ajouter plusieurs nœuds
             </button>
           </form>
 
@@ -336,7 +391,49 @@ console.log("isArray =", Array.isArray(nodes));
             })}
           </div>
         </div>
+      <div className="flex gap-2">
 
+        {/* importer du nodes et du edges en json  */}
+        <button
+          onClick={() => { fileInputRef.current?.click()}}
+          className="flex-1 py-1.5 px-2 bg-blue-500 text-white text-[10px] font-semibold rounded-lg"
+        >
+          <input
+            type="file"
+            accept=".json"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleImport}
+          />
+          Importer
+        </button>
+        {/* importer du nodes et du edges en json  */}
+        <button
+          onClick={() => {
+            const graphData = {
+              nodes,
+              edges,
+            };
+
+            const blob = new Blob(
+              [JSON.stringify(graphData, null, 2)],
+              { type: "application/json" }
+            );
+
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "graph.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+          }}
+          className="flex-1 py-1.5 px-2 bg-slate-200 text-slate-600 text-[10px] font-semibold rounded-lg"
+        >
+          Exporter
+        </button>
+      </div>
       </div>
     </div>
   );
@@ -486,6 +583,7 @@ function EdgeEditor({
           Annuler
         </button>
       </div>
+
     </div>
   );
 }

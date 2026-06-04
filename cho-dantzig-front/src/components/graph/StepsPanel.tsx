@@ -42,7 +42,7 @@ export default function StepsPanel() {
   };
 
   return (
-    <div className="p-4 flex flex-col gap-3 h-full">
+    <div className="p-4 flex border-2 flex-col gap-3 h-full">
       <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-4 text-white shadow-lg shadow-yellow-200">
         <p className="text-[10px] font-semibold uppercase tracking-widest opacity-70 mb-1">
           Étape {currentStepIndex + 1}/{result.steps.length}

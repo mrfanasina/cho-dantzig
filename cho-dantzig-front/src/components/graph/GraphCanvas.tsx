@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useGraphStore } from "../../store/graphStore";
 import type { GraphNode, GraphEdge, NodeColors } from "../../types/graph";
 
@@ -7,6 +7,7 @@ export default function GraphCanvas() {
     nodes,
     edges,
     setNodes,
+    setCanvasSize,
     getNodeLambda,
     isNodeMarked,
     isCurrentNode,
@@ -196,6 +197,19 @@ const onMouseMove = useCallback(
   } catch (e) {
   }
 
+  useEffect(() => {
+    if (!svgRef.current) return;
+
+    const updateSize = () => {
+      const rect = svgRef.current!.getBoundingClientRect();
+      setCanvasSize(rect.width, rect.height);
+    };
+
+    updateSize();
+
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, [setCanvasSize]);
   return (
     <svg
       ref={svgRef}
