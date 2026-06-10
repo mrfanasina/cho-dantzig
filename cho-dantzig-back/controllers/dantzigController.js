@@ -21,6 +21,7 @@ const dantzigController = {
 
       res.json({
         success: true,
+        input: req.body,
         data: results
       });
     } catch (error) {

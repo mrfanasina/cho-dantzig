@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useGraphStore } from "../../store/graphStore";
 import type { GraphNode, GraphEdge } from "../../types/graph";
 import AddNodeForm from "../AddNodeForm";
+import AddEdgeModal from "./AddEdgeModal";
 
 
 export default function GraphEditor() {
@@ -35,6 +36,12 @@ export default function GraphEditor() {
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [editingEdgeId, setEditingEdgeId] = useState<string | null>(null);
   const [showAddNodeForm, setShowAddNodeForm] = useState(false);
+  const [showAddEdgeModal, setShowAddEdgeModal] = useState(false);
+
+  const [pendingEdge, setPendingEdge] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
 
   const handleAddNode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,16 +111,35 @@ export default function GraphEditor() {
   };
   return (
     <div className="w-80 border-l border-slate-200 bg-white flex flex-col shadow-[4px_0_15px_rgba(0,0,0,0,0.02)]">
-      
+
+
+{
+  showAddEdgeModal && (
+    <AddEdgeModal
+      from="a"
+      to="b"
+      fromLabel="A"
+      toLabel="B"
+      onClose={() => setShowAddEdgeModal(false)}
+      onCreate={(edge) => {
+        addEdge(edge);
+        resetResult();
+      }}
+    />
+  )}
+
     {showAddNodeForm && (
       <AddNodeForm
+        existingNodes={nodes}
         onAdd={(node) => {
           addNode(node);
           resetResult();
         }}
         onClose={() => setShowAddNodeForm(false)}
       />
-)}
+    )}
+
+
       <div className="p-4 border-b border-slate-100 bg-slate-50/50">
         <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
           <span className="w-2 h-2 bg-blue-500 rounded-full" />
@@ -334,6 +360,13 @@ export default function GraphEditor() {
             >
               + Ajouter un arc
             </button>
+            <button
+              type="button"
+              onClick={() => setShowAddEdgeModal(true)}
+              className="w-full py-2 px-3 bg-indigo-500 text-white text-xs font-semibold rounded-lg"
+            >
+              + Ajouter des arcs visuellement
+            </button>
           </form>
 
           <div className="space-y-2">
@@ -391,49 +424,90 @@ export default function GraphEditor() {
             })}
           </div>
         </div>
-      <div className="flex gap-2">
 
-        {/* importer du nodes et du edges en json  */}
-        <button
-          onClick={() => { fileInputRef.current?.click()}}
-          className="flex-1 py-1.5 px-2 bg-blue-500 text-white text-[10px] font-semibold rounded-lg"
-        >
-          <input
-            type="file"
-            accept=".json"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={handleImport}
-          />
-          Importer
-        </button>
-        {/* importer du nodes et du edges en json  */}
-        <button
-          onClick={() => {
-            const graphData = {
-              nodes,
-              edges,
-            };
-
-            const blob = new Blob(
-              [JSON.stringify(graphData, null, 2)],
-              { type: "application/json" }
-            );
-
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "graph.json";
-            a.click();
-
-            URL.revokeObjectURL(url);
-          }}
-          className="flex-1 py-1.5 px-2 bg-slate-200 text-slate-600 text-[10px] font-semibold rounded-lg"
-        >
-          Exporter
-        </button>
       </div>
+      <div className="sticky bottom-0 border-t bg-white/80 border-slate-200  backdrop-blur-md p-3">
+        <input
+          type="file"
+          accept=".json"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleImport}
+        />
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="
+              flex-1 flex items-center justify-center gap-2
+              py-2 px-3
+              bg-blue-500 hover:bg-blue-600 active:bg-blue-700
+              text-white text-xs font-semibold
+              rounded-xl
+              shadow-sm hover:shadow-md
+              transition-all duration-200
+            "
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 4v12m0 0l-4-4m4 4l4-4"
+              />
+            </svg>
+            Importer
+          </button>
+
+          <button
+            onClick={() => {
+              const graphData = { nodes, edges };
+
+              const blob = new Blob(
+                [JSON.stringify(graphData, null, 2)],
+                { type: "application/json" }
+              );
+
+              const url = URL.createObjectURL(blob);
+
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `graph-${Date.now()}.json`;
+              a.click();
+
+              URL.revokeObjectURL(url);
+            }}
+            className="
+              flex-1 flex items-center justify-center gap-2
+              py-2 px-3
+              bg-slate-100 hover:bg-slate-200 active:bg-slate-300
+              text-slate-700 text-xs font-semibold
+              rounded-xl
+              shadow-sm hover:shadow-md
+              transition-all duration-200
+            "
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 16V4m0 0l4 4m-4-4L8 8"
+              />
+            </svg>
+            Exporter
+          </button>
+        </div>
       </div>
     </div>
   );

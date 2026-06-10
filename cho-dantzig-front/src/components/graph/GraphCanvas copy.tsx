@@ -44,9 +44,6 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
   const svgRef = useRef<SVGSVGElement>(null);
   const dragOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-
   useEffect(() => {
     if (!addEdgeMode) {
       setEdgeSource(null);
@@ -127,48 +124,8 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
   const getSvgCoords = (e: React.MouseEvent) => {
     if (!svgRef.current) return { x: 0, y: 0 };
     const rect = svgRef.current.getBoundingClientRect();
-    return {
-      x: (e.clientX - rect.left - pan.x) / zoom,
-      y: (e.clientY - rect.top - pan.y) / zoom,
-    };
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   };
-
-  const zoomIn = useCallback(() => setZoom((z) => Math.min(3, z * 1.15)), []);
-  const zoomOut = useCallback(() => setZoom((z) => Math.max(0.3, z / 1.15)), []);
-
-  const fitView = useCallback(() => {
-    if (!svgRef.current || safeNodes.length === 0) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const padding = 80;
-
-    const minX = Math.min(...safeNodes.map((n) => n.x)) - padding;
-    const maxX = Math.max(...safeNodes.map((n) => n.x)) + padding;
-    const minY = Math.min(...safeNodes.map((n) => n.y)) - padding;
-    const maxY = Math.max(...safeNodes.map((n) => n.y)) + padding;
-
-    const graphWidth = Math.max(1, maxX - minX);
-    const graphHeight = Math.max(1, maxY - minY);
-
-    const nextZoom = Math.max(
-      0.3,
-      Math.min(3, Math.min(rect.width / graphWidth, rect.height / graphHeight))
-    );
-
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-
-    setZoom(nextZoom);
-    setPan({
-      x: rect.width / 2 - centerX * nextZoom,
-      y: rect.height / 2 - centerY * nextZoom,
-    });
-  }, [safeNodes]);
-
-  const onWheel = useCallback((e: React.WheelEvent<SVGSVGElement>) => {
-    e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.1 : 0.9;
-    setZoom((z) => Math.max(0.3, Math.min(3, z * factor)));
-  }, []);
 
   const onNodeClickAddMode = useCallback(
     (e: React.MouseEvent, id: string) => {
@@ -233,8 +190,8 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
       if (!node || !svgRef.current) return;
       const rect = svgRef.current.getBoundingClientRect();
       dragOffset.current = {
-        x: (e.clientX - rect.left - pan.x) / zoom - node.x,
-        y: (e.clientY - rect.top - pan.y) / zoom - node.y,
+        x: e.clientX - rect.left - node.x,
+        y: e.clientY - rect.top - node.y,
       };
       setDragging(id);
     },
@@ -249,8 +206,8 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
       }
       if (!dragging || !svgRef.current) return;
       const rect = svgRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left - pan.x) / zoom - dragOffset.current.x;
-      const y = (e.clientY - rect.top - pan.y) / zoom - dragOffset.current.y;
+      const x = Math.max(30, Math.min(rect.width - 30, e.clientX - rect.left - dragOffset.current.x));
+      const y = Math.max(30, Math.min(rect.height - 30, e.clientY - rect.top - dragOffset.current.y));
       moveNode(dragging, x, y);
     },
     [addEdgeMode, edgeSource, pendingEdge, dragging, moveNode]
@@ -293,23 +250,6 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     return "#cbd5e1";
   };
 
-
-  useEffect(() => {
-    const zin = () => zoomIn();
-    const zout = () => zoomOut();
-    const fit = () => fitView();
-
-    window.addEventListener("graph-zoom-in", zin);
-    window.addEventListener("graph-zoom-out", zout);
-    window.addEventListener("graph-fit-view", fit);
-
-    return () => {
-      window.removeEventListener("graph-zoom-in", zin);
-      window.removeEventListener("graph-zoom-out", zout);
-      window.removeEventListener("graph-fit-view", fit);
-    };
-  }, [zoomIn, zoomOut, fitView]);
-
   useEffect(() => {
     if (!svgRef.current) return;
     const updateSize = () => {
@@ -330,7 +270,6 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseUp}
       onClick={onSvgClick}
-      onWheel={onWheel}
     >
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
@@ -359,7 +298,6 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
         </filter>
       </defs>
 
-      <g transform={`translate(${pan.x} ${pan.y}) scale(${zoom})`}>
       {/* Existing edges */}
       {safeEdges.map((edge) => {
         try {
@@ -489,8 +427,6 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
       })}
 
       {/* Floating weight input */}
-      </g>
-
       {pendingEdge && (
         <foreignObject
           x={pendingEdge.midX - 76}

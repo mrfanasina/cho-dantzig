@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ALPHABET } from "../constants/graphConstants";
 import type { GraphNode } from "../types/graph";
 
@@ -9,8 +9,8 @@ interface AddNodeFormProps {
 }
 
 const CANVAS_WIDTH = 696;
-const CANVAS_HEIGHT = 494;
 const MARGIN = 40;
+const spacing = 75;
 
 export default function AddNodeForm({
   onAdd,
@@ -18,263 +18,252 @@ export default function AddNodeForm({
   existingNodes = [],
 }: AddNodeFormProps) {
   const [mode, setMode] = useState<"count" | "range">("count");
-
-  // COUNT MODE
   const [count, setCount] = useState(5);
-
-  // RANGE MODE
   const [startLetter, setStartLetter] = useState<string | null>(null);
   const [endLetter, setEndLetter] = useState<string | null>(null);
 
-  // POSITION (UNIQUEMENT MODE COUNT)
-  const [startX, setStartX] = useState(200);
-  const [startY, setStartY] = useState(200);
-  const [spacing, setSpacing] = useState(80);
+  const existingLabels = useMemo(
+    () => new Set(existingNodes.map((n) => n.label.toUpperCase())),
+    [existingNodes]
+  );
 
-  const usedIds = new Set(existingNodes.map(n => n.id));
+  const usedIdsBase = useMemo(
+    () => new Set(existingNodes.map((n) => n.id.toLowerCase())),
+    [existingNodes]
+  );
 
-  const generateUniqueId = (base: string) => {
+  const maxPerRow = Math.max(
+    1,
+    Math.floor((CANVAS_WIDTH - 2 * MARGIN) / spacing)
+  );
+
+  const availableAlphabet = useMemo(
+    () => ALPHABET.filter((l) => !existingLabels.has(l.toUpperCase())),
+    [existingLabels]
+  );
+
+  const clamp = (v: number, min: number, max: number) =>
+    Math.max(min, Math.min(max, v));
+
+  const generateUniqueId = (base: string, local: Set<string>) => {
     let id = base.toLowerCase();
-    let index = 1;
+    let i = 1;
 
-    while (usedIds.has(id)) {
-      id = `${base.toLowerCase()}_${index}`;
-      index++;
+    while (local.has(id)) {
+      id = `${base.toLowerCase()}_${i}`;
+      i++;
     }
 
-    usedIds.add(id);
+    local.add(id);
     return id;
   };
 
-  const clamp = (value: number, min: number, max: number) =>
-    Math.max(min, Math.min(max, value));
-
-  const getRangeLetters = () => {
+  const rangeLetters = useMemo(() => {
     if (!startLetter || !endLetter) return [];
 
-    const startIndex = ALPHABET.indexOf(startLetter);
-    const endIndex = ALPHABET.indexOf(endLetter);
+    const a = ALPHABET.indexOf(startLetter);
+    const b = ALPHABET.indexOf(endLetter);
 
-    const from = Math.min(startIndex, endIndex);
-    const to = Math.max(startIndex, endIndex);
+    const from = Math.min(a, b);
+    const to = Math.max(a, b);
 
-    return ALPHABET.slice(from, to + 1);
+    return ALPHABET.slice(from, to + 1).filter(
+      (l) => !existingLabels.has(l.toUpperCase())
+    );
+  }, [startLetter, endLetter, existingLabels]);
+
+  useEffect(() => {
+    setStartLetter(null);
+    setEndLetter(null);
+  }, [mode]);
+
+  const handleLetterClick = (letter: string) => {
+    if (existingLabels.has(letter.toUpperCase())) return;
+
+    if (!startLetter || endLetter) {
+      setStartLetter(letter);
+      setEndLetter(null);
+    } else {
+      setEndLetter(letter);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const maxPerRow = Math.max(
-      1,
-      Math.floor((CANVAS_WIDTH - 2 * MARGIN) / spacing)
-    );
-
+    const localIds = new Set(usedIdsBase);
     let letters: string[] = [];
 
     if (mode === "count") {
-      const safeCount = Math.min(Math.max(count, 1), 26);
-      letters = ALPHABET.slice(0, safeCount);
+      const safe = Math.min(Math.max(count, 1), availableAlphabet.length);
+      letters = availableAlphabet.slice(0, safe);
     }
 
     if (mode === "range") {
-      letters = getRangeLetters();
+      letters = rangeLetters;
     }
 
     letters.forEach((label, i) => {
-      const id = generateUniqueId(label);
-
       const col = i % maxPerRow;
       const row = Math.floor(i / maxPerRow);
 
-      const node: GraphNode = {
-        id,
+      onAdd({
+        id: generateUniqueId(label, localIds),
         label,
-        x: clamp(startX + col * spacing, MARGIN, CANVAS_WIDTH - MARGIN),
-        y: clamp(startY + row * spacing, MARGIN, CANVAS_HEIGHT - MARGIN),
+        x: clamp(80 + col * spacing, MARGIN, CANVAS_WIDTH - MARGIN),
+        y: clamp(80 + row * spacing, MARGIN, 500),
         type: "normal",
-      };
-
-      onAdd(node);
+      });
     });
 
     onClose();
   };
 
-  const handleLetterClick = (letter: string) => {
-    if (!startLetter || (startLetter && endLetter)) {
-      setStartLetter(letter);
-      setEndLetter(null);
-      return;
-    }
+  const isActive = (letter: string) =>
+    letter === startLetter || letter === endLetter;
 
-    setEndLetter(letter);
-  };
+  const isInRange = (letter: string) =>
+    startLetter &&
+    endLetter &&
+    rangeLetters.includes(letter);
 
-  const getLetterClass = (letter: string) => {
-    if (letter === startLetter || letter === endLetter) {
-      return "bg-blue-500 text-white";
-    }
+  const getLetterStyle = (letter: string) => {
+    const disabled = existingLabels.has(letter.toUpperCase());
 
-    if (startLetter && endLetter) {
-      const range = getRangeLetters();
-      if (range.includes(letter)) {
-        return "bg-blue-100 text-blue-700";
-      }
-    }
+    if (disabled)
+      return "opacity-30 cursor-not-allowed line-through bg-slate-100 dark:bg-slate-900";
 
-    return "bg-slate-100 hover:bg-slate-200";
+    if (isActive(letter))
+      return "bg-indigo-500 text-white scale-110 shadow-md";
+
+    if (isInRange(letter))
+      return "bg-indigo-500/10 text-indigo-600 dark:text-indigo-300";
+
+    return "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700";
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-        {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-slate-200 p-4">
-          <h2 className="text-lg font-semibold text-slate-700">
-            Ajouter des nœuds
-          </h2>
+    <div className="w-full max-w-md text-slate-800 dark:text-slate-100">
 
+      {/* HEADER */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <h2 className="text-sm font-bold tracking-wide">
+            Générateur de sommets
+          </h2>
+          <span className="text-[10px] text-slate-400">
+            {existingNodes.length} nœuds existants
+          </span>
+        </div>
+
+        <button
+          onClick={onClose}
+          className="w-7 h-7 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4 pt-3">
+
+        {/* MODE SWITCH */}
+        <div className="relative flex bg-slate-200 dark:bg-slate-900 p-1 rounded-xl">
+          <div
+            className={`absolute top-1 bottom-1 w-1/2 rounded-lg bg-white dark:bg-slate-800 transition-transform duration-200 ${
+              mode === "range" ? "translate-x-full" : ""
+            }`}
+          />
           <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-600"
+            type="button"
+            onClick={() => setMode("count")}
+            className="relative z-10 flex-1 text-xs py-1"
           >
-            ✕
+            Quantité
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("range")}
+            className="relative z-10 flex-1 text-xs py-1"
+          >
+            Plage
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 p-4">
-
-          {/* MODE SWITCH */}
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="radio"
-                checked={mode === "count"}
-                onChange={() => setMode("count")}
-              />
-              Nombre
+        {/* COUNT */}
+        {mode === "count" && (
+          <div className="space-y-2">
+            <label className="text-xs text-slate-500">
+              Nombre de sommets
             </label>
 
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="radio"
-                checked={mode === "range"}
-                onChange={() => setMode("range")}
-              />
-              A → Z
-            </label>
+            <input
+              type="number"
+              value={count}
+              min={1}
+              max={availableAlphabet.length}
+              onChange={(e) => setCount(Number(e.target.value))}
+              className="w-28 px-2 py-1 text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950"
+            />
+
+            <p className="text-[10px] text-slate-400">
+              {availableAlphabet.length} lettres disponibles
+            </p>
           </div>
+        )}
 
-          {/* COUNT MODE */}
-          {mode === "count" && (
-            <>
-              <div>
-                <label className="mb-1 block text-sm text-slate-600">
-                  Nombre de nœuds
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={26}
-                  value={count}
-                  onChange={(e) => setCount(Number(e.target.value))}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2"
-                />
-              </div>
+        {/* RANGE */}
+        {mode === "range" && (
+          <div className="space-y-2">
+            <div className="grid grid-cols-7 gap-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-950 max-h-36 overflow-y-auto">
+              {ALPHABET.map((letter) => {
+                const disabled = existingLabels.has(letter.toUpperCase());
 
-              {/* POSITION ONLY HERE */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-sm text-slate-600">
-                    Position X
-                  </label>
-                  <input
-                    type="number"
-                    value={startX}
-                    onChange={(e) => setStartX(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-sm text-slate-600">
-                    Position Y
-                  </label>
-                  <input
-                    type="number"
-                    value={startY}
-                    onChange={(e) => setStartY(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm text-slate-600">
-                  Espacement
-                </label>
-                <input
-                  type="number"
-                  min={20}
-                  value={spacing}
-                  onChange={(e) => setSpacing(Number(e.target.value))}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2"
-                />
-              </div>
-            </>
-          )}
-
-          {/* RANGE MODE */}
-          {mode === "range" && (
-            <div>
-              <label className="mb-2 block text-sm text-slate-600">
-                Choisir une plage (clic début puis fin)
-              </label>
-
-              <div className="grid grid-cols-6 gap-2">
-                {ALPHABET.map((letter) => (
+                return (
                   <button
                     key={letter}
                     type="button"
+                    disabled={disabled}
                     onClick={() => handleLetterClick(letter)}
-                    className={`rounded-lg px-2 py-2 text-sm transition ${getLetterClass(letter)}`}
+                    className={`text-xs py-1 rounded-md transition-all active:scale-95 ${getLetterStyle(
+                      letter
+                    )}`}
                   >
                     {letter}
                   </button>
-                ))}
-              </div>
-
-              <div className="mt-2 text-xs text-slate-500">
-                Début : {startLetter ?? "-"} | Fin : {endLetter ?? "-"}
-              </div>
+                );
+              })}
             </div>
-          )}
 
-          {/* INFO */}
-          <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
-            Zone canvas : {CANVAS_WIDTH} × {CANVAS_HEIGHT}
+            <div className="flex justify-between text-[10px] text-slate-400">
+              <span>Début: {startLetter ?? "-"}</span>
+              <span>Fin: {endLetter ?? "-"}</span>
+              <span>{rangeLetters.length} nœuds</span>
+            </div>
           </div>
+        )}
 
-          {/* ACTIONS */}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-lg bg-slate-200 px-4 py-2 font-medium text-slate-700"
-            >
-              Annuler
-            </button>
+        {/* ACTIONS */}
+        <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 text-xs py-2 rounded-md bg-slate-100 dark:bg-slate-800 hover:opacity-80"
+          >
+            Annuler
+          </button>
 
-            <button
-              type="submit"
-              className="flex-1 rounded-lg bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600"
-              disabled={mode === "range" && (!startLetter || !endLetter)}
-            >
-              Générer
-            </button>
-          </div>
-        </form>
-      </div>
+          <button
+            type="submit"
+            disabled={
+              (mode === "range" && (!startLetter || !endLetter)) ||
+              (mode === "count" && availableAlphabet.length === 0)
+            }
+            className="flex-1 text-xs py-2 rounded-md bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-40"
+          >
+            Générer
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
