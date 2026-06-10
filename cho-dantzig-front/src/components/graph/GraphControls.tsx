@@ -26,7 +26,7 @@ function Tooltip({ label, children }: TooltipProps) {
     <div className="relative group/tip flex items-center">
       {children}
 
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-[10px] font-medium rounded-lg whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none shadow-lg">
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-[10px] font-medium rounded-lg whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none shadow-lg z-50">
         {label}
         <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
       </div>
@@ -104,10 +104,29 @@ export default function GraphControls() {
   };
 
   const cycleSpeed = () => {
-    const nextIndex =
-      (SPEEDS.indexOf(speed) + 1) % SPEEDS.length;
+    setSpeed((currentSpeed) => {
+      const nextIndex = (SPEEDS.indexOf(currentSpeed) + 1) % SPEEDS.length;
+      return SPEEDS[nextIndex];
+    });
+  };
 
-    setSpeed(SPEEDS[nextIndex]);
+  const handlePlayPause = () => {
+    if (!isComputed && !isRunning) {
+      executeDantzig();
+    }
+    setIsPlaying((p) => !p);
+  };
+
+  const handleFitView = () => {
+    window.dispatchEvent(new CustomEvent("graph-fit-view"));
+  };
+
+  const handleZoomIn = () => {
+    window.dispatchEvent(new CustomEvent("graph-zoom-in"));
+  };
+
+  const handleZoomOut = () => {
+    window.dispatchEvent(new CustomEvent("graph-zoom-out"));
   };
 
   // Lecture automatique
@@ -143,12 +162,84 @@ export default function GraphControls() {
     goToNextStep,
   ]);
 
+  // Gestion des raccourcis clavier
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Évite de déclencher les raccourcis si l'utilisateur écrit dans un champ de saisie
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      switch (event.key) {
+        case " ":
+          event.preventDefault(); // Évite le scroll de la page avec Espace
+          handlePlayPause();
+          break;
+        case "ArrowRight":
+          if (currentStepIndex < totalSteps - 1) {
+            goToNextStep();
+          }
+          break;
+        case "ArrowLeft":
+          if (currentStepIndex > 0) {
+            goToPreviousStep();
+          }
+          break;
+        case "r":
+case "R":
+          handleReset();
+          break;
+        case "s":
+case "S":
+          cycleSpeed();
+          break;
+        case "f":
+case "F":
+          handleFitView();
+          break;
+        case "+":
+        case "=": // Pour gérer le "+" sans Shift sur certains claviers
+          handleZoomIn();
+          break;
+        case "-":
+          handleZoomOut();
+          break;
+        case "Home":
+          goToFirstStep();
+          break;
+        case "End":
+          goToLastStep();
+          break;
+        default:
+          return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    currentStepIndex,
+    totalSteps,
+    isComputed,
+    isRunning,
+    goToNextStep,
+    goToPreviousStep,
+    goToFirstStep,
+    goToLastStep,
+  ]);
+
   return (
     <>
       {/* RESET */}
-
       <IconButton
-        tooltip="Réinitialiser"
+        tooltip="Réinitialiser (R)"
         variant="danger"
         onClick={handleReset}
       >
@@ -170,13 +261,12 @@ export default function GraphControls() {
       </IconButton>
 
       <div className="flex items-center">
-  <div className="w-px h-5 bg-slate-200" />
-</div>
+        <div className="w-px h-5 bg-slate-200" />
+      </div>
 
       {/* PREVIOUS */}
-
       <IconButton
-        tooltip="Étape précédente"
+        tooltip="Étape précédente (←)"
         disabled={currentStepIndex <= 0}
         onClick={goToPreviousStep}
       >
@@ -192,17 +282,10 @@ export default function GraphControls() {
       </IconButton>
 
       {/* PLAY / PAUSE */}
-
       <IconButton
-        tooltip={isPlaying ? "Pause" : "Lancer"}
+        tooltip={isPlaying ? "Pause (Espace)" : "Lancer (Espace)"}
         active={isPlaying}
-        onClick={() => {
-          if (!isComputed && !isRunning) {
-            executeDantzig();
-          }
-
-          setIsPlaying((p) => !p);
-        }}
+        onClick={handlePlayPause}
       >
         {isPlaying ? (
           <svg
@@ -225,9 +308,8 @@ export default function GraphControls() {
       </IconButton>
 
       {/* NEXT */}
-
       <IconButton
-        tooltip="Étape suivante"
+        tooltip="Étape suivante (→)"
         disabled={currentStepIndex >= totalSteps - 1}
         onClick={goToNextStep}
       >
@@ -247,7 +329,6 @@ export default function GraphControls() {
       </div>
 
       {/* STEP INDICATORS */}
-
       <div className="flex items-center gap-1 px-2">
         {Array.from({ length: totalSteps }).map((_, i) => (
           <button
@@ -269,8 +350,7 @@ export default function GraphControls() {
       </div>
 
       {/* SPEED */}
-
-      <Tooltip label={`Vitesse : ${speed}x`}>
+      <Tooltip label={`Vitesse : ${speed}x (S)`}>
         <button
           className="h-9 px-2.5 rounded-xl text-[11px] font-bold font-mono text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-150 active:scale-95 min-w-[40px]"
           onClick={cycleSpeed}
@@ -284,9 +364,8 @@ export default function GraphControls() {
       </div>
 
       {/* FIRST STEP */}
-
       <IconButton
-        tooltip="Première étape"
+        tooltip="Première étape (Home)"
         onClick={goToFirstStep}
       >
         <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none">
@@ -295,9 +374,8 @@ export default function GraphControls() {
       </IconButton>
 
       {/* LAST STEP */}
-
       <IconButton
-        tooltip="Dernière étape"
+        tooltip="Dernière étape (End)"
         onClick={goToLastStep}
       >
         <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none">
@@ -306,14 +384,9 @@ export default function GraphControls() {
       </IconButton>
 
       {/* FIT VIEW */}
-
       <IconButton
-        tooltip="Ajuster la vue"
-        onClick={() => {
-          window.dispatchEvent(
-            new CustomEvent("graph-fit-view")
-          );
-        }}
+        tooltip="Ajuster la vue (F)"
+        onClick={handleFitView}
       >
         <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none">
           <path
@@ -327,14 +400,9 @@ export default function GraphControls() {
       </IconButton>
 
       {/* ZOOM + */}
-
       <IconButton
-        tooltip="Zoom +"
-        onClick={() => {
-          window.dispatchEvent(
-            new CustomEvent("graph-zoom-in")
-          );
-        }}
+        tooltip="Zoom + (+)"
+        onClick={handleZoomIn}
       >
         <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none">
           <circle
@@ -354,14 +422,9 @@ export default function GraphControls() {
       </IconButton>
 
       {/* ZOOM - */}
-
       <IconButton
-        tooltip="Zoom -"
-        onClick={() => {
-          window.dispatchEvent(
-            new CustomEvent("graph-zoom-out")
-          );
-        }}
+        tooltip="Zoom - (-)"
+        onClick={handleZoomOut}
       >
         <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none">
           <circle
