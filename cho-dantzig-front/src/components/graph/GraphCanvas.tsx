@@ -133,13 +133,13 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     };
   };
 
-  const zoomIn = useCallback(() => setZoom((z) => Math.min(3, z * 1.15)), []);
-  const zoomOut = useCallback(() => setZoom((z) => Math.max(0.3, z / 1.15)), []);
+  const zoomIn = useCallback(() => setZoom((z) => Math.min(3, z * 1.01)), []);
+  const zoomOut = useCallback(() => setZoom((z) => Math.max(0.3, z / 1.01)), []);
 
   const fitView = useCallback(() => {
     if (!svgRef.current || safeNodes.length === 0) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const padding = 80;
+    const padding = 100;
 
     const minX = Math.min(...safeNodes.map((n) => n.x)) - padding;
     const maxX = Math.max(...safeNodes.map((n) => n.x)) + padding;

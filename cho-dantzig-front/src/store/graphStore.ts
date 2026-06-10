@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { DantzigResult, DantzigStep, GraphNode, GraphEdge, ApiGraph } from "../types/graph";
 import { graphService } from "../services/graphService";
 import { INITIAL_NODES, INITIAL_EDGES } from "../constants/graphConstants";
+import { buildPath } from "../utils/graphUtils";
 
 interface GraphStore {
   nodes: GraphNode[];
@@ -129,7 +130,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       }
 
       const result = response.data;
-      
+      console.log("DANTZIG RESULT =", result);
       set({
         isRunning: false,
         isComputed: true,
@@ -235,37 +236,54 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   isNodeInOptimalPath: (nodeId) => {
-    try {
-      const { result, currentStepIndex, totalSteps } = get();
-      if (!result?.optimalPaths || totalSteps === 0) return false;
-      
-      if (currentStepIndex < totalSteps - 1) return false;
+    const { result, currentStepIndex, totalSteps } = get();
 
-      return result.optimalPaths.some(path => 
-        path.path.includes(nodeId)
-      );
-    } catch (e) {
-      return false;
-    }
+    if (!result?.optimalPath) return false;
+    if (currentStepIndex < totalSteps - 1) return false;
+
+    return result.optimalPath.path.includes(nodeId);
   },
-
   isEdgeInOptimalPath: (from, to) => {
-    try {
-      const { result, currentStepIndex, totalSteps } = get();
-      if (!result?.optimalPaths || totalSteps === 0) return false;
-      
-      if (currentStepIndex < totalSteps - 1) return false;
+    const { result, currentStepIndex, totalSteps } = get();
 
-      return result.optimalPaths.some(path => {
-        for (let i = 0; i < path.path.length - 1; i++) {
-          if (path.path[i] === from && path.path[i + 1] === to) {
-            return true;
-          }
-        }
-        return false;
-      });
-    } catch (e) {
-      return false;
+    if (!result?.optimalPath) return false;
+    if (currentStepIndex < totalSteps - 1) return false;
+
+    const path = result.optimalPath.path;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      if (path[i] === from && path[i + 1] === to) {
+        return true;
+      }
     }
+
+    return false;
   },
 }));
+
+  // isNodeInOptimalPath: (nodeId) => {
+  //   const { result, currentStepIndex, totalSteps } = get();
+  //   if (!result?.predecessors) return false;
+  //   if (currentStepIndex < totalSteps - 1) return false;
+
+  //   const path = buildPath(result.predecessors, nodeId);
+  //   return path.includes(nodeId);
+  // },
+
+  // isEdgeInOptimalPath: (from, to) => {
+  //   const { result, currentStepIndex, totalSteps, sourceNode } = get();
+
+  //   if (!result?.predecessors) return false;
+  //   if (currentStepIndex < totalSteps - 1) return false;
+  //   if (!sourceNode) return false;
+
+  //   const pathToTo = buildPath(result.predecessors, to);
+
+  //   for (let i = 0; i < pathToTo.length - 1; i++) {
+  //     if (pathToTo[i] === from && pathToTo[i + 1] === to) {
+  //       return true;
+  //     }
+  //   }
+
+  //   return false;
+  // },

@@ -76,6 +76,7 @@ export interface DantzigResult {
   markedNodes: string[];
   predecessors: Record<string, string | null>;
   optimalPaths: OptimalPath[];
+  optimalPath: OptimalPath;
   sourceNode: string;
   nodes: Array<{ id: string; [key: string]: any }>;
 }
