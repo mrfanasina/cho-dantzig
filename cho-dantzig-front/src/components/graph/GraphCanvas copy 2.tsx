@@ -34,6 +34,7 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
   const [selected, setSelected] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
 
+  // Add-edge mode state
   const [edgeSource, setEdgeSource] = useState<string | null>(null);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null);
   const [pendingEdge, setPendingEdge] = useState<PendingEdge | null>(null);
@@ -71,7 +72,6 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
 
   const getNode = (id: string) => safeNodes.find((n) => n.id === id);
 
-  // Courbure augmentée : offset latéral 30 au lieu de 20
   const getEdgePath = (edge: GraphEdge) => {
     const from = getNode(edge.from);
     const to = getNode(edge.to);
@@ -82,14 +82,13 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     if (len === 0) return "";
     const nx = dx / len;
     const ny = dy / len;
-    const r = 27;
+    const r = 22;
     const x1 = from.x + nx * r;
     const y1 = from.y + ny * r;
     const x2 = to.x - nx * r;
     const y2 = to.y - ny * r;
-    const curve = Math.min(40, len * 0.15);
-    const mx = (x1 + x2) / 2 - ny * curve;
-    const my = (y1 + y2) / 2 + nx * curve;
+    const mx = (x1 + x2) / 2 - ny * 20;
+    const my = (y1 + y2) / 2 + nx * 20;
     return `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
   };
 
@@ -102,11 +101,10 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     if (len < 1) return "";
     const nx = dx / len;
     const ny = dy / len;
-    const x1 = from.x + nx * 23;
-    const y1 = from.y + ny * 23;
-    const curve = Math.min(40, len * 0.15);
-    const mx = (x1 + tx) / 2 - ny * curve;
-    const my = (y1 + ty) / 2 + nx * curve;
+    const x1 = from.x + nx * 22;
+    const y1 = from.y + ny * 22;
+    const mx = (x1 + tx) / 2 - ny * 20;
+    const my = (y1 + ty) / 2 + nx * 20;
     return `M ${x1} ${y1} Q ${mx} ${my} ${tx} ${ty}`;
   };
 
@@ -118,12 +116,11 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     const dy = to.y - from.y;
     const len = Math.sqrt(dx * dx + dy * dy);
     if (len === 0) return { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
-    const curve = Math.min(40, len * 0.15);
     const nx = -dy / len;
     const ny = dx / len;
     return {
-      x: (from.x + to.x) / 2 + nx * curve,
-      y: (from.y + to.y) / 2 + ny * curve,
+      x: (from.x + to.x) / 2 + nx * 20,
+      y: (from.y + to.y) / 2 + ny * 20,
     };
   };
 
@@ -143,18 +140,23 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     if (!svgRef.current || safeNodes.length === 0) return;
     const rect = svgRef.current.getBoundingClientRect();
     const padding = 100;
+
     const minX = Math.min(...safeNodes.map((n) => n.x)) - padding;
     const maxX = Math.max(...safeNodes.map((n) => n.x)) + padding;
     const minY = Math.min(...safeNodes.map((n) => n.y)) - padding;
     const maxY = Math.max(...safeNodes.map((n) => n.y)) + padding;
+
     const graphWidth = Math.max(1, maxX - minX);
     const graphHeight = Math.max(1, maxY - minY);
+
     const nextZoom = Math.max(
       0.3,
       Math.min(3, Math.min(rect.width / graphWidth, rect.height / graphHeight))
     );
+
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
+
     setZoom(nextZoom);
     setPan({
       x: rect.width / 2 - centerX * nextZoom,
@@ -172,6 +174,7 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
     (e: React.MouseEvent, id: string) => {
       e.stopPropagation();
       if (pendingEdge) return;
+
       if (!edgeSource) {
         setEdgeSource(id);
       } else if (edgeSource === id) {
@@ -184,14 +187,13 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
         const dx = to.x - from.x;
         const dy = to.y - from.y;
         const len = Math.sqrt(dx * dx + dy * dy);
-        const curve = Math.min(40, len * 0.15);
         const nx = len > 0 ? -dy / len : 0;
         const ny = len > 0 ? dx / len : 0;
         setPendingEdge({
           fromId: edgeSource,
           toId: id,
-          midX: (from.x + to.x) / 2 + nx * curve,
-          midY: (from.y + to.y) / 2 + ny * curve,
+          midX: (from.x + to.x) / 2 + nx * 20,
+          midY: (from.y + to.y) / 2 + ny * 20,
         });
         setCursorPos(null);
         setWeightInput("");
@@ -236,7 +238,7 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
       };
       setDragging(id);
     },
-    [addEdgeMode, safeNodes, pan, zoom]
+    [addEdgeMode, safeNodes]
   );
 
   const onMouseMove = useCallback(
@@ -251,7 +253,7 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
       const y = (e.clientY - rect.top - pan.y) / zoom - dragOffset.current.y;
       moveNode(dragging, x, y);
     },
-    [addEdgeMode, edgeSource, pendingEdge, dragging, moveNode, pan, zoom]
+    [addEdgeMode, edgeSource, pendingEdge, dragging, moveNode]
   );
 
   const onMouseUp = () => setDragging(null);
@@ -268,46 +270,39 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
   const nodeColor = (node: GraphNode): NodeColors => {
     try {
       if (addEdgeMode) {
-        if (edgeSource === node.id) return { fill: "#2563eb", stroke: "#60a5fa", text: "#fff" };
+        if (edgeSource === node.id) return { fill: "#2563eb", stroke: "#3b82f6", text: "#fff" };
         if (pendingEdge?.toId === node.id) return { fill: "#7c3aed", stroke: "#a78bfa", text: "#fff" };
-        return { fill: "#f8fafc", stroke: "#cbd5e1", text: "#475569" };
+        return { fill: "#fff", stroke: "#94a3b8", text: "#334155" };
       }
       const isOptimal = isNodeInOptimalPath(node.id);
       const isMarked = isNodeMarked(node.id);
       const isCurrent = isCurrentNode(node.id);
-      if (isOptimal) return { fill: "#2d6ef8", stroke: "#2d5ef8", text: "#fff" };
-      if (isCurrent) return { fill: "#f59e0b", stroke: "#fcd34d", text: "#fff" };
-      if (isMarked) return { fill: "#fef08a", stroke: "#eab308", text: "#713f12" };
+      if (isOptimal) return { fill: "#1d4ed8", stroke: "#3b82f6", text: "#fff" };
+      if (isCurrent) return { fill: "#fbbf24", stroke: "#f59e0b", text: "#000" };
+      if (isMarked) return { fill: "#facc15", stroke: "#eab308", text: "#000" };
     } catch (_) {}
-    return { fill: "#ffffff", stroke: "#e2e8f0", text: "#334155" };
+    return { fill: "#fff", stroke: "#94a3b8", text: "#334155" };
   };
 
-  // Couleurs d'arc enrichies
-  const edgeColor = (edge: GraphEdge): string => {
+  const edgeColor = (edge: GraphEdge) => {
     try {
-      if (isEdgeInOptimalPath(edge.from, edge.to)) return "#2d6ef8";
+      if (isEdgeInOptimalPath(edge.from, edge.to)) return "#1d4ed8";
       if (isSelectedEdge(edge.from, edge.to)) return "#f59e0b";
-      if (hovered === edge.id) return "#94a3b8";
+      if (hovered === edge.id) return "#64748b";
     } catch (_) {}
-    return "#c1cfe0";
+    return "#cbd5e1";
   };
 
-  const edgeMarkerId = (edge: GraphEdge): string => {
-    try {
-      if (isEdgeInOptimalPath(edge.from, edge.to)) return "url(#arrow-optimal)";
-      if (isSelectedEdge(edge.from, edge.to)) return "url(#arrow-selected)";
-      if (hovered === edge.id) return "url(#arrow-hover)";
-    } catch (_) {}
-    return "url(#arrow)";
-  };
 
   useEffect(() => {
     const zin = () => zoomIn();
     const zout = () => zoomOut();
     const fit = () => fitView();
+
     window.addEventListener("graph-zoom-in", zin);
     window.addEventListener("graph-zoom-out", zout);
     window.addEventListener("graph-fit-view", fit);
+
     return () => {
       window.removeEventListener("graph-zoom-in", zin);
       window.removeEventListener("graph-zoom-out", zout);
@@ -363,245 +358,164 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
           <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#7c3aed" floodOpacity="0.5" />
         </filter>
       </defs>
+
       <g transform={`translate(${pan.x} ${pan.y}) scale(${zoom})`}>
+      {/* Existing edges */}
+      {safeEdges.map((edge) => {
+        try {
+          const mid = getMidpoint(edge);
+          const sel = isSelectedEdge(edge.from, edge.to);
+          const optimal = isEdgeInOptimalPath(edge.from, edge.to);
+          return (
+            <g key={edge.id} onMouseEnter={() => setHovered(edge.id)} onMouseLeave={() => setHovered(null)}>
+              <path
+                d={getEdgePath(edge)}
+                fill="none"
+                stroke={edgeColor(edge)}
+                strokeWidth={sel || optimal ? 3 : 2}
+                markerEnd={optimal ? "url(#arrow-optimal)" : sel ? "url(#arrow-selected)" : "url(#arrow)"}
+              />
+              <rect x={mid.x - 13} y={mid.y - 10} width={26} height={20} rx={6}
+                fill={optimal ? "#dbeafe" : sel ? "#fef3c7" : "#f8fafc"}
+                stroke={optimal ? "#3b82f6" : sel ? "#fbbf24" : "#e2e8f0"} />
+              <text x={mid.x} y={mid.y + 4} textAnchor="middle" fontSize={11} fontWeight="600"
+                fill={optimal ? "#1e40af" : sel ? "#92400e" : "#64748b"}>
+                {edge.weight}
+              </text>
+            </g>
+          );
+        } catch (_) { return null; }
+      })}
 
-        {/* Arcs existants */}
-        {safeEdges.map((edge) => {
-          try {
-            const mid = getMidpoint(edge);
-            const sel = isSelectedEdge(edge.from, edge.to);
-            const optimal = isEdgeInOptimalPath(edge.from, edge.to);
-            const isHov = hovered === edge.id;
-            const color = edgeColor(edge);
-            const strokeW = optimal ? 2.5 : sel ? 2.2 : isHov ? 1.8 : 1.6;
+      {/* Live preview arrow */}
+      {addEdgeMode && edgeSource && cursorPos && !pendingEdge && (
+        <path
+          d={getPreviewPath(edgeSource, cursorPos.x, cursorPos.y)}
+          fill="none"
+          stroke="#3b82f6"
+          strokeWidth={2}
+          strokeDasharray="6 4"
+          markerEnd="url(#arrow-preview)"
+          style={{ pointerEvents: "none" }}
+        />
+      )}
 
-            return (
-              <g
-                key={edge.id}
-                onMouseEnter={() => setHovered(edge.id)}
-                onMouseLeave={() => setHovered(null)}
-                style={{ cursor: "default" }}
-              >
-                {/* Zone de hover élargie invisible */}
-                <path
-                  d={getEdgePath(edge)}
-                  fill="none"
-                  stroke="transparent"
-                  strokeWidth={14}
-                />
-                <path
-                  d={getEdgePath(edge)}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={strokeW}
-                  strokeLinecap="round"
-                  markerEnd={edgeMarkerId(edge)}
-                  style={{ transition: "stroke 0.15s, stroke-width 0.15s" }}
-                />
-                {/* Badge poids — plus élégant */}
-                <rect
-                  x={mid.x - 14} y={mid.y - 11}
-                  width={28} height={22}
-                  rx={7}
-                  fill={optimal ? "#eff6ff" : sel ? "#fffbeb" : isHov ? "#f1f5f9" : "#f8fafc"}
-                  stroke={optimal ? "#93c5fd" : sel ? "#fcd34d" : isHov ? "#cbd5e1" : "#e2e8f0"}
-                  strokeWidth={optimal || sel ? 1 : 0.8}
-                />
-                <text
-                  x={mid.x} y={mid.y + 4}
-                  textAnchor="middle"
-                  fontSize={11}
-                  fontWeight="600"
-                  fontFamily="ui-monospace, monospace"
-                  fill={optimal ? "#1d4ed8" : sel ? "#b45309" : isHov ? "#475569" : "#94a3b8"}
-                  style={{ transition: "fill 0.15s" }}
-                >
-                  {edge.weight}
-                </text>
-              </g>
-            );
-          } catch (_) { return null; }
-        })}
-
-        {/* Preview animé en mode ajout d'arc */}
-        {addEdgeMode && edgeSource && cursorPos && !pendingEdge && (
+      {/* Locked pending edge */}
+      {pendingEdge && (() => {
+        const from = getNode(pendingEdge.fromId);
+        const to = getNode(pendingEdge.toId);
+        if (!from || !to) return null;
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        if (len === 0) return null;
+        const nx = dx / len;
+        const ny = dy / len;
+        const x1 = from.x + nx * 22;
+        const y1 = from.y + ny * 22;
+        const x2 = to.x - nx * 22;
+        const y2 = to.y - ny * 22;
+        const cx = (x1 + x2) / 2 - (dy / len) * 20;
+        const cy = (y1 + y2) / 2 + (dx / len) * 20;
+        return (
           <path
-            d={getPreviewPath(edgeSource, cursorPos.x, cursorPos.y)}
+            d={`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`}
             fill="none"
-            stroke="#3b82f6"
-            strokeWidth={1.8}
-            strokeDasharray="7 4"
-            markerEnd="url(#arrow-preview)"
-            opacity={0.75}
+            stroke="#7c3aed"
+            strokeWidth={2.5}
+            strokeDasharray="6 3"
+            markerEnd="url(#arrow-pending)"
             style={{ pointerEvents: "none" }}
           />
-        )}
+        );
+      })()}
 
-        {/* Arc en attente (pending) */}
-        {pendingEdge && (() => {
-          const from = getNode(pendingEdge.fromId);
-          const to = getNode(pendingEdge.toId);
-          if (!from || !to) return null;
-          const dx = to.x - from.x;
-          const dy = to.y - from.y;
-          const len = Math.sqrt(dx * dx + dy * dy);
-          if (len === 0) return null;
-          const nx = dx / len;
-          const ny = dy / len;
-          const r = 23;
-          const x1 = from.x + nx * r;
-          const y1 = from.y + ny * r;
-          const x2 = to.x - nx * r;
-          const y2 = to.y - ny * r;
-          const curve = Math.min(40, len * 0.15);
-          const cx = (x1 + x2) / 2 - (dy / len) * curve;
-          const cy = (y1 + y2) / 2 + (dx / len) * curve;
-          return (
-            <path
-              d={`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`}
-              fill="none"
-              stroke="#7c3aed"
-              strokeWidth={2}
-              strokeDasharray="7 3"
-              markerEnd="url(#arrow-pending)"
-              opacity={0.85}
-              style={{ pointerEvents: "none" }}
-            />
-          );
-        })()}
-
-        {/* Nœuds */}
-        {safeNodes.map((node) => {
+      {/* Nodes */}
+      {safeNodes.map((node) => {
+        try {
+          const colors = nodeColor(node);
+          let lambdaVal = null;
+          try { lambdaVal = getNodeLambda(node.id); } catch (_) {}
+          const isSel = selected === node.id;
+          let isMarked = false;
+          let isCurrent = false;
           try {
-            const colors = nodeColor(node);
-            let lambdaVal = null;
-            try { lambdaVal = getNodeLambda(node.id); } catch (_) {}
-            const isSel = selected === node.id;
-            let isMarked = false;
-            let isCurrent = false;
-            let isOptimal = false;
-            try {
-              isMarked = isNodeMarked(node.id);
-              isCurrent = isCurrentNode(node.id);
-              isOptimal = isNodeInOptimalPath(node.id);
-            } catch (_) {}
-            const isEdgeSrc = addEdgeMode && edgeSource === node.id;
-            const isEdgeTgt = addEdgeMode && pendingEdge?.toId === node.id;
+            isMarked = isNodeMarked(node.id);
+            isCurrent = isCurrentNode(node.id);
+          } catch (_) {}
+          const isEdgeSrc = addEdgeMode && edgeSource === node.id;
+          const isEdgeTgt = addEdgeMode && pendingEdge?.toId === node.id;
 
-            const filterId = isEdgeSrc
-              ? "url(#glow-blue)"
-              : isEdgeTgt
-              ? "url(#glow-purple)"
-              : isSel || isCurrent || isOptimal
-              ? "url(#node-shadow-selected)"
-              : "url(#node-shadow)";
+          return (
+            <g
+              key={node.id}
+              transform={`translate(${node.x},${node.y})`}
+              onMouseDown={(e) => onMouseDownNode(e, node.id)}
+              onClick={(e) => addEdgeMode && onNodeClickAddMode(e, node.id)}
+              style={{ cursor: addEdgeMode ? "pointer" : dragging === node.id ? "grabbing" : "grab" }}
+              filter={isEdgeSrc ? "url(#glow-blue)" : isEdgeTgt ? "url(#glow-purple)" : "url(#node-shadow)"}
+            >
+              {isEdgeSrc && (
+                <circle r={30} fill="none" stroke="#3b82f6" strokeWidth={2} opacity={0.4} strokeDasharray="4 3">
+                  <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite" />
+                </circle>
+              )}
 
-            return (
-              <g
-                key={node.id}
-                transform={`translate(${node.x},${node.y})`}
-                onMouseDown={(e) => onMouseDownNode(e, node.id)}
-                onClick={(e) => addEdgeMode && onNodeClickAddMode(e, node.id)}
-                style={{ cursor: addEdgeMode ? "pointer" : dragging === node.id ? "grabbing" : "grab" }}
-                filter={filterId}
-              >
-                {/* Anneau pulsant pour source d'arc */}
-                {isEdgeSrc && (
-                  <circle r={32} fill="none" stroke="#3b82f6" strokeWidth={1.5} opacity={0.35} strokeDasharray="5 3">
-                    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="5s" repeatCount="indefinite" />
-                  </circle>
-                )}
+              {lambdaVal !== null && lambdaVal !== undefined && (
+                <g transform="translate(0,-42)">
+                  <rect x={-24} y={-12} width={48} height={22} rx={6}
+                    fill={isCurrent ? "#fef3c7" : isMarked ? "#fef9c3" : "#f1f5f9"}
+                    stroke={isCurrent ? "#f59e0b" : isMarked ? "#eab308" : "#cbd5e1"} />
+                  <text textAnchor="middle" y="3" fontSize={12} fontWeight="700" fontFamily="serif"
+                    fill={isCurrent ? "#92400e" : isMarked ? "#854d0e" : "#334155"}>
+                    λ={lambdaVal}
+                  </text>
+                </g>
+              )}
 
-                {/* Badge λ revu */}
-                {lambdaVal !== null && lambdaVal !== undefined && (
-                  <g transform="translate(0,-44)">
-                    <rect
-                      x={-16} y={-12} width={32} height={24}
-                      rx={8}
-                      fill={isCurrent ? "#fdf0c7" : isMarked ? "#fdf0e8" : "#fbf1f9"}
-                      stroke={isCurrent ? "#fcd34d" : isMarked ? "#fde047" : "#e2e8f0"}
-                      strokeWidth={0.8}
-                    />
-                    <text
-                      textAnchor="middle" y="4"
-                      fontSize={12}
-                      fontWeight="600"
-                      fontFamily="ui-serif, Georgia, serif"
-                      fill={isCurrent ? "#92400e" : isMarked ? "#713f12" : "#475569"}
-                    >
-                      {lambdaVal}
-                    </text>
-                  </g>
-                )}
+              <circle
+                r={22}
+                fill={colors.fill}
+                stroke={isEdgeSrc ? "#3b82f6" : isEdgeTgt ? "#7c3aed" : isSel ? "#3b82f6" : colors.stroke}
+                strokeWidth={isCurrent || isEdgeSrc || isEdgeTgt ? 3 : 2}
+              />
+              <text textAnchor="middle" dominantBaseline="central" fontSize={13} fontWeight="700"
+                fill={colors.text} style={{ pointerEvents: "none" }}>
+                {node.label}
+              </text>
+            </g>
+          );
+        } catch (_) { return null; }
+      })}
 
-                {/* Cercle principal */}
-                <circle
-                  r={23}
-                  fill={colors.fill}
-                  stroke={
-                    isEdgeSrc ? "#3b82f6"
-                    : isEdgeTgt ? "#7c3aed"
-                    : isSel ? "#3b82f6"
-                    : isCurrent ? "#fcd34d"
-                    : isOptimal ? "#60a5fa"
-                    : colors.stroke
-                  }
-                  strokeWidth={
-                    isEdgeSrc || isEdgeTgt || isCurrent || isOptimal ? 2.5
-                    : isSel ? 2
-                    : 1.5
-                  }
-                />
-
-                <text
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize={13}
-                  fontWeight="700"
-                  fill={colors.text}
-                  style={{ pointerEvents: "none", letterSpacing: "0.01em" }}
-                >
-                  {node.label}
-                </text>
-              </g>
-            );
-          } catch (_) { return null; }
-        })}
-
+      {/* Floating weight input */}
       </g>
 
-      {/* Popup de saisie du poids — redessinée */}
       {pendingEdge && (
         <foreignObject
-          x={pendingEdge.midX * zoom + pan.x - 80}
-          y={pendingEdge.midY * zoom + pan.y - 44}
-          width={160}
-          height={88}
+          x={pendingEdge.midX - 76}
+          y={pendingEdge.midY - 40}
+          width={152}
+          height={80}
           style={{ overflow: "visible" }}
         >
           <div
             style={{
-              background: "#fff",
-              border: "1px solid #ddd6fe",
-              borderRadius: 14,
-              boxShadow: "0 4px 24px rgba(124,58,237,0.14), 0 1px 4px rgba(0,0,0,0.06)",
-              padding: "10px 12px",
+              background: "white",
+              border: "1.5px solid #a78bfa",
+              borderRadius: 12,
+              boxShadow: "0 8px 32px rgba(124,58,237,0.18)",
+              padding: "8px 10px",
               display: "flex",
               flexDirection: "column",
-              gap: 8,
+              gap: 6,
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <span style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: "#8b5cf6",
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-            }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.06em" }}>
               Poids de l'arc
             </span>
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 4 }}>
               <input
                 ref={weightInputRef}
                 type="number"
@@ -614,16 +528,16 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
                 }}
                 placeholder="ex: 5"
                 style={{
-                  width: 60,
-                  padding: "5px 8px",
+                  width: 64,
+                  padding: "4px 7px",
                   fontSize: 13,
-                  fontWeight: 600,
-                  border: "1px solid #ede9fe",
-                  borderRadius: 8,
+                  fontWeight: 700,
+                  border: "1.5px solid #ddd6fe",
+                  borderRadius: 6,
                   outline: "none",
-                  color: "#5b21b6",
+                  color: "#4c1d95",
                   background: "#faf5ff",
-                  fontFamily: "ui-monospace, monospace",
+                  fontFamily: "monospace",
                 }}
               />
               <button
@@ -631,14 +545,13 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
                 style={{
                   flex: 1,
                   background: "#7c3aed",
-                  color: "#fff",
+                  color: "white",
                   border: "none",
-                  borderRadius: 8,
+                  borderRadius: 6,
                   fontSize: 12,
                   fontWeight: 700,
                   cursor: "pointer",
-                  padding: "5px 0",
-                  letterSpacing: "0.03em",
+                  letterSpacing: "0.02em",
                 }}
               >
                 OK
@@ -646,18 +559,18 @@ export default function GraphCanvas({ addEdgeMode = false, onEdgeModeCancel }: G
               <button
                 onClick={cancelPendingEdge}
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: 26,
                   background: "#f1f5f9",
                   color: "#94a3b8",
                   border: "none",
-                  borderRadius: 8,
+                  borderRadius: 6,
                   fontSize: 16,
+                  fontWeight: 400,
                   cursor: "pointer",
+                  lineHeight: 1,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  flexShrink: 0,
                 }}
               >
                 ×
