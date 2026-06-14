@@ -6,23 +6,29 @@ interface AddNodeFormProps {
   onAdd: (node: GraphNode) => void;
   onClose: () => void;
   existingNodes?: GraphNode[];
-  theme?: "light" | "dark"; // Nouvelle prop reçue du parent
+  theme?: "light" | "dark";
 }
 
 const CANVAS_WIDTH = 696;
 const MARGIN = 40;
 const spacing = 75;
+const MAX_CUSTOM_COUNT = 50; // Limite maximale demandée
 
 export default function AddNodeForm({
   onAdd,
   onClose,
   existingNodes = [],
-  theme = "light", // Mode clair par défaut si non spécifié
+  theme = "light",
 }: AddNodeFormProps) {
-  const [mode, setMode] = useState<"count" | "range">("count");
+  // Ajout du mode 'custom'
+  const [mode, setMode] = useState<"count" | "range" | "custom">("range");
   const [count, setCount] = useState(5);
   const [startLetter, setStartLetter] = useState<string | null>(null);
   const [endLetter, setEndLetter] = useState<string | null>(null);
+
+  // Nouveaux états pour le mode personnalisé
+  const [customPrefix, setCustomPrefix] = useState("X");
+  const [customCount, setCustomCount] = useState(5);
 
   const isDark = theme === "dark";
 
@@ -71,6 +77,7 @@ export default function AddNodeForm({
     );
   }, [startLetter, endLetter, existingLabels]);
 
+  // Reset des états spécifiques lors du changement de mode
   useEffect(() => {
     setStartLetter(null);
     setEndLetter(null);
@@ -89,17 +96,24 @@ export default function AddNodeForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const localIds = new Set(usedIdsBase);
-    let letters: string[] = [];
+    let labelsToCreate: string[] = [];
 
     if (mode === "count") {
       const safe = Math.min(Math.max(count, 1), availableAlphabet.length);
-      letters = availableAlphabet.slice(0, safe);
-    }
-    if (mode === "range") {
-      letters = rangeLetters;
+      labelsToCreate = availableAlphabet.slice(0, safe);
+    } else if (mode === "range") {
+      labelsToCreate = rangeLetters;
+    } else if (mode === "custom") {
+      // Génération de la suite personnalisée (ex: X1, X2, X3...)
+      const safeCount = Math.min(Math.max(customCount, 1), MAX_CUSTOM_COUNT);
+      const prefix = customPrefix.trim() || "N";
+      
+      for (let i = 1; i <= safeCount; i++) {
+        labelsToCreate.push(`${prefix}${i}`);
+      }
     }
 
-    letters.forEach((label, i) => {
+    labelsToCreate.forEach((label, i) => {
       const col = i % maxPerRow;
       const row = Math.floor(i / maxPerRow);
       onAdd({
@@ -140,7 +154,7 @@ export default function AddNodeForm({
   };
 
   return (
-    <div className={`w-full max-w-lg p-6 rounded-2xl shadow-xl transition-colors duration-200 ${
+    <div className={`w-full max-w-xl p-6 rounded-2xl shadow-xl transition-colors duration-200 ${
       isDark 
         ? "text-slate-100 bg-slate-900 border border-white/10" 
         : "text-slate-900 bg-white border border-slate-200/60"
@@ -175,36 +189,42 @@ export default function AddNodeForm({
 
       <form onSubmit={handleSubmit} className="space-y-6 pt-5">
         
-        {/* MODE SWITCH */}
+        {/* MODE SWITCH (3 Options maintenant) */}
         <div className={`relative flex p-1 rounded-xl border ${
           isDark ? "bg-slate-950 border-transparent" : "bg-slate-100 border-slate-200/60"
         }`}>
-          <div
-            className={`absolute top-1 bottom-1 w-[49%] rounded-lg shadow-sm transition-transform duration-200 ease-out ${
-              isDark ? "bg-slate-800" : "bg-white"
-            } ${mode === "range" ? "translate-x-[102%]" : ""}`}
-          />
-          <button
-            type="button"
-            onClick={() => setMode("count")}
-            className={`relative z-10 flex-1 text-xs font-semibold py-2 rounded-lg transition-colors duration-200 ${
-              mode === "count" 
-                ? isDark ? "text-white" : "text-indigo-600" 
-                : isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Par Quantité
-          </button>
           <button
             type="button"
             onClick={() => setMode("range")}
-            className={`relative z-10 flex-1 text-xs font-semibold py-2 rounded-lg transition-colors duration-200 ${
+            className={`relative z-10 flex-1 text-[11px] font-semibold py-2 rounded-lg transition-colors duration-200 ${
               mode === "range" 
-                ? isDark ? "text-white" : "text-indigo-600" 
+                ? isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-indigo-600 shadow-sm" 
                 : isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            Par Plage de lettres
+            Plage Alphabet
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("count")}
+            className={`relative z-10 flex-1 text-[11px] font-semibold py-2 rounded-lg transition-colors duration-200 ${
+              mode === "count" 
+                ? isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-indigo-600 shadow-sm" 
+                : isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            Quantité Alphabet
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("custom")}
+            className={`relative z-10 flex-1 text-[11px] font-semibold py-2 rounded-lg transition-colors duration-200 ${
+              mode === "custom" 
+                ? isDark ? "bg-slate-800 text-white shadow-sm" : "bg-white text-indigo-600 shadow-sm" 
+                : isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            Personnalisé (X1, X2...)
           </button>
         </div>
 
@@ -245,22 +265,19 @@ export default function AddNodeForm({
               <div className={`grid grid-cols-6 gap-2 p-3 rounded-xl border max-h-48 overflow-y-auto ${
                 isDark ? "border-transparent bg-slate-950" : "border-slate-200/60 bg-slate-50/50"
               }`}>
-                {ALPHABET.map((letter) => {
-                  const disabled = existingLabels.has(letter.toUpperCase());
-                  return (
-                    <button
-                      key={letter}
-                      type="button"
-                      disabled={disabled}
-                      onClick={() => handleLetterClick(letter)}
-                      className={`text-xs font-semibold py-2.5 rounded-lg transition-all active:scale-95 flex items-center justify-center ${getLetterStyle(
-                        letter
-                      )}`}
-                    >
-                      {letter}
-                    </button>
-                  );
-                })}
+                {ALPHABET.map((letter) => (
+                  <button
+                    key={letter}
+                    type="button"
+                    disabled={existingLabels.has(letter.toUpperCase())}
+                    onClick={() => handleLetterClick(letter)}
+                    className={`text-xs font-semibold py-2.5 rounded-lg transition-all active:scale-95 flex items-center justify-center ${getLetterStyle(
+                      letter
+                    )}`}
+                  >
+                    {letter}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -273,6 +290,64 @@ export default function AddNodeForm({
               <div>Début : <span className={`font-bold ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>{startLetter ?? "-"}</span></div>
               <div className={`border-x ${isDark ? "border-slate-700" : "border-slate-200"}`}>Fin : <span className={`font-bold ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>{endLetter ?? "-"}</span></div>
               <div>Sélection : <span className={`font-bold ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>{rangeLetters.length} nœuds</span></div>
+            </div>
+          </div>
+        )}
+
+        {/* CONTENU DU MODE : CUSTOM (NOUVEAU) */}
+        {mode === "custom" && (
+          <div className="space-y-4 bg-transparent rounded-xl">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className={`text-xs font-semibold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                  Préfixe du label
+                </label>
+                <input
+                  type="text"
+                  value={customPrefix}
+                  maxLength={5}
+                  onChange={(e) => setCustomPrefix(e.target.value.replace(/\s+/g, ""))}
+                  placeholder="Ex: X, N, Id..."
+                  className={`px-3 py-2 text-sm font-medium rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all ${
+                    isDark 
+                      ? "border-slate-800 bg-slate-950 text-slate-100" 
+                      : "border-slate-200 bg-white text-slate-800"
+                  }`}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className={`text-xs font-semibold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                  Quantité (Max {MAX_CUSTOM_COUNT})
+                </label>
+                <input
+                  type="number"
+                  value={customCount}
+                  min={1}
+                  max={MAX_CUSTOM_COUNT}
+                  onChange={(e) => setCustomCount(Math.min(MAX_CUSTOM_COUNT, Number(e.target.value)))}
+                  className={`px-3 py-2 text-sm font-medium rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all ${
+                    isDark 
+                      ? "border-slate-800 bg-slate-950 text-slate-100" 
+                      : "border-slate-200 bg-white text-slate-800"
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Aperçu de la suite générée */}
+            <div className={`p-3 rounded-xl border text-[11px] ${
+              isDark ? "bg-slate-950/60 border-slate-800 text-slate-400" : "bg-slate-50 border-slate-200 text-slate-500"
+            }`}>
+              <span className="font-semibold block mb-1">Aperçu de la série :</span>
+              <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto font-mono">
+                {Array.from({ length: Math.min(customCount, 6) }).map((_, idx) => (
+                  <span key={idx} className={`px-1.5 py-0.5 rounded ${isDark ? "bg-slate-800 text-slate-300" : "bg-slate-200/60 text-slate-700"}`}>
+                    {(customPrefix.trim() || "N") + (idx + 1)}
+                  </span>
+                ))}
+                {customCount > 6 && <span>... +{customCount - 6} de plus</span>}
+              </div>
             </div>
           </div>
         )}
@@ -294,7 +369,8 @@ export default function AddNodeForm({
             type="submit"
             disabled={
               (mode === "range" && (!startLetter || !endLetter)) ||
-              (mode === "count" && availableAlphabet.length === 0)
+              (mode === "count" && availableAlphabet.length === 0) ||
+              (mode === "custom" && (!customPrefix.trim() || customCount < 1))
             }
             className="flex-1 text-xs font-semibold py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150"
           >

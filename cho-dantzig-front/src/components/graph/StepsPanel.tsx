@@ -73,7 +73,7 @@ function LambdaGrid({
   return (
     <div className="grid grid-cols-2 gap-1.5">
       {Object.entries(lambdas).map(([nodeId, lambda]) => {
-        const isMarked = markedNodes.includes(nodeId);
+        const isMarked = markedNodes?.includes(nodeId) ?? false;
         const isCurrent = currentNode === nodeId;
         return (
           <div
@@ -120,11 +120,11 @@ function LambdaGrid({
 
 // ─── Marked nodes chips ────────────────────────────────────────────────────────
 function MarkedNodes({
-  nodes,
+  nodes = [],
   currentNode,
   stepIndex,
 }: {
-  nodes: string[];
+  nodes?: string[];
   currentNode?: string;
   stepIndex: number;
 }) {
@@ -167,7 +167,7 @@ function SelectedEdge({
       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
       <div className="flex items-center gap-2 text-[11px]">
         <span className="font-bold font-mono text-emerald-700 dark:text-emerald-400">
-          {edge.from.toUpperCase()} → {edge.to.toUpperCase()}
+          {(edge.from ?? "?").toUpperCase()} → {(edge.to ?? "?").toUpperCase()}
         </span>
         <span className="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-mono font-bold">
           v = {edge.weight}

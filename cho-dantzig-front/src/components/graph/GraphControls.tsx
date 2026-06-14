@@ -143,6 +143,18 @@ const Icons = {
       <path d="M10.5 10.5l3 3M5 7h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   ),
+  generate: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"
+        fill="currentColor"
+      />
+
+      <circle cx="20" cy="5" r="1" fill="currentColor"/>
+      <circle cx="5" cy="18" r="1" fill="currentColor"/>
+      <circle cx="18" cy="18" r="0.8" fill="currentColor"/>
+    </svg>
+  ),
 };
 
 // ─── Step indicator dots ──────────────────────────────────────────────────────
@@ -339,7 +351,12 @@ export default function GraphControls() {
 
       <Sep />
 
+
       {/* View controls */}
+
+      <IconButton tooltip="Ajuster automatiquemnt la graphe">
+        {Icons.generate}
+      </IconButton>
       <IconButton tooltip="Ajuster la vue (F)" onClick={() => dispatch("graph-fit-view")}>
         {Icons.fit}
       </IconButton>

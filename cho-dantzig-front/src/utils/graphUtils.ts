@@ -107,4 +107,5 @@ export function findSink(nodes: GraphNode[], edges: GraphEdge[]) {
   return nodes.find(n => sinkIds.has(n.id));
 }
 
+
 //Trouver le chemin finale a partir de nodes et edges

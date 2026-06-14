@@ -212,7 +212,7 @@ export default function GraphPage() {
             <h1 className={`text-[11px] font-bold tracking-widest uppercase ${
               isDarkMode ? "text-slate-200" : "text-slate-800"
             }`}>
-              Graph Studio
+              Chemin Optimal
             </h1>
             <p className="text-[10px] text-amber-500 font-medium tracking-wide">
               Algorithme de Dantzig
@@ -456,7 +456,6 @@ export default function GraphPage() {
       {/* Modal d'ajout de nœud */}
       {showAddNodeForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="transform animate-in scale-in duration-200">
               <AddNodeForm
                 existingNodes={nodes}
                 onAdd={(node) => {
@@ -467,7 +466,6 @@ export default function GraphPage() {
                 theme={isDarkMode ? "dark" : "light"}
                 onClose={() => setShowAddNodeForm(false)}
               />
-            </div>
         </div>
       )}
 
