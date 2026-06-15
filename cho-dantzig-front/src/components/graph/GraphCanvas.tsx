@@ -59,7 +59,7 @@ const BIDIRECTIONAL_OFFSET = 14;
 
 /** How far (px) the weight badge is pushed perpendicularly off the arc path.
  *  Small value keeps the label close; 0 would centre it on the arc itself. */
-const WEIGHT_PERP_OFFSET = 7;
+const WEIGHT_PERP_OFFSET = 0;
 
 const ZOOM_MIN  = 0.15;
 const ZOOM_MAX  = 4;
@@ -573,7 +573,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
   const fitView = useCallback(() => {
     if (!svgRef.current || safeNodes.length === 0) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const pad  = 80;
+    const pad  = 110;
     const xs   = safeNodes.map((n) => n.x);
     const ys   = safeNodes.map((n) => n.y);
     const minX = Math.min(...xs) - pad;
@@ -1187,19 +1187,31 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
               {lambdaVal !== null && lambdaVal !== undefined && (
                 <g transform="translate(0,-44)">
                   <rect
-                    x={-18} y={-13} width={36} height={26} rx={9}
+                    x={-30} y={-12} width={60} height={26} rx={9}
                     fill  ={isCurrent ? "#fdf0c7" : isMarked ? "#fdf0e8" : "#f5f0ff"}
                     stroke={isCurrent ? "#fcd34d" : isMarked ? "#fde047" : "#e2e8f0"}
                     strokeWidth={0.9}
                   />
-                  <text
-                    textAnchor="middle" y={5}
-                    fontSize={12} fontWeight={700}
-                    fontFamily="ui-serif, Georgia, serif"
-                    fill={isCurrent ? "#92400e" : isMarked ? "#713f12" : "#475569"}
-                  >
-                    {lambdaVal}
-                  </text>
+                    <text
+                      textAnchor="middle"
+                      y={5}
+                      fontSize={12}
+                      fontWeight={700}
+                      fontFamily="ui-serif, Georgia, serif"
+                      fill={isCurrent ? "#92400e" : isMarked ? "#713f12" : "#475569"}
+                    >
+                      λ
+                      <tspan
+                        dy="3"
+                        fontSize="8"
+                      >
+                        {node.label}
+                      </tspan>
+                      <tspan dy="-3" fontSize="12">
+                        {" = "}
+                        {lambdaVal}
+                      </tspan>
+                    </text>
                 </g>
               )}
 
@@ -1247,30 +1259,6 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
           onChange={setWeightInput}
           inputRef={weightInputRef}
         />
-      )}
-
-      {/* ── Add-edge mode hint ── */}
-      {addEdgeMode && !edgeSource && !pendingEdge && (
-        <g style={{ pointerEvents: "none" }}>
-          <rect
-            x={8} y={8} width={220} height={22} rx={7}
-            fill="rgba(239,246,255,0.92)" stroke="#bfdbfe" strokeWidth={0.8}
-          />
-          <text x={16} y={23} fontSize={10} fill="#3b82f6" fontFamily="ui-sans-serif, system-ui, sans-serif">
-            Cliquez un sommet pour démarrer l'arc
-          </text>
-        </g>
-      )}
-      {addEdgeMode && edgeSource && !pendingEdge && (
-        <g style={{ pointerEvents: "none" }}>
-          <rect
-            x={8} y={8} width={238} height={22} rx={7}
-            fill="rgba(240,253,250,0.92)" stroke="#99f6e4" strokeWidth={0.8}
-          />
-          <text x={16} y={23} fontSize={10} fill="#0d9488" fontFamily="ui-sans-serif, system-ui, sans-serif">
-            Cliquez la destination  ·  Échap pour annuler
-          </text>
-        </g>
       )}
     </svg>
   );

@@ -118,12 +118,12 @@ const Icons = {
   ),
   first: (
     <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none">
-      <path d="M3 4v8M7 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13 4v8M9 4l-4 4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   last: (
     <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none">
-      <path d="M13 4v8M9 4l-4 4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3 4v8M7 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   fit: (
@@ -217,6 +217,7 @@ export default function GraphControls() {
     goToFirstStep,
     goToLastStep,
     setCurrentStepIndex,
+    arrangeGraph,
   } = useGraphStore();
 
   const handleReset = () => {
@@ -354,7 +355,7 @@ export default function GraphControls() {
 
       {/* View controls */}
 
-      <IconButton tooltip="Ajuster automatiquemnt la graphe">
+      <IconButton tooltip="Réorganiser automatiquement (G)" onClick={arrangeGraph}>
         {Icons.generate}
       </IconButton>
       <IconButton tooltip="Ajuster la vue (F)" onClick={() => dispatch("graph-fit-view")}>

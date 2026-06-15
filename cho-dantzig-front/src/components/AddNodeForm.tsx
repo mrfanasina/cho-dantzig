@@ -67,13 +67,13 @@ export default function AddNodeForm({
   };
 
   const rangeLetters = useMemo(() => {
-    if (!startLetter || !endLetter) return [];
+    if (!startLetter) return [];
     const a = ALPHABET.indexOf(startLetter);
-    const b = ALPHABET.indexOf(endLetter);
+    const b = ALPHABET.indexOf(endLetter ?? startLetter);
     const from = Math.min(a, b);
     const to = Math.max(a, b);
     return ALPHABET.slice(from, to + 1).filter(
-      (l) => !existingLabels.has(l.toUpperCase())
+      (l) => !existingLabels.has(l.toUpperCase()) 
     );
   }, [startLetter, endLetter, existingLabels]);
 
@@ -260,7 +260,7 @@ export default function AddNodeForm({
           <div className="space-y-4">
             <div className="flex flex-col gap-2">
               <label className={`text-xs font-semibold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                Sélectionnez la lettre de début et de fin
+                Sélectionnez la lettre de début et de fin 
               </label>
               <div className={`grid grid-cols-6 gap-2 p-3 rounded-xl border max-h-48 overflow-y-auto ${
                 isDark ? "border-transparent bg-slate-950" : "border-slate-200/60 bg-slate-50/50"
@@ -368,13 +368,13 @@ export default function AddNodeForm({
           <button
             type="submit"
             disabled={
-              (mode === "range" && (!startLetter || !endLetter)) ||
+              (mode === "range" && (!startLetter)) ||
               (mode === "count" && availableAlphabet.length === 0) ||
               (mode === "custom" && (!customPrefix.trim() || customCount < 1))
             }
             className="flex-1 text-xs font-semibold py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-indigo-600/10 active:scale-[0.99] transition-all duration-150"
           >
-            Générer les sommets
+            Générer
           </button>
         </div>
       </form>

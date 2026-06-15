@@ -3,6 +3,7 @@ import type { DantzigResult, DantzigStep, GraphNode, GraphEdge, ApiGraph } from 
 import { graphService } from "../services/graphService";
 import { INITIAL_NODES, INITIAL_EDGES } from "../constants/graphConstants";
 import { buildPath } from "../utils/graphUtils";
+import ELK from "elkjs/lib/elk.bundled.js";
 
 interface GraphStore {
   nodes: GraphNode[];
@@ -53,6 +54,8 @@ interface GraphStore {
   isSelectedEdge: (from: string, to: string) => boolean;
   isNodeInOptimalPath: (nodeId: string) => boolean;
   isEdgeInOptimalPath: (from: string, to: string) => boolean;
+
+  arrangeGraph: () => void;
 }
 
 export const useGraphStore = create<GraphStore>((set, get) => ({
@@ -259,31 +262,145 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
     return false;
   },
+arrangeGraph: () => {
+  const { nodes, edges, sourceNode, canvasWidth, canvasHeight } = get();
+  if (!nodes.length) return;
+
+  import("d3-force").then(({
+    forceSimulation,
+    forceLink,
+    forceManyBody,
+    forceCenter,
+    forceCollide,
+    forceX,
+    forceY,
+  }) => {
+    const source = sourceNode ?? nodes[0].id;
+
+    // ── BFS pour niveau horizontal ──────────────────────────────────────
+    const adj: Record<string, string[]> = {};
+    nodes.forEach(n => { adj[n.id] = []; });
+    edges.forEach(e => {
+      adj[e.from]?.push(e.to);
+      adj[e.to]?.push(e.from); // non-dirigé pour le layout
+    });
+
+    const bfsLevel: Record<string, number> = { [source]: 0 };
+    const queue = [source];
+    while (queue.length) {
+      const cur = queue.shift()!;
+      (adj[cur] ?? []).forEach(nb => {
+        if (bfsLevel[nb] === undefined) {
+          bfsLevel[nb] = bfsLevel[cur] + 1;
+          queue.push(nb);
+        }
+      });
+    }
+    nodes.forEach(n => { if (bfsLevel[n.id] === undefined) bfsLevel[n.id] = 0; });
+
+    const maxLevel = Math.max(...Object.values(bfsLevel), 1);
+
+    const MARGIN_X = 100;
+    const MARGIN_Y = 80;
+    const usableW = canvasWidth - MARGIN_X * 2;
+    const usableH = canvasHeight - MARGIN_Y * 2;
+
+    // Position initiale : grille propre basée sur le niveau BFS
+    const levelCounts: Record<number, number> = {};
+    const levelIndex: Record<string, number> = {};
+    nodes.forEach(n => {
+      const l = bfsLevel[n.id];
+      levelIndex[n.id] = levelCounts[l] ?? 0;
+      levelCounts[l] = (levelCounts[l] ?? 0) + 1;
+    });
+
+    const simNodes = nodes.map(n => {
+      const l = bfsLevel[n.id];
+      const idx = levelIndex[n.id];
+      const total = levelCounts[l];
+      return {
+        id: n.id,
+        x: MARGIN_X + (l / maxLevel) * usableW,
+        y: MARGIN_Y + ((idx + 0.5) / total) * usableH,
+      };
+    });
+
+    const simLinks = edges.map(e => ({
+      source: e.from,
+      target: e.to,
+    }));
+
+    // ── Simulation ──────────────────────────────────────────────────────
+    const simulation = forceSimulation(simNodes)
+      .force("link", forceLink(simLinks)
+        .id((d: any) => d.id)
+        .distance(130)   // longueur cible des arêtes — augmente pour plus d'espace
+        .strength(0.5)
+      )
+      .force("charge", forceManyBody()
+        .strength(-600)  // forte répulsion → nœuds bien écartés
+        .distanceMax(500)
+      )
+      .force("center", forceCenter(canvasWidth / 2, canvasHeight / 2)
+        .strength(0.02)  // très faible → ne comprime pas
+      )
+      .force("collide", forceCollide(55).strength(1).iterations(4))
+      // Ancrage horizontal fort : préserve la progression G→D
+      .force("x", forceX((d: any) => {
+        const l = bfsLevel[d.id] ?? 0;
+        return MARGIN_X + (l / maxLevel) * usableW;
+      }).strength(0.7))
+      // Ancrage vertical faible : laisse les nœuds s'étaler librement
+      .force("y", forceY(canvasHeight / 2).strength(0.01))
+      .alphaDecay(0.015)  // décroissance lente → meilleure convergence
+      .velocityDecay(0.35)
+      .stop();
+
+    // Run synchrone jusqu'à convergence complète
+    const iterations = Math.ceil(
+      Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())
+    );
+    for (let i = 0; i < iterations; i++) simulation.tick();
+
+    // ── Recentrage sans scale (pas de compression) ──────────────────────
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    simNodes.forEach(p => {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    });
+
+    // Clamp dans le canvas avec marge, sans réduire les distances
+    const offsetX = MARGIN_X - minX;
+    const offsetY = MARGIN_Y - minY;
+
+    // Si ça dépasse le canvas, scale uniquement dans ce cas
+    const graphW = maxX - minX;
+    const graphH = maxY - minY;
+    const scaleX = graphW > usableW ? usableW / graphW : 1;
+    const scaleY = graphH > usableH ? usableH / graphH : 1;
+    const scale = Math.min(scaleX, scaleY);
+
+    const finalOffsetX = scale < 1
+      ? (canvasWidth - graphW * scale) / 2 - minX * scale
+      : offsetX;
+    const finalOffsetY = scale < 1
+      ? (canvasHeight - graphH * scale) / 2 - minY * scale
+      : offsetY;
+
+    const newNodes = nodes.map(n => {
+      const sim = simNodes.find(p => p.id === n.id);
+      if (!sim) return n;
+      return {
+        ...n,
+        x: sim.x * scale + finalOffsetX,
+        y: sim.y * scale + finalOffsetY,
+      };
+    });
+
+    set({ nodes: newNodes });
+  });
+},
 }));
-
-  // isNodeInOptimalPath: (nodeId) => {
-  //   const { result, currentStepIndex, totalSteps } = get();
-  //   if (!result?.predecessors) return false;
-  //   if (currentStepIndex < totalSteps - 1) return false;
-
-  //   const path = buildPath(result.predecessors, nodeId);
-  //   return path.includes(nodeId);
-  // },
-
-  // isEdgeInOptimalPath: (from, to) => {
-  //   const { result, currentStepIndex, totalSteps, sourceNode } = get();
-
-  //   if (!result?.predecessors) return false;
-  //   if (currentStepIndex < totalSteps - 1) return false;
-  //   if (!sourceNode) return false;
-
-  //   const pathToTo = buildPath(result.predecessors, to);
-
-  //   for (let i = 0; i < pathToTo.length - 1; i++) {
-  //     if (pathToTo[i] === from && pathToTo[i + 1] === to) {
-  //       return true;
-  //     }
-  //   }
-
-  //   return false;
-  // },
