@@ -31,7 +31,7 @@ function EmptyState({ isRunning }: { isRunning: boolean }) {
           {isRunning ? "Calcul en cours…" : "Prêt à calculer"}
         </p>
         <p className="text-xs text-slate-400 leading-relaxed max-w-[200px]">
-          {isRunning ? "Exécution de l'algorithme de Dantzig" : "Appuyez sur ▶ pour lancer l'algorithme"}
+          {isRunning ? "Exécution de l'algorithme de Dantzig" : "Appuyez sur  pour lancer l'algorithme"}
         </p>
       </div>
     </div>
@@ -47,6 +47,8 @@ interface AlgoStep {
   lambdas: Record<string, number>;
   markedNodes: string[];
   selectedEdge?: { from: string; to: string; weight: number };
+  // Champ injecté pour les étapes de révélation du chemin optimal
+  pathRevealCount?: number;
 }
 interface AlgoResult {
   steps: AlgoStep[];
@@ -64,31 +66,26 @@ interface GraphEdge {
 const fmt = (v: number) => (v === Infinity || v === -Infinity ? "∞" : String(v));
 
 function buildIterations(steps: AlgoStep[], edges: GraphEdge[]) {
-  // Build adjacency list from graph edges for quick lookup
   const adjacency: Record<string, { to: string; weight: number }[]> = {};
   edges.forEach((e) => {
     if (!adjacency[e.from]) adjacency[e.from] = [];
     adjacency[e.from].push({ to: e.to, weight: e.weight });
   });
 
-  return steps.slice(1).map((curr, i) => {
-    const prev = steps[i];
+  // On filtre uniquement les étapes Dantzig normales (pas les path_reveal)
+  const dantzigSteps = steps.filter((s) => s.pathRevealCount === undefined);
+
+  return dantzigSteps.slice(1).map((curr, i) => {
+    const prev = dantzigSteps[i];
     const pivot = curr.currentNode!;
 
-    // All outgoing edges from pivot (from the graph)
     const outEdges = adjacency[pivot] ?? [];
 
-    // Which ones actually improved a lambda?
-    const improvedSet = new Set<string>();
-    Object.keys(curr.lambdas).forEach((id) => {
-      if (id !== pivot && curr.lambdas[id] !== prev.lambdas[id] && curr.lambdas[id] !== Infinity) {
-        improvedSet.add(id);
-      }
-    });
+    const prevMarkedSet = new Set(prev.markedNodes);
+    const chosenNode = curr.markedNodes.find(node => !prevMarkedSet.has(node));
 
-    // Build full edge list: all arcs from pivot, flagged as winner or not
     const allEdgeLines = outEdges.map((e) => {
-      const winner = improvedSet.has(e.to);
+      const winner = e.to === chosenNode;
       const newLambda = curr.lambdas[e.to];
       return {
         to: e.to,
@@ -144,10 +141,22 @@ export default function StepsPanel() {
   const totalSteps = steps.length;
   const progress = totalSteps > 1 ? currentStepIndex / (totalSteps - 1) : 1;
 
+  const currentStep = steps[currentStepIndex] as AlgoStep;
+  const isPathRevealStep = currentStep?.pathRevealCount !== undefined;
+  const isFinal = currentStepIndex === totalSteps - 1;
+  // Le résumé chemin complet n'apparaît qu'à la toute dernière étape
+  const showPathResult = isFinal && isPathRevealStep;
+
   const initStep = steps[0];
   const allIterations = buildIterations(steps, (edges as GraphEdge[]) ?? []);
-  const visibleIterations = allIterations.slice(0, currentStepIndex);
-  const isFinal = currentStepIndex === totalSteps - 1;
+
+  // Nombre d'étapes Dantzig normales (hors path_reveal)
+  const dantzigStepCount = steps.filter((s) => (s as AlgoStep).pathRevealCount === undefined).length;
+  // On affiche les itérations Dantzig jusqu'à la dernière étape Dantzig visible
+  const dantzigVisible = isPathRevealStep
+    ? allIterations.length  // toutes les itérations Dantzig affichées pendant path_reveal
+    : Math.min(currentStepIndex, allIterations.length);
+  const visibleIterations = allIterations.slice(0, dantzigVisible);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -188,16 +197,16 @@ export default function StepsPanel() {
 
         <div className="h-px bg-slate-100 dark:bg-slate-800/60 my-2" />
 
-        {/* ─ Iterations ─ */}
+        {/* ─ Iterations Dantzig ─ */}
         {visibleIterations.map((iter, idx) => {
-          const isActive = idx === visibleIterations.length - 1 && !isFinal;
+          // L'itération est "active" uniquement pendant les étapes Dantzig normales
+          const isActive = !isPathRevealStep && idx === visibleIterations.length - 1 && !isFinal;
 
           return (
             <div
               key={iter.k}
               className={cx("py-2", idx > 0 && "border-t border-slate-100 dark:border-slate-800/40")}
             >
-              {/* k = N */}
               <span className={cx(
                 "font-mono font-bold text-[13px] underline underline-offset-2 decoration-1",
                 isActive ? "text-indigo-600" : "text-slate-700"
@@ -210,16 +219,13 @@ export default function StepsPanel() {
                   iter.allEdgeLines.map((edge, ei) => (
                     <div key={ei}>
                       <div className="flex items-baseline gap-2 flex-wrap">
-                        {/* v(X,Y) — toujours en noir */}
                         <span className="text-slate-600 text-[12px] whitespace-nowrap">
                           v({edge.fromNode},{edge.to})
                         </span>
-
-                        {/* formule λ — rouge si amélioré, gris sinon */}
                         <span className={cx(
                           "text-[12px] whitespace-nowrap",
                           edge.winner
-                            ? "text-red-600 dark:text-red-400 font-semibold"
+                            ? "text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/30 px-1 rounded"
                             : "text-slate-400"
                         )}>
                           λ<sub className="text-[9px]">{edge.to}</sub>
@@ -227,13 +233,12 @@ export default function StepsPanel() {
                           {" + v("}
                           {edge.fromNode},{edge.to}
                           {") = "}
-                          <span className={edge.winner ? "font-bold" : ""}>
+                          <span>
                             {fmt(edge.newLambda)}
                           </span>
                         </span>
                       </div>
 
-                      {/* E_{k+1} sous la 1ère ligne seulement */}
                       {ei === 0 && (
                         <div className="mt-0.5">
                           <ESet
@@ -255,8 +260,40 @@ export default function StepsPanel() {
           );
         })}
 
-        {/* ─ Résultat final ─ */}
-        {isFinal && optimalValue !== undefined && (
+        {/* ─ Révélation progressive du chemin optimal ─ */}
+        {/* {isPathRevealStep && (
+          <div className="mt-3 pt-3 border-t-2 border-indigo-100 dark:border-indigo-800/40">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-2">
+              Remontée du chemin optimal
+            </p>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(() => {
+                const path = optimalPaths[optimalPaths.length - 1]?.path ?? [];
+                const count = currentStep.pathRevealCount as number;
+                // Les (count + 1) derniers nœuds du chemin sont révélés
+                const revealedNodes = path.slice(path.length - count - 1);
+                return revealedNodes.map((node, ni, arr) => (
+                  <span key={ni} className="flex items-center gap-1.5">
+                    <span className={cx(
+                      "w-8 h-8 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm",
+                      ni === 0 || ni === arr.length - 1
+                        ? "bg-amber-100 border-amber-400 text-amber-800"
+                        : "bg-indigo-50 border-indigo-400 text-indigo-700"
+                    )}>
+                      {node}
+                    </span>
+                    {ni < arr.length - 1 && (
+                      <span className="text-indigo-400 font-bold">←</span>
+                    )}
+                  </span>
+                ));
+              })()}
+            </div>
+          </div>
+        )} */}
+
+        {/* ─ Résultat final (uniquement à la toute dernière étape) ─ */}
+        {showPathResult && optimalValue !== undefined && (
           <div className="mt-4 pt-4 border-t-2 border-indigo-200 dark:border-indigo-800/60 space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">
               Chemin de valeur optimale
@@ -280,7 +317,7 @@ export default function StepsPanel() {
               ))}
             </div>
 
-            <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-lg px-3 py-1.5">
+            <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1.5">
               <span className="text-xs text-slate-500">Valeur optimale :</span>
               <span className="font-mono font-black text-indigo-600 text-base tabular-nums">
                 {fmt(optimalValue)}

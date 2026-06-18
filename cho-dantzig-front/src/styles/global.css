@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .fa{
-    background-color: #4c4c51;
+    background-color: #585558;
 }
 
 @layer utilities {

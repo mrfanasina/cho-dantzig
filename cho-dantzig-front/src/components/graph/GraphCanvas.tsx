@@ -263,7 +263,6 @@ const WeightPopup = memo(({
             if (e.key === "Enter")  { e.preventDefault(); onConfirm(); }
             if (e.key === "Escape") onCancel();
           }}
-          placeholder="ex: 5"
           aria-label="Poids de l'arc"
           style={{
             width: 62, padding: "5px 8px", fontSize: 13, fontWeight: 600,
@@ -1119,7 +1118,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
             : (!addEdgeMode && isSel)           ? "#3b82f6"
             : isCurrent                         ? "#fcd34d"
             : isOptimal                         ? "#60a5fa"
-            : colors.stroke;
+            : "#cbd5e1";
 
           const strokeWidth = (isEdgeSrc || isEdgeTgt || isEdgeHovTarget || isCurrent || isOptimal)
             ? 2.5

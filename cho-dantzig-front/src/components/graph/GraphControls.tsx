@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useGraphStore } from "../../store/graphStore";
 
-type Speed = 0.5 | 1 | 2;
+type Speed = 0.5 | 1 | 2 | 3 | 5 | 10;
 type ButtonVariant = "default" | "danger" | "success" | "primary";
 
 function cx(...classes: (string | false | null | undefined)[]) {
@@ -198,7 +198,7 @@ function StepDots({
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
-const SPEEDS: Speed[] = [0.5, 1, 2];
+const SPEEDS: Speed[] = [0.5, 1, 2, 3, 5, 10];
 
 export default function GraphControls() {
   const [isPlaying, setIsPlaying] = useState(false);
