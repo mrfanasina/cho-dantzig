@@ -14,6 +14,13 @@ interface GraphStore {
   addEdge: (edge: GraphEdge) => void;
   updateNode: (id: string, updates: Partial<GraphNode>) => void;
   updateEdge: (id: string, updates: Partial<GraphEdge>) => void;
+  /**
+   * Convenience action used by GraphCanvas to change a single edge's weight
+   * (e.g. inline editing of the weight badge). Previously GraphCanvas called
+   * a function with this exact name that didn't exist on the store, so
+   * weight edits silently did nothing — this action fixes that.
+   */
+  updateEdgeWeight: (id: string, weight: number) => void;
   removeNode: (id: string) => void;
   removeEdge: (id: string) => void;
   moveNode: (id: string, x: number, y: number) => void;
@@ -80,6 +87,10 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   updateEdge: (id, updates) => set((state) => ({
     edges: state.edges.map((e) => e.id === id ? { ...e, ...updates } : e)
   })),
+  // Fix: GraphCanvas's inline weight editor calls `updateEdgeWeight`, which
+  // never existed before — edits to an edge's weight were silently dropped.
+  // Implemented as a thin wrapper around `updateEdge` so both stay consistent.
+  updateEdgeWeight: (id, weight) => get().updateEdge(id, { weight }),
   removeNode: (id) => set((state) => ({
     nodes: state.nodes.filter((n) => n.id !== id),
     edges: state.edges.filter((e) => e.from !== id && e.to !== id)

@@ -25,6 +25,11 @@
     const [showAddNodeForm, setShowAddNodeForm] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [showHelpModal, setShowHelpModal] = useState(false);
+
+    // Affichage global des flèches sur les arcs (et non par arc individuel) :
+    // certains supports de cours (cf. PDF de référence) représentent le
+    // graphe avec de simples traits, sans pointes de flèche.
+    const [showArrows, setShowArrows] = useState(true);
     
     // Nouvel état pour l'effet visuel de survol du fichier (Drag and Drop)
     const [isDraggingFile, setIsDraggingFile] = useState(false);
@@ -54,6 +59,10 @@
           case "m":
             e.preventDefault();
             setIsDarkMode((prev) => !prev);
+            break;
+          case "f":
+            e.preventDefault();
+            setShowArrows((prev) => !prev);
             break;
           case "escape":
             setAddEdgeMode(false);
@@ -331,6 +340,30 @@
                 </svg>
               </button>
 
+              {/* Afficher / masquer les flèches — réglage GLOBAL (toutes les arêtes), */}
+              {/* pas un réglage par arête : reproduit la notation à traits simples */}
+              {/* utilisée dans le support de cours (PDF Dantzig). */}
+              <button
+                onClick={() => setShowArrows((prev) => !prev)}
+                title={showArrows ? "Masquer les flèches sur tous les arcs (F)" : "Afficher les flèches sur tous les arcs (F)"}
+                aria-pressed={showArrows}
+                className={`w-10 h-10 rounded-xl text-xs font-medium flex items-center justify-center transition-all duration-200 active:scale-95 border ${
+                  !showArrows ? "bg-amber-500/10 border-amber-500/30 text-amber-400 shadow-inner" : "border-transparent text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {showArrows ? (
+                  // Trait avec pointe — flèches actives
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h15m0 0l-5-5m5 5l-5 5" />
+                  </svg>
+                ) : (
+                  // Simple trait — flèches désactivées (notation du PDF de référence)
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16" />
+                  </svg>
+                )}
+              </button>
+
               {/* Toggle Éditeur matriciel */}
               <button
                 onClick={() => setShowEditor(!showEditor)}
@@ -416,7 +449,7 @@
               </div>
             )}
 
-            <GraphCanvas addEdgeMode={addEdgeMode} onEdgeModeCancel={() => setAddEdgeMode(false)} />
+            <GraphCanvas addEdgeMode={addEdgeMode} showArrows={showArrows} onEdgeModeCancel={() => setAddEdgeMode(false)} />
             
             {/* Menu de commandes algo */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
@@ -480,6 +513,7 @@
               <div className="space-y-3 text-xs font-mono">
                 <div className="flex justify-between"><span className="text-slate-400">Ajouter Sommet</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">N</kbd></div>
                 <div className="flex justify-between"><span className="text-slate-400">Mode Arêtes/Liens</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">E</kbd></div>
+                <div className="flex justify-between"><span className="text-slate-400">Flèches Arcs (afficher/masquer)</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">F</kbd></div>
                 <div className="flex justify-between"><span className="text-slate-400">Basculer le Thème</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">M</kbd></div>
                 <div className="flex justify-between"><span className="text-slate-400">Annuler / Quitter</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">Echap</kbd></div>
               </div>

@@ -218,6 +218,7 @@ export default function GraphControls() {
     goToLastStep,
     setCurrentStepIndex,
     arrangeGraph,
+    nodes,
   } = useGraphStore();
 
   const handleReset = () => {

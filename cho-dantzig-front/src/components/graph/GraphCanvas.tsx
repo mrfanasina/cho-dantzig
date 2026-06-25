@@ -10,11 +10,13 @@
  *   potential targets → click destination → enter weight → confirm.
  * • Right-click a node or edge to open a context-menu with a Delete option.
  * • Press Delete/Backspace to remove the currently selected node.
- * • Double-click an edge weight badge to edit inline.
+ * • Single-click an edge weight badge to edit inline.
  * • Drag the midpoint handle on a hovered edge to adjust its curvature.
  * • Weight badges are offset perpendicularly just enough to stay readable
  *   without drifting far from the arc.
  * • Bidirectional edges are laterally offset so both arcs stay visible.
+ * • Arrowheads can be toggled on/off for the whole graph (see `showArrows`)
+ *   to match the plain-line notation used in the reference course material.
  *
  * Store contract (useGraphStore)
  * ──────────────────────────────
@@ -75,6 +77,13 @@ const BADGE_MIN_W   = 24;
 interface GraphCanvasProps {
   /** When true the canvas is in "add-edge" mode: clicking nodes connects them. */
   addEdgeMode?: boolean;
+  /**
+   * Global toggle for arrowheads on every edge (new, preview, pending and
+   * existing). When false, edges render as plain lines — matching the
+   * undirected-looking notation used in the reference course material.
+   * This is intentionally NOT settable per-edge.
+   */
+  showArrows?: boolean;
   onEdgeModeCancel?: () => void;
 }
 
@@ -187,19 +196,15 @@ function monoTextWidth(text: string, fontSize = 11): number {
   return text.length * fontSize * 0.62;
 }
 
+/** True for strings that parseFloat would accept as a finite, real weight. */
+function isValidWeightInput(raw: string): boolean {
+  if (raw.trim() === "") return false;
+  return Number.isFinite(parseFloat(raw));
+}
+
 // ─── Inline SVG icon components ───────────────────────────────────────────────
 // Using pure SVG paths avoids any icon-library dependency and keeps the icons
 // crisp at any scale.
-
-/** Trash / bin icon (14 × 14 viewport). */
-const TrashIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ display: "block" }}>
-    <path
-      d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1M5 3.5l.5 7h3l.5-7"
-      stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
-    />
-  </svg>
-);
 
 // ─── Reusable sub-components ──────────────────────────────────────────────────
 
@@ -229,68 +234,73 @@ interface WeightPopupProps {
  */
 const WeightPopup = memo(({
   midX, midY, value, zoom, pan, onConfirm, onCancel, onChange, inputRef,
-}: WeightPopupProps) => (
-  <foreignObject
-    x={midX * zoom + pan.x - 82}
-    y={midY * zoom + pan.y - 52}
-    width={164} height={100}
-    style={{ overflow: "visible" }}
-  >
-    <div
-      style={{
-        background: "#fff",
-        border: "1.5px solid #ddd6fe",
-        borderRadius: 14,
-        boxShadow: "0 6px 30px rgba(124,58,237,0.16), 0 1px 4px rgba(0,0,0,0.07)",
-        padding: "10px 12px",
-        display: "flex", flexDirection: "column", gap: 8,
-        userSelect: "none",
-      }}
-      onPointerDown={(e) => e.stopPropagation()}
+}: WeightPopupProps) => {
+  const invalid = !isValidWeightInput(value);
+  return (
+    <foreignObject
+      x={midX * zoom + pan.x - 82}
+      y={midY * zoom + pan.y - 52}
+      width={164} height={100}
+      style={{ overflow: "visible" }}
     >
-      <span style={{
-        fontSize: 10, fontWeight: 700, color: "#8b5cf6",
-        textTransform: "uppercase", letterSpacing: "0.08em",
-      }}>
-        Poids de l'arc
-      </span>
-      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-        <input
-          ref={inputRef}
-          type="number" min={0} step="any" value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter")  { e.preventDefault(); onConfirm(); }
-            if (e.key === "Escape") onCancel();
-          }}
-          aria-label="Poids de l'arc"
-          style={{
-            width: 62, padding: "5px 8px", fontSize: 13, fontWeight: 600,
-            border: "1px solid #ede9fe", borderRadius: 8, outline: "none",
-            color: "#5b21b6", background: "#faf5ff",
-            fontFamily: "ui-monospace, monospace",
-          }}
-        />
-        <button
-          onClick={onConfirm} aria-label="Confirmer"
-          style={{
-            flex: 1, background: "#7c3aed", color: "#fff",
-            border: "none", borderRadius: 8, fontSize: 12,
-            fontWeight: 700, cursor: "pointer", padding: "5px 0",
-          }}
-        >OK</button>
-        <button
-          onClick={onCancel} aria-label="Annuler"
-          style={{
-            width: 28, height: 28, background: "#f1f5f9", color: "#94a3b8",
-            border: "none", borderRadius: 8, fontSize: 16, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >×</button>
+      <div
+        style={{
+          background: "#fff",
+          border: "1.5px solid #ddd6fe",
+          borderRadius: 14,
+          boxShadow: "0 6px 30px rgba(124,58,237,0.16), 0 1px 4px rgba(0,0,0,0.07)",
+          padding: "10px 12px",
+          display: "flex", flexDirection: "column", gap: 8,
+          userSelect: "none",
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <span style={{
+          fontSize: 10, fontWeight: 700, color: "#8b5cf6",
+          textTransform: "uppercase", letterSpacing: "0.08em",
+        }}>
+          Poids de l'arc
+        </span>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <input
+            ref={inputRef}
+            type="number" min={0} step="any" value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter")  { e.preventDefault(); if (!invalid) onConfirm(); }
+              if (e.key === "Escape") onCancel();
+            }}
+            aria-label="Poids de l'arc"
+            aria-invalid={invalid}
+            style={{
+              width: 62, padding: "5px 8px", fontSize: 13, fontWeight: 600,
+              border: `1px solid ${invalid ? "#fca5a5" : "#ede9fe"}`, borderRadius: 8, outline: "none",
+              color: "#5b21b6", background: invalid ? "#fef2f2" : "#faf5ff",
+              fontFamily: "ui-monospace, monospace",
+            }}
+          />
+          <button
+            onClick={onConfirm} aria-label="Confirmer"
+            disabled={invalid}
+            style={{
+              flex: 1, background: invalid ? "#c4b5fd" : "#7c3aed", color: "#fff",
+              border: "none", borderRadius: 8, fontSize: 12,
+              fontWeight: 700, cursor: invalid ? "not-allowed" : "pointer", padding: "5px 0",
+            }}
+          >OK</button>
+          <button
+            onClick={onCancel} aria-label="Annuler"
+            style={{
+              width: 28, height: 28, background: "#f1f5f9", color: "#94a3b8",
+              border: "none", borderRadius: 8, fontSize: 16, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >×</button>
+        </div>
       </div>
-    </div>
-  </foreignObject>
-));
+    </foreignObject>
+  );
+});
 
 // ── Context menu ─────────────────────────────────────────────────────────────
 interface ContextMenuProps {
@@ -352,7 +362,7 @@ const ContextMenu = memo(({ x, y, label, onDelete, onClose }: ContextMenuProps) 
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
+export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: GraphCanvasProps) {
   const {
     nodes, edges,
     setCanvasSize,
@@ -453,6 +463,20 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
       }
     });
     return bidi;
+  }, [safeEdges]);
+
+  // Keep per-edge curvature offsets from leaking memory once an edge is deleted.
+  useEffect(() => {
+    setEdgeOffsets((prev) => {
+      const liveIds = new Set(safeEdges.map((e) => e.id));
+      let changed = false;
+      const next: Record<string, number> = {};
+      for (const [id, off] of Object.entries(prev)) {
+        if (liveIds.has(id)) next[id] = off;
+        else changed = true;
+      }
+      return changed ? next : prev;
+    });
   }, [safeEdges]);
 
   const getNode = useCallback((id: string) => nodeMap.get(id), [nodeMap]);
@@ -751,8 +775,8 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
 
   const confirmEdge = useCallback(() => {
     if (!pendingEdge) return;
+    if (!isValidWeightInput(weightInput)) return;
     const w = parseFloat(weightInput);
-    if (!Number.isFinite(w)) return;
     addEdge?.({
       id:     `e_${pendingEdge.fromId}_${pendingEdge.toId}_${Date.now()}`,
       from:   pendingEdge.fromId,
@@ -778,12 +802,24 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
     setEditingEdgeValue(String(edge.weight));
   }, [addEdgeMode]);
 
+  /**
+   * Commit the inline weight edit. Bug fix: this now calls `updateEdgeWeight`
+   * — the action actually exposed by the store (the previous build called a
+   * function that didn't exist on the store, so edits silently no-opped).
+   */
   const confirmEditEdge = useCallback(() => {
     if (!editingEdge) return;
-    const w = parseFloat(editingEdgeValue);
-    if (Number.isFinite(w)) updateEdgeWeight?.(editingEdge, w);
+    if (isValidWeightInput(editingEdgeValue)) {
+      const w = parseFloat(editingEdgeValue);
+      updateEdgeWeight?.(editingEdge, w);
+    }
     setEditingEdge(null);
   }, [editingEdge, editingEdgeValue, updateEdgeWeight]);
+
+  const cancelEditEdge = useCallback(() => {
+    setEditingEdge(null);
+    setEditingEdgeValue("");
+  }, []);
 
   // ── Edge-curvature handle ──────────────────────────────────────────────────
 
@@ -814,7 +850,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if      (pendingEdge)  cancelPendingEdge();
-        else if (editingEdge)  setEditingEdge(null);
+        else if (editingEdge)  cancelEditEdge();
         else                   setCtxMenu(null);
       }
       // Delete/Backspace when a node is selected (and not inside an input)
@@ -830,7 +866,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [pendingEdge, editingEdge, selected, cancelPendingEdge, removeNode]);
+  }, [pendingEdge, editingEdge, selected, cancelPendingEdge, cancelEditEdge, removeNode]);
 
   // ── Toolbar button events (dispatched via window) ─────────────────────────
   useEffect(() => {
@@ -885,12 +921,19 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
     return "#c1cfe0";
   }, [isEdgeInOptimalPath, isSelectedEdge, hovered]);
 
-  const edgeMarker = useCallback((edge: GraphEdge): string => {
+  /**
+   * Arrowhead marker for a given edge. Returns `undefined` whenever
+   * `showArrows` is false so the edge renders as a plain line, matching the
+   * undirected-looking notation used in the reference course material. This
+   * is a single global switch — there is deliberately no per-edge override.
+   */
+  const edgeMarker = useCallback((edge: GraphEdge): string | undefined => {
+    if (!showArrows) return undefined;
     if (isEdgeInOptimalPath(edge.from, edge.to)) return "url(#arrow-optimal)";
     if (isSelectedEdge(edge.from, edge.to))      return "url(#arrow-selected)";
     if (hovered === edge.id)                      return "url(#arrow-hover)";
     return "url(#arrow)";
-  }, [isEdgeInOptimalPath, isSelectedEdge, hovered]);
+  }, [showArrows, isEdgeInOptimalPath, isSelectedEdge, hovered]);
 
   const svgCursor = isPanning.current
     ? "grabbing"
@@ -962,6 +1005,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
 
           const weightStr = String(edge.weight);
           const badgeW    = Math.max(BADGE_MIN_W, monoTextWidth(weightStr) + BADGE_PAD_X * 2);
+          const editInvalid = isEditing && !isValidWeightInput(editingEdgeValue);
 
           return (
             <g
@@ -984,7 +1028,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
                 style={{ transition: "stroke 0.12s, stroke-width 0.12s", pointerEvents: "none" }}
               />
 
-              {/* Weight badge — inline editor when double-clicked */}
+              {/* Weight badge — inline editor when clicked */}
               {isEditing ? (
                 <foreignObject
                   x={badgePos.x - 32} y={badgePos.y - 16}
@@ -994,20 +1038,23 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
                   <input
                     ref={editInputRef}
                     type="number"
+                    step="any"
                     value={editingEdgeValue}
                     onChange={(e) => setEditingEdgeValue(e.target.value)}
                     onBlur={confirmEditEdge}
                     onKeyDown={(e) => {
                       if (e.key === "Enter")  { e.preventDefault(); confirmEditEdge(); }
-                      if (e.key === "Escape") setEditingEdge(null);
+                      if (e.key === "Escape") { e.preventDefault(); cancelEditEdge(); }
                     }}
+                    aria-invalid={editInvalid}
                     style={{
                       width: 60, textAlign: "center",
                       fontSize: 12, fontWeight: 700,
-                      border: "1.5px solid #7c3aed", borderRadius: 8,
+                      border: `1.5px solid ${editInvalid ? "#f87171" : "#7c3aed"}`, borderRadius: 8,
                       padding: "2px 4px",
                       fontFamily: "ui-monospace, monospace",
-                      color: "#5b21b6", background: "#faf5ff", outline: "none",
+                      color: editInvalid ? "#b91c1c" : "#5b21b6",
+                      background: editInvalid ? "#fef2f2" : "#faf5ff", outline: "none",
                     }}
                   />
                 </foreignObject>
@@ -1061,7 +1108,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
           <path
             d={previewPath} fill="none"
             stroke="#3b82f6" strokeWidth={1.8} strokeDasharray="7 4"
-            markerEnd="url(#arrow-preview)" opacity={0.7}
+            markerEnd={showArrows ? "url(#arrow-preview)" : undefined} opacity={0.7}
             style={{ pointerEvents: "none" }}
           />
         )}
@@ -1078,7 +1125,7 @@ export default function GraphCanvas({ addEdgeMode = false }: GraphCanvasProps) {
             <path
               d={path} fill="none"
               stroke="#7c3aed" strokeWidth={2} strokeDasharray="7 3"
-              markerEnd="url(#arrow-pending)" opacity={0.85}
+              markerEnd={showArrows ? "url(#arrow-pending)" : undefined} opacity={0.85}
               style={{ pointerEvents: "none" }}
             />
           );
