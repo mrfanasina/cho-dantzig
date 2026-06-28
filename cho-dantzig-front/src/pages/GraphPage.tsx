@@ -27,7 +27,6 @@
     const [showHelpModal, setShowHelpModal] = useState(false);
 
     // Affichage global des flèches sur les arcs (et non par arc individuel) :
-    // certains supports de cours (cf. PDF de référence) représentent le
     // graphe avec de simples traits, sans pointes de flèche.
     const [showArrows, setShowArrows] = useState(true);
     
@@ -60,7 +59,7 @@
             e.preventDefault();
             setIsDarkMode((prev) => !prev);
             break;
-          case "f":
+          case "a":
             e.preventDefault();
             setShowArrows((prev) => !prev);
             break;
@@ -454,7 +453,7 @@
             {/* Menu de commandes algo */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
               <div className={`border p-2 rounded-2xl shadow-2xl backdrop-blur-xl flex items-center gap-2 transition-all ${
-                isDarkMode ? "bg-slate-950/90 border-white/10 shadow-black/80" : "bg-white/95 border-slate-300 shadow-slate-300"
+                isDarkMode ? "bg-slate-950/90 border-white/10 shadow-black/80" : "border-slate-200 bg-white/40 shadow-slate-300"
               }`}>
                 <GraphControls />
                 {isRunning && (

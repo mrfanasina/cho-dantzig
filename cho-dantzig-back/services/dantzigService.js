@@ -126,8 +126,20 @@ class DantzigService {
   }
 
   // =====================================================
-  // MAXIMISATION (vrai plus long chemin dans un DAG)
+  // MAXIMISATION (plus long chemin dans un DAG, via tri topologique)
   // =====================================================
+  //
+  // Important : on ne fait PAS un DFS exhaustif avec retour-arrière
+  // (qui explorait tous les chemins et désengageait les nœuds visités,
+  // d'où des étapes interminables et des markedNodes incohérents).
+  //
+  // Sur un DAG, le plus long chemin depuis "source" se calcule par
+  // relaxation, en traitant les nœuds dans l'ORDRE TOPOLOGIQUE : quand
+  // on traite un nœud, tous ses prédécesseurs accessibles depuis la
+  // source ont déjà été traités, donc sa valeur λ est définitive.
+  // Cela garantit un marquage strictement croissant (1 étape / nœud),
+  // exactement comme la version min, et compatible avec la
+  // reconstruction des "tours k" côté StepsPanel.
 
   executeLongestPath(graph, nodes, source) {
     const adjacencyList = {};
@@ -143,12 +155,13 @@ class DantzigService {
       });
     });
 
-    const steps = [];
-
-    const visited = new Set();
+    // Lève une erreur si le graphe contient un cycle (le mode MAX exige un DAG).
+    const order = this.topologicalSort(nodes, graph.edges);
 
     const lambdas = {};
     const predecessors = {};
+    const markedNodes = [];
+    const steps = [];
 
     nodes.forEach(node => {
       lambdas[node.id] = Number.NEGATIVE_INFINITY;
@@ -157,76 +170,70 @@ class DantzigService {
 
     lambdas[source] = 0;
 
-    let bestValue = Number.NEGATIVE_INFINITY;
-    let bestPath = [];
+    steps.push({
+      iteration: 0,
+      description: 'Initialisation',
+      lambdas: { ...lambdas },
+      markedNodes: [],
+      explanation: `λ_${source} = 0`
+    });
 
-    const dfs = (current, value, path) => {
-      visited.add(current);
+    // On ne parcourt que la portion de l'ordre topologique à partir de la
+    // source : les nœuds avant elle ne lui sont jamais accessibles.
+    const sourceIndex = order.indexOf(source);
+    const relevantOrder = order.slice(sourceIndex === -1 ? 0 : sourceIndex);
 
-      if (value > bestValue) {
-        bestValue = value;
-        bestPath = [...path];
-      }
+    relevantOrder.forEach(current => {
+      // Un nœud non accessible depuis la source (λ encore -∞) n'est jamais marqué.
+      if (lambdas[current] === Number.NEGATIVE_INFINITY) return;
+
+      markedNodes.push(current);
+
+      adjacencyList[current].forEach(edge => {
+        const candidate = lambdas[current] + edge.weight;
+
+        if (candidate > lambdas[edge.to]) {
+          lambdas[edge.to] = candidate;
+          predecessors[edge.to] = current;
+        }
+      });
 
       steps.push({
         iteration: steps.length,
-        description: `Visite ${current}`,
+        description: `Étape ${steps.length}`,
         currentNode: current,
-        markedNodes: [...visited],
         lambdas: { ...lambdas },
-        explanation: `λ_${current} = ${value}`
+        markedNodes: [...markedNodes]
       });
+    });
 
-      for (const edge of adjacencyList[current]) {
-        if (!visited.has(edge.to)) {
-          const newValue = value + edge.weight;
-
-          if (newValue > lambdas[edge.to]) {
-            lambdas[edge.to] = newValue;
-            predecessors[edge.to] = current;
-          }
-
-          steps.push({
-            iteration: steps.length,
-            description: `${current} → ${edge.to}`,
-            currentNode: edge.to,
-            selectedEdge: edge,
-            markedNodes: [...visited, edge.to],
-            lambdas: { ...lambdas },
-            explanation: `λ_${edge.to} = ${newValue}`
-          });
-
-          dfs(edge.to, newValue, [...path, edge.to]);
-        }
-      }
-
-      visited.delete(current);
-    };
-
-    dfs(source, 0, [source]);
-
-    const targetNode = bestPath[bestPath.length - 1];
-
-    const optimalPath = {
-      from: source,
-      to: targetNode,
-      path: bestPath
-    };
+    const targetNode =
+      this.findSink(nodes, graph.edges) ||
+      markedNodes[markedNodes.length - 1];
 
     return {
-      initialLambdas: { ...lambdas },
+      initialLambdas: steps[0].lambdas,
       steps,
       finalLambdas: { ...lambdas },
-      markedNodes: bestPath,
+      markedNodes,
       predecessors,
-      optimalPaths: [optimalPath],
-      optimalPath,
-      optimalValue: bestValue,
+      optimalPaths: this.reconstructPaths(
+        predecessors,
+        source,
+        nodes
+      ),
+      optimalPath: this.reconstructSinglePath(
+        predecessors,
+        source,
+        targetNode
+      ),
+      optimalValue: lambdas[targetNode],
       sourceNode: source,
       targetNode,
       nodes
     };
   }
+
   // =====================================================
   // TRI TOPOLOGIQUE
   // =====================================================

@@ -23,7 +23,8 @@ class GraphService {
           message: errorData.message || `Erreur HTTP: ${response.status}`,
         };
       }
-
+      console.log(response);
+      
       return await response.json();
     } catch (error) {
       return {

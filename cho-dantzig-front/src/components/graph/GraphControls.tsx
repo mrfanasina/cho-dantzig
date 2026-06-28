@@ -271,8 +271,8 @@ export default function GraphControls() {
         case "f": case "F": dispatch("graph-fit-view"); break;
         case "+": case "=": dispatch("graph-zoom-in"); break;
         case "-":            dispatch("graph-zoom-out"); break;
-        case "Home":         goToFirstStep(); break;
-        case "End":          goToLastStep(); break;
+        case "Home": case "ArrowDown": goToFirstStep(); break;
+        case "End": case "ArrowUp": goToLastStep(); break;
       }
     };
     window.addEventListener("keydown", onKey);
