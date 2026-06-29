@@ -221,6 +221,13 @@ export default function GraphControls() {
     nodes,
   } = useGraphStore();
 
+  const handleArrange = () => {
+  arrangeGraph();
+
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new CustomEvent("graph-fit-view"));
+  });
+};
   const handleReset = () => {
     setIsPlaying(false);
     if (timerRef.current) clearInterval(timerRef.current);
@@ -356,7 +363,10 @@ export default function GraphControls() {
 
       {/* View controls */}
 
-      <IconButton tooltip="Réorganiser automatiquement (G)" onClick={arrangeGraph}>
+      <IconButton
+        tooltip="Réorganiser automatiquement (G)"
+        onClick={handleArrange}
+      >
         {Icons.generate}
       </IconButton>
       <IconButton tooltip="Ajuster la vue (F)" onClick={() => dispatch("graph-fit-view")}>

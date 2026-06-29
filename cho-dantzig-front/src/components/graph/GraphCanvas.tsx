@@ -10,8 +10,11 @@
  *   potential targets → click destination → enter weight → confirm.
  * • Right-click a node or edge to open a context-menu with a Delete option.
  * • Press Delete/Backspace to remove the currently selected node.
- * • Single-click an edge weight badge to edit inline.
- * • Drag the midpoint handle on a hovered edge to adjust its curvature.
+ * • Single-click an edge weight badge to edit inline — this is the badge's
+ *   ONLY job now; it is never a drag target.
+ * • Click-and-drag directly on an edge's line (anywhere along its arc, not
+ *   on the weight badge) to adjust its curvature. There is no separate
+ *   handle dot anymore — the arc itself is the drag target.
  * • Weight badges are offset perpendicularly just enough to stay readable
  *   without drifting far from the arc.
  * • Bidirectional edges are laterally offset so both arcs stay visible.
@@ -147,7 +150,8 @@ function buildEdgePath(
 
 /**
  * Point on the quadratic bezier at t = 0.5 (i.e., visual midpoint of the arc).
- * This is where the weight badge and the drag handle are anchored.
+ * This is where the weight badge is anchored, and the default position used
+ * when computing the curvature-drag projection.
  */
 function bezierMid(from: XY, to: XY, lateralOffset: number = 0): XY {
   const { len, ny, nx } = vec(from, to);
@@ -407,11 +411,16 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   const editInputRef = useRef<HTMLInputElement>(null);
 
   // ── Edge-curvature dragging ────────────────────────────────────────────────
-  /** Id of the edge whose midpoint handle is being dragged. */
+  /**
+   * Id of the edge currently being curved by a click-drag directly on its
+   * line. There is no separate handle dot — the arc's own (wide, invisible)
+   * hit-zone is the drag target, so dragging works from anywhere along the
+   * line except the weight badge.
+   */
   const [draggingEdge, setDraggingEdge] = useState<string | null>(null);
   /**
-   * Per-edge extra perpendicular offset accumulated by dragging the midpoint
-   * handle.  Keyed by edge id.
+   * Per-edge extra perpendicular offset accumulated by dragging the edge
+   * line.  Keyed by edge id.
    */
   const [edgeOffsets, setEdgeOffsets] = useState<Record<string, number>>({});
 
@@ -497,16 +506,6 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return buildEdgePath(from, to, getLateralOffset(edge) + extra);
   }, [getNode, getLateralOffset, edgeOffsets]);
 
-  /** Geometric midpoint of an edge arc (for the drag handle). */
-  const getEdgeMid = useCallback((edge: GraphEdge): XY => {
-    const from = getNode(edge.from);
-    const to   = getNode(edge.to);
-    if (!from || !to) return { x: 0, y: 0 };
-    if (from.id === to.id) return selfLoopMid(from);
-    const extra = edgeOffsets[edge.id] ?? 0;
-    return bezierMid(from, to, getLateralOffset(edge) + extra);
-  }, [getNode, getLateralOffset, edgeOffsets]);
-
   /**
    * Position for the weight badge, offset just slightly off the arc.
    * See `weightBadgePos` for the rationale behind WEIGHT_PERP_OFFSET.
@@ -518,6 +517,16 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     if (from.id === to.id) return selfLoopMid(from);
     const extra = edgeOffsets[edge.id] ?? 0;
     return weightBadgePos(from, to, getLateralOffset(edge), extra);
+  }, [getNode, getLateralOffset, edgeOffsets]);
+
+  /** Geometric midpoint of an edge arc (used to position the context menu). */
+  const getEdgeMid = useCallback((edge: GraphEdge): XY => {
+    const from = getNode(edge.from);
+    const to   = getNode(edge.to);
+    if (!from || !to) return { x: 0, y: 0 };
+    if (from.id === to.id) return selfLoopMid(from);
+    const extra = edgeOffsets[edge.id] ?? 0;
+    return bezierMid(from, to, getLateralOffset(edge) + extra);
   }, [getNode, getLateralOffset, edgeOffsets]);
 
   // ── Coordinate conversion ──────────────────────────────────────────────────
@@ -642,7 +651,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       return;
     }
 
-    // ── Edge-curvature dragging ──
+    // ── Edge-curvature dragging (started by pressing on the arc itself) ──
     if (draggingEdge) {
       const svgC = getSvgCoords(e.clientX, e.clientY);
       const edge = safeEdges.find((ed) => ed.id === draggingEdge);
@@ -821,9 +830,17 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     setEditingEdgeValue("");
   }, []);
 
-  // ── Edge-curvature handle ──────────────────────────────────────────────────
+  // ── Edge-curvature drag, started directly from the arc's own hit-zone ─────
 
-  const onPointerDownEdgeHandle = useCallback(
+  /**
+   * Pressing down anywhere on an edge's (wide, invisible) hit-zone starts a
+   * curvature drag. There is no separate handle dot anymore — the line
+   * itself is the drag target. The weight badge sits on top of the arc but
+   * has its own onClick (startEditEdge) and stops propagation, so pressing
+   * on the badge never starts a curvature drag — it's reserved purely for
+   * editing the weight value.
+   */
+  const onPointerDownEdge = useCallback(
     (e: React.PointerEvent, edgeId: string) => {
       if (addEdgeMode) return;
       e.stopPropagation();
@@ -1014,10 +1031,17 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               onMouseLeave={() => setHovered(null)}
               onContextMenu={(e) => onContextMenuEdge(e, edge)}
             >
-              {/* Invisible wide hit zone so edges are easy to hover/right-click */}
+              {/*
+                Invisible wide hit zone: this IS the drag target for adjusting
+                curvature now (no more separate handle dot). Pressing down
+                anywhere along the line — except on the weight badge, which
+                has its own handler and stops propagation — starts a
+                curvature drag.
+              */}
               <path
                 d={path} fill="none" stroke="transparent" strokeWidth={18}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: addEdgeMode ? "pointer" : (isDragThis ? "grabbing" : "grab") }}
+                onPointerDown={(e) => onPointerDownEdge(e, edge.id)}
               />
 
               {/* Visible arc */}
@@ -1028,7 +1052,10 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 style={{ transition: "stroke 0.12s, stroke-width 0.12s", pointerEvents: "none" }}
               />
 
-              {/* Weight badge — inline editor when clicked */}
+              {/* Weight badge — inline editor when clicked. Reserved ONLY for
+                  editing the weight value: it stops propagation on click so
+                  pressing it never starts (or interferes with) a curvature
+                  drag on the underlying arc. */}
               {isEditing ? (
                 <foreignObject
                   x={badgePos.x - 32} y={badgePos.y - 16}
@@ -1062,6 +1089,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 // Static badge — single-click to edit
                 <g
                   style={{ cursor: addEdgeMode ? "default" : "text" }}
+                  onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => { e.stopPropagation(); startEditEdge(edge); }}
                 >
                   <rect
@@ -1084,21 +1112,6 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                   </text>
                 </g>
               )}
-
-              {/* Midpoint drag handle — visible only when hovered or dragging */}
-              {!addEdgeMode && (isHov || isDragThis) && (() => {
-                const mid = getEdgeMid(edge);
-                return (
-                  <circle
-                    cx={mid.x} cy={mid.y} r={5}
-                    fill={isDragThis ? "#7c3aed" : "#94a3b8"}
-                    stroke="#fff" strokeWidth={1.5}
-                    style={{ cursor: "grab" }}
-                    onPointerDown={(e) => onPointerDownEdgeHandle(e, edge.id)}
-                    onMouseEnter={(e) => e.stopPropagation()}
-                  />
-                );
-              })()}
             </g>
           );
         })}

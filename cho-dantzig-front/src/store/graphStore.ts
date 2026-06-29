@@ -13,6 +13,18 @@ const ARRANGE_MARGIN_X = 90;
 const ARRANGE_MARGIN_Y = 90;
 const ARRANGE_MAX_SCALE = 1.25;
 
+/**
+ * Cible de step à restaurer après un recalcul automatique déclenché par une
+ * modification du graphe pendant qu'un résultat est déjà affiché :
+ *  - un nombre  → on essaie de rester exactement sur ce step (clampé si le
+ *    nouveau nombre total d'étapes est plus petit).
+ *  - "end"      → on était sur la toute dernière étape au moment du
+ *    changement ; on se replace donc sur la nouvelle dernière étape, quel
+ *    que soit le nombre total d'étapes désormais.
+ *  - undefined  → calcul "normal" (bouton Lancer) : on repart du début.
+ */
+type StepTarget = number | "end" | undefined;
+
 interface GraphStore {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -24,9 +36,8 @@ interface GraphStore {
   updateEdge: (id: string, updates: Partial<GraphEdge>) => void;
   /**
    * Convenience action used by GraphCanvas to change a single edge's weight
-   * (e.g. inline editing of the weight badge). Previously GraphCanvas called
-   * a function with this exact name that didn't exist on the store, so
-   * weight edits silently did nothing — this action fixes that.
+   * (e.g. inline editing of the weight badge). Implemented as a wrapper
+   * around `updateEdge`, so it inherits the same "recalcul auto" behaviour.
    */
   updateEdgeWeight: (id: string, weight: number) => void;
   removeNode: (id: string) => void;
@@ -50,7 +61,21 @@ interface GraphStore {
   currentStepIndex: number;
   totalSteps: number;
 
-  executeDantzig: () => Promise<void>;
+  /**
+   * `stepTarget` undefined = comportement normal, on repart du step 0.
+   * Sert uniquement aux appels internes déclenchés par `maybeRecompute`.
+   */
+  executeDantzig: (stepTarget?: StepTarget) => Promise<void>;
+  /**
+   * Déclenché automatiquement par toute modification structurelle du
+   * graphe (ajout/suppression de nœud, ajout/suppression d'arc, changement
+   * de poids) lorsqu'un résultat est déjà affiché. Relance Dantzig en
+   * arrière-plan SANS rien changer à l'affichage courant tant que le
+   * nouveau résultat n'est pas prêt (isComputed/result restent ceux
+   * d'avant), puis se replace sur le step où on était (ou sur la fin si on
+   * y était), donnant l'illusion que seule "la suite" a changé.
+   */
+  maybeRecompute: () => void;
   resetResult: () => void;
 
   setCurrentStepIndex: (index: number) => void;
@@ -92,25 +117,58 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
-  addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
-  addEdge: (edge) => set((state) => ({ edges: [...state.edges, edge] })),
-  updateNode: (id, updates) => set((state) => ({
-    nodes: state.nodes.map((n) => n.id === id ? { ...n, ...updates } : n)
-  })),
-  updateEdge: (id, updates) => set((state) => ({
-    edges: state.edges.map((e) => e.id === id ? { ...e, ...updates } : e)
-  })),
+
+  // ── Modifications structurelles ────────────────────────────────────────
+  // Chacune applique le changement de données puis délègue à
+  // `maybeRecompute`, qui décide s'il faut relancer Dantzig en tâche de
+  // fond (seulement si un résultat était déjà affiché).
+  addNode: (node) => {
+    set((state) => ({ nodes: [...state.nodes, node] }));
+    get().maybeRecompute();
+  },
+
+  addEdge: (edge) => {
+    set((state) => ({ edges: [...state.edges, edge] }));
+    get().maybeRecompute();
+  },
+
+  updateNode: (id, updates) =>
+    set((state) => ({
+      nodes: state.nodes.map((n) => (n.id === id ? { ...n, ...updates } : n)),
+    })),
+
+  // Changer le poids (ou tout autre champ) d'un arc invalide l'ancien
+  // résultat Dantzig → recalcul auto en arrière-plan.
+  updateEdge: (id, updates) => {
+    set((state) => ({
+      edges: state.edges.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+    }));
+    get().maybeRecompute();
+  },
+
   // Fix: GraphCanvas's inline weight editor calls `updateEdgeWeight`, which
   // never existed before — edits to an edge's weight were silently dropped.
-  // Implemented as a thin wrapper around `updateEdge` so both stay consistent.
+  // Implemented as a thin wrapper around `updateEdge` so both stay
+  // consistent, including the auto-recompute behaviour.
   updateEdgeWeight: (id, weight) => get().updateEdge(id, { weight }),
-  removeNode: (id) => set((state) => ({
-    nodes: state.nodes.filter((n) => n.id !== id),
-    edges: state.edges.filter((e) => e.from !== id && e.to !== id)
-  })),
-  removeEdge: (id) => set((state) => ({
-    edges: state.edges.filter((e) => e.id !== id)
-  })),
+
+  removeNode: (id) => {
+    set((state) => ({
+      nodes: state.nodes.filter((n) => n.id !== id),
+      edges: state.edges.filter((e) => e.from !== id && e.to !== id),
+    }));
+    get().maybeRecompute();
+  },
+
+  removeEdge: (id) => {
+    set((state) => ({
+      edges: state.edges.filter((e) => e.id !== id),
+    }));
+    get().maybeRecompute();
+  },
+
+  // Déplacement de nœud = purement visuel, n'affecte pas l'algorithme :
+  // pas de recalcul ici.
   moveNode: (id, x, y) =>
     set((state) => ({
       nodes: state.nodes.map((n) =>
@@ -135,9 +193,22 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   error: null,
   clearError: () => set({ error: null }),
 
-  executeDantzig: async () => {
+  maybeRecompute: () => {
+    const { isComputed, currentStepIndex, totalSteps } = get();
+    // Rien n'était affiché → rien à "faire semblant" de préserver, on ne
+    // lance pas de calcul tout seul (l'utilisateur appuiera sur "Lancer").
+    if (!isComputed) return;
+    const wasAtEnd = totalSteps > 0 && currentStepIndex === totalSteps - 1;
+    get().executeDantzig(wasAtEnd ? "end" : currentStepIndex);
+  },
+
+  executeDantzig: async (stepTarget) => {
     const { nodes, edges, sourceNode, optimizationType } = get();
 
+    // Important : on NE touche PAS à `isComputed`/`result` ici. Tant que le
+    // nouveau résultat n'est pas prêt, l'ancien reste affiché tel quel —
+    // c'est ce qui donne l'illusion que "rien n'a changé avant" pendant que
+    // le recalcul tourne en réalité en arrière-plan.
     set({ isRunning: true, error: null });
 
     try {
@@ -181,14 +252,30 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
         }
       }
 
+      const newTotal = result.steps.length;
+
+      // Détermine l'étape sur laquelle se replacer :
+      //  - "end"      → nouvelle dernière étape (on y était au changement)
+      //  - un nombre  → on essaie de rester pile sur ce step, clampé si le
+      //                 nouveau total d'étapes est plus petit
+      //  - undefined  → calcul "normal" (bouton Lancer) : on repart de 0
+      const nextIndex =
+        stepTarget === "end"
+          ? Math.max(0, newTotal - 1)
+          : typeof stepTarget === "number"
+          ? Math.min(stepTarget, Math.max(0, newTotal - 1))
+          : 0;
+
       set({
         isRunning: false,
         isComputed: true,
         result,
-        currentStepIndex: 0,
-        totalSteps: result.steps.length,
+        currentStepIndex: nextIndex,
+        totalSteps: newTotal,
       });
     } catch (error) {
+      // Le recalcul a échoué (ex: source supprimée) : on laisse l'ancien
+      // résultat affiché plutôt que de tout effacer, et on signale l'erreur.
       set({
         isRunning: false,
         error: error instanceof Error ? error.message : "Une erreur est survenue",

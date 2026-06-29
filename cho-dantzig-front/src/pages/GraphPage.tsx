@@ -41,6 +41,21 @@
       if (showAddNodeForm) setAddEdgeMode(false);
     }, [showAddNodeForm]);
 
+    // UX : Empêcher la page de se quitter sans confirmation 
+    useEffect(() => {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+
+        // Nécessaire pour Chrome/Edge
+        e.returnValue = "";
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+    }, []);
     // UX Pro : Raccourcis clavier
     useEffect(() => {
       const handleKeyDown = (e) => {
@@ -235,7 +250,12 @@
               {(["min", "max"] as const).map((type) => (
                 <button
                   key={type}
-                  onClick={() => setOptimizationType(type)}
+                  onClick={() => {
+                    if (optimizationType !== type) {
+                      resetResult();
+                      setOptimizationType(type);
+                    }
+                  }}
                   disabled={isRunning}
                   className={`px-3 py-1 rounded-md text-[11px] font-medium transition-all duration-200 uppercase tracking-wider ${
                     optimizationType === type
