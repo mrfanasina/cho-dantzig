@@ -1,3 +1,9 @@
+// Tolérance utilisée pour détecter les égalités de poids (chemins optimaux
+// multiples). Deux candidats sont considérés à égalité si leur écart est
+// inférieur à EPS — nécessaire car des poids flottants "égaux en théorie"
+// peuvent différer de quelques ulps après addition.
+const EPS = 1e-9;
+
 class DantzigService {
   constructor() {
     this.INF = Number.POSITIVE_INFINITY;
@@ -42,13 +48,17 @@ class DantzigService {
     });
 
     const lambdas = {};
+    // predecessors[node] est maintenant un TABLEAU : plusieurs prédécesseurs
+    // possibles quand deux arcs mènent au même λ optimal (égalité de poids).
+    // C'est ce qui permet de reconstruire plusieurs chemins optimaux
+    // distincts vers un même sommet cible.
     const predecessors = {};
     const markedNodes = [];
     const steps = [];
 
     nodes.forEach(node => {
       lambdas[node.id] = this.INF;
-      predecessors[node.id] = null;
+      predecessors[node.id] = [];
     });
 
     lambdas[source] = 0;
@@ -80,12 +90,22 @@ class DantzigService {
       markedNodes.push(current);
 
       adjacencyList[current].forEach(edge => {
-        const candidate =
-          lambdas[current] + edge.weight;
+        const candidate = lambdas[current] + edge.weight;
 
-        if (candidate < lambdas[edge.to]) {
+        if (candidate < lambdas[edge.to] - EPS) {
+          // Nouveau meilleur λ : on repart d'un seul prédécesseur.
           lambdas[edge.to] = candidate;
-          predecessors[edge.to] = current;
+          predecessors[edge.to] = [current];
+        } else if (Math.abs(candidate - lambdas[edge.to]) <= EPS) {
+          // Égalité stricte avec le λ déjà connu (et fini) : chemin
+          // alternatif de même valeur optimale → on l'ajoute sans écraser
+          // le(s) prédécesseur(s) existant(s).
+          if (
+            lambdas[edge.to] !== this.INF &&
+            !predecessors[edge.to].includes(current)
+          ) {
+            predecessors[edge.to].push(current);
+          }
         }
       });
 
@@ -114,6 +134,13 @@ class DantzigService {
         nodes
       ),
       optimalPath: this.reconstructSinglePath(
+        predecessors,
+        source,
+        targetNode
+      ),
+      // NOUVEAU : tous les chemins optimaux distincts (égalités de poids)
+      // menant de la source au sommet cible.
+      optimalPathsToTarget: this.reconstructAllPathsToTarget(
         predecessors,
         source,
         targetNode
@@ -165,7 +192,7 @@ class DantzigService {
 
     nodes.forEach(node => {
       lambdas[node.id] = Number.NEGATIVE_INFINITY;
-      predecessors[node.id] = null;
+      predecessors[node.id] = [];
     });
 
     lambdas[source] = 0;
@@ -192,9 +219,16 @@ class DantzigService {
       adjacencyList[current].forEach(edge => {
         const candidate = lambdas[current] + edge.weight;
 
-        if (candidate > lambdas[edge.to]) {
+        if (candidate > lambdas[edge.to] + EPS) {
           lambdas[edge.to] = candidate;
-          predecessors[edge.to] = current;
+          predecessors[edge.to] = [current];
+        } else if (Math.abs(candidate - lambdas[edge.to]) <= EPS) {
+          if (
+            lambdas[edge.to] !== Number.NEGATIVE_INFINITY &&
+            !predecessors[edge.to].includes(current)
+          ) {
+            predecessors[edge.to].push(current);
+          }
         }
       });
 
@@ -223,6 +257,11 @@ class DantzigService {
         nodes
       ),
       optimalPath: this.reconstructSinglePath(
+        predecessors,
+        source,
+        targetNode
+      ),
+      optimalPathsToTarget: this.reconstructAllPathsToTarget(
         predecessors,
         source,
         targetNode
@@ -304,6 +343,10 @@ class DantzigService {
     );
   }
 
+  // Un chemin "représentatif" par sommet (utilise le premier prédécesseur
+  // de chaque nœud). Sert au panneau "chemins vers tous les sommets" côté
+  // StepsPanel — inchangé fonctionnellement, juste adapté au fait que
+  // `predecessors[x]` est désormais un tableau.
   reconstructPaths(predecessors, source, nodes) {
     const paths = [];
 
@@ -313,9 +356,10 @@ class DantzigService {
       const path = [];
       let current = node.id;
 
-      while (current !== null) {
+      while (current !== null && current !== undefined) {
         path.unshift(current);
-        current = predecessors[current];
+        const preds = predecessors[current];
+        current = preds && preds.length ? preds[0] : null;
       }
 
       if (path[0] === source) {
@@ -330,18 +374,18 @@ class DantzigService {
     return paths;
   }
 
-  reconstructSinglePath(
-    predecessors,
-    source,
-    target
-  ) {
+  // Chemin unique "par défaut" (premier prédécesseur à chaque étape) —
+  // conservé pour compatibilité avec le code existant qui lit
+  // `result.optimalPath`.
+  reconstructSinglePath(predecessors, source, target) {
     const path = [];
 
     let current = target;
 
-    while (current !== null) {
+    while (current !== null && current !== undefined) {
       path.unshift(current);
-      current = predecessors[current];
+      const preds = predecessors[current];
+      current = preds && preds.length ? preds[0] : null;
     }
 
     if (path[0] !== source) {
@@ -353,6 +397,49 @@ class DantzigService {
       to: target,
       path
     };
+  }
+
+  /**
+   * NOUVEAU — reconstruit TOUS les chemins optimaux distincts entre
+   * `source` et `target`, en explorant récursivement, à rebours, toutes
+   * les branches de `predecessors` (qui peut contenir plusieurs
+   * prédécesseurs par nœud en cas d'égalité de poids).
+   *
+   * `maxPaths` protège contre une explosion combinatoire sur des graphes
+   * très maillés — largement suffisant pour un exercice pédagogique.
+   */
+  reconstructAllPathsToTarget(predecessors, source, target, maxPaths = 20) {
+    if (target === null || target === undefined) return [];
+
+    const results = [];
+
+    const build = (node, suffix, visiting) => {
+      if (results.length >= maxPaths) return;
+
+      if (node === source) {
+        results.push([source, ...suffix]);
+        return;
+      }
+
+      // Garde-fou anti-cycle : ne devrait jamais se produire sur les DAG de
+      // plus courts/longs chemins que produit cet algorithme, mais on
+      // préfère s'arrêter proprement plutôt que boucler à l'infini si des
+      // données incohérentes sont injectées (ex. graphe édité manuellement).
+      if (visiting.has(node)) return;
+      visiting.add(node);
+
+      const preds = predecessors[node] || [];
+      for (const p of preds) {
+        if (results.length >= maxPaths) break;
+        build(p, [node, ...suffix], visiting);
+      }
+
+      visiting.delete(node);
+    };
+
+    build(target, [], new Set());
+
+    return results.map(path => ({ from: source, to: target, path }));
   }
 }
 

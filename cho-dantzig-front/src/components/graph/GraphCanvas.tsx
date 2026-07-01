@@ -20,6 +20,9 @@
  * • Bidirectional edges are laterally offset so both arcs stay visible.
  * • Arrowheads can be toggled on/off for the whole graph (see `showArrows`)
  *   to match the plain-line notation used in the reference course material.
+ * • When several optimal paths tie on weight ("chemin multiple" mode, see
+ *   `pathDisplayMode` in the store), each is drawn as its own coloured
+ *   overlay on top of the graph — see MULTI_PATH_STYLES below.
  *
  * Store contract (useGraphStore)
  * ──────────────────────────────
@@ -33,6 +36,7 @@
  *   getNodeLambda(id)       – λ value shown above node (optional)
  *   isNodeMarked / isCurrentNode / isSelectedEdge
  *   isNodeInOptimalPath / isEdgeInOptimalPath
+ *   pathDisplayMode / getPathIndicesForEdge – chemins optimaux multiples
  */
 
 import {
@@ -64,7 +68,7 @@ const BIDIRECTIONAL_OFFSET = 14;
 
 /** How far (px) the weight badge is pushed perpendicularly off the arc path.
  *  Small value keeps the label close; 0 would centre it on the arc itself. */
-const WEIGHT_PERP_OFFSET = 0;
+const WEIGHT_PERP_OFFSET = -1;
 
 const ZOOM_MIN  = 0.15;
 const ZOOM_MAX  = 4;
@@ -74,6 +78,70 @@ const ZOOM_STEP = 1.02;
 const BADGE_H       = 20;
 const BADGE_PAD_X   = 8;   // horizontal padding inside the pill
 const BADGE_MIN_W   = 24;
+
+// ────────────────────────────────────────────────────────────────────────
+// STYLES DES CHEMINS OPTIMAUX MULTIPLES — à modifier ici uniquement.
+// ────────────────────────────────────────────────────────────────────────
+// Utilisé quand `pathDisplayMode === "all"` (sélecteur "Chemin multiple"
+// dans GraphPage) : chaque chemin optimal distinct est dessiné en overlay
+// avec le style d'index correspondant. S'il y a plus de chemins que
+// d'entrées ici, le tableau boucle (modulo) — les couleurs se répètent
+// mais le décalage latéral (MULTI_PATH_LATERAL_GAP) reste unique par
+// chemin, donc les tracés restent distinguables même au-delà de 6.
+//
+//   stroke : couleur du trait (n'importe quelle couleur CSS valide)
+//   dash   : motif strokeDasharray ; `undefined` = trait plein
+//   label  : nom affiché (sélecteur GraphPage / légende StepsPanel)
+//
+// Exemple pour repasser TOUT en traits pleins de couleurs différentes :
+// remplacer chaque `dash` par `undefined`.
+export const MULTI_PATH_STYLES = [
+  {
+    stroke: "#2563eb",
+    marker: "url(#arrow-blue)",
+    dash: undefined,
+    label: "Chemin 1",
+  },
+  {
+    stroke: "#f97316",
+    marker: "url(#arrow-orange)",
+    dash: "undefined",
+    label: "Chemin 2",
+  },
+  {
+    stroke: "#f0f001",
+    marker: "url(#arrow-green)",
+    dash: "8 4",
+    label: "Chemin 3",
+  },
+  {
+    stroke: "#db2777",
+    marker: "url(#arrow-pink)",
+    dash: "1 4",
+    label: "Chemin 4",
+  },
+  {
+    stroke: "#8b5cf6",
+    marker: "url(#arrow-purple)",
+    dash: "10 4 2 4",
+    label: "Chemin 5",
+  },
+  {
+    stroke: "#eab308",
+    marker: "url(#arrow-yellow)",
+    dash: "6 3",
+    label: "Chemin 6",
+  },
+];
+/**
+ * Décalage latéral additionnel (px) entre deux chemins optimaux superposés
+ * en mode "multiple", pour que les tracés parallèles restent visuellement
+ * distincts même quand plusieurs chemins partagent un même arc.
+ */
+export const MULTI_PATH_LATERAL_GAP = 9;
+
+/** Épaisseur des tracés d'overlay des chemins multiples. */
+const MULTI_PATH_STROKE_WIDTH = 2.4;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -373,6 +441,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     getNodeLambda,
     isNodeMarked, isCurrentNode, isSelectedEdge,
     isNodeInOptimalPath, isEdgeInOptimalPath,
+    pathDisplayMode, getPathIndicesForEdge,
     moveNode, addEdge,
     updateEdgeWeight,
     removeEdge,
@@ -982,6 +1051,12 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         <ArrowMarker id="arrow-preview"  fill="#3b82f6" />
         <ArrowMarker id="arrow-pending"  fill="#7c3aed" />
         <ArrowMarker id="arrow-hover"    fill="#64748b" />
+        <ArrowMarker id="arrow-blue"   fill="#2563eb" />
+        <ArrowMarker id="arrow-orange" fill="#f97316" />
+        <ArrowMarker id="arrow-green"  fill="#f0f001" />
+        <ArrowMarker id="arrow-pink"   fill="#db2777" />
+        <ArrowMarker id="arrow-purple" fill="#8b5cf6" />
+        <ArrowMarker id="arrow-yellow" fill="#eab308" />
 
         {/* Subtle drop-shadow for normal nodes */}
         <filter id="node-shadow" x="-30%" y="-30%" width="160%" height="160%">
@@ -1243,7 +1318,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               )}
 
               {/* ── λ value badge (shown above the node during algorithm runs) ── */}
-              {lambdaVal !== null && lambdaVal !== undefined && (
+              {lambdaVal !== null && lambdaVal !== undefined && isMarked && (
                 <g transform="translate(0,-44)">
                   <rect
                     x={-30} y={-12} width={60} height={26} rx={9}
@@ -1292,6 +1367,74 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
             </g>
           );
         })}
+
+        {/* ════════════════════════════════════════════════════════════════════
+            CHEMINS OPTIMAUX MULTIPLES — overlay ("Chemin multiple" mode)
+            Dessiné PAR-DESSUS les nœuds pour rester bien visible même là où
+            plusieurs chemins optimaux se superposent aux arcs normaux.
+            Un chemin sélectionné individuellement ("Chemin N") reste rendu
+            en bleu par le mécanisme normal ci-dessus (isEdgeInOptimalPath) ;
+            ce bloc ne s'active QU'en mode "all" (voir getPathIndicesForEdge).
+            ════════════════════════════════════════════════════════════════════ */}
+            {pathDisplayMode === "all" && safeEdges.map((edge) => {
+              const pathIndices = getPathIndicesForEdge(edge.from, edge.to);
+              // S'il n'y a aucun chemin sur cet arc, on n'affiche rien
+              if (!pathIndices.length) return null;
+
+              const from = getNode(edge.from);
+              const to   = getNode(edge.to);
+              if (!from || !to || from.id === to.id) return null;
+
+              // Décalage de base pour les arcs parallèles normaux du graphe
+              const baseOffset = getLateralOffset(edge) + (edgeOffsets[edge.id] ?? 0);
+
+              // CAS 1 : Plusieurs chemins partagent cet arc -> TRONC COMMUN
+              if (pathIndices.length > 1) {
+                // On génère un SEUL arc unique au centre (pas de multiplication par pIdx)
+                const overlayPath = buildEdgePath(from, to, baseOffset);
+                
+                return (
+                  <path
+                    key={`${edge.id}-mp-shared`}
+                    d={overlayPath}
+                    fill="none"
+                    stroke="#2563eb"
+                    strokeWidth={MULTI_PATH_STROKE_WIDTH * 1.3}
+                    strokeLinecap="round"
+                    markerEnd={showArrows ? "url(#arrow-blue)" : undefined}
+                    style={{
+                      pointerEvents: "none",
+                      opacity: 0.95,
+                    }}
+                  />
+                );
+              }
+
+              // CAS 2 : Un seul chemin passe par cet arc -> CHEMIN UNIQUE / DIVERGENT
+              const pIdx = pathIndices[0];
+              const style = MULTI_PATH_STYLES[pIdx % MULTI_PATH_STYLES.length];
+              
+              // Pas de décalage non plus ici (0 * GAP), l'arc s'alignera parfaitement 
+              // dans la continuité du tronc commun lorsqu'il se sépare.
+              const overlayPath = buildEdgePath(from, to, baseOffset);
+
+              return (
+                <path
+                  key={`${edge.id}-mp-${pIdx}`}
+                  d={overlayPath}
+                  fill="none"
+                  stroke={style.stroke}
+                  strokeWidth={MULTI_PATH_STROKE_WIDTH}
+                  strokeDasharray={style.dash}
+                  strokeLinecap="round"
+                  markerEnd={showArrows ? style.marker : undefined}
+                  style={{
+                    pointerEvents: "none",
+                    opacity: 0.92,
+                  }}
+                />
+              );
+            })}
 
         {/* ── Context menu (inside transform group so it follows zoom/pan) ── */}
         {ctxMenu && (

@@ -1,5 +1,5 @@
-  import { useState, useEffect, useRef } from "react";
-  import GraphCanvas from "../components/graph/GraphCanvas";
+import { useState, useEffect, useRef } from "react";
+  import GraphCanvas, { MULTI_PATH_STYLES } from "../components/graph/GraphCanvas";
   import StepsPanel from "../components/graph/StepsPanel";
   import GraphControls from "../components/graph/GraphControls";
   import GraphEditor from "../components/graph/GraphEditor";
@@ -16,7 +16,11 @@
       setOptimizationType, 
       resetResult,
       setNodes,
-      setEdges
+      setEdges,
+      isComputed,
+      result,
+      pathDisplayMode,
+      setPathDisplayMode,
     } = useGraphStore();
     
     // États d'interface utilisateur (UI)
@@ -35,6 +39,17 @@
 
     // Référence pour le bouton d'importation masqué
     const fileInputRef = useRef(null);
+
+    // ── Chemins optimaux disponibles (calculés par le backend) ──────────────
+    // `optimalPathsToTarget` contient un ou plusieurs chemins de valeur
+    // optimale identique (égalités de poids) entre la source et le sommet
+    // cible. `pathsCount > 1` déclenche l'apparition du sélecteur.
+    const dantzigResult = result as any;
+    const optimalPathsList: { path: string[] }[] =
+      dantzigResult?.optimalPathsToTarget
+      ?? (dantzigResult?.optimalPath ? [dantzigResult.optimalPath] : []);
+    const pathsCount = optimalPathsList.length;
+    const showPathSelector = isComputed && pathsCount > 0;
 
     // UX : Désactiver le mode arête si on ouvre le formulaire d'ajout de sommet
     useEffect(() => {
@@ -148,11 +163,7 @@
       setIsDraggingFile(false);
 
       const file = e.dataTransfer.files?.[0];
-      if (file && file.type === "application/json" || file?.name.endsWith(".json")) {
         processGraphFile(file);
-      } else {
-        alert("Veuillez déposer un fichier au format .json uniquement.");
-      }
     };
 
     // --- EXPORTATION ---
@@ -469,6 +480,50 @@
             )}
 
             <GraphCanvas addEdgeMode={addEdgeMode} showArrows={showArrows} onEdgeModeCancel={() => setAddEdgeMode(false)} />
+
+            {/* ── Sélecteur de chemin(s) optimal(aux) ────────────────────────
+                N'apparaît qu'une fois un résultat calculé. "Chemin multiple"
+                superpose tous les chemins optimaux à égalité (voir couleurs
+                dans MULTI_PATH_STYLES, GraphCanvas.tsx) ; "Chemin N" isole un
+                seul chemin, affiché en bleu comme avant. */}
+            {showPathSelector && (
+              <div className={`absolute top-6 right-6 z-30 flex items-center gap-2 p-2 rounded-2xl border backdrop-blur-xl shadow-2xl transition-all duration-300 ${
+                isDarkMode ? "bg-slate-900/80 border-white/10 shadow-black/50" : "bg-white/90 border-slate-200 shadow-slate-300/60"
+              }`}>
+                <span className={`text-[10px] font-bold uppercase tracking-wider pl-1 ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                  {pathsCount > 1 ? "Chemins" : "Chemin"}
+                </span>
+                <select
+                  value={pathDisplayMode === "all" ? "all" : String(pathDisplayMode)}
+                  onChange={(e) => setPathDisplayMode(e.target.value === "all" ? "all" : Number(e.target.value))}
+                  disabled={pathsCount <= 1}
+                  className={`text-[11px] font-medium rounded-lg px-2 py-1.5 border outline-none disabled:opacity-40 disabled:cursor-not-allowed ${
+                    isDarkMode
+                      ? "bg-slate-950/60 border-white/10 text-slate-200"
+                      : "bg-white border-slate-200 text-slate-700"
+                  }`}
+                >
+                  {pathsCount > 1 && <option value="all">Chemin multiple</option>}
+                  {optimalPathsList.map((_, i) => (
+                    <option key={i} value={i}>{`Chemin ${i + 1}`}</option>
+                  ))}
+                </select>
+
+                {/* Légende couleurs — uniquement utile en mode "multiple" */}
+                {pathDisplayMode === "all" && pathsCount > 1 && (
+                  <div className="flex items-center gap-1.5 pl-1 pr-1">
+                    {optimalPathsList.map((_, i) => (
+                      <span
+                        key={i}
+                        title={`Chemin ${i + 1}`}
+                        className="w-2.5 h-2.5 rounded-full ring-1 ring-black/5"
+                        style={{ background: MULTI_PATH_STYLES[i % MULTI_PATH_STYLES.length].stroke }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Menu de commandes algo */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
@@ -522,23 +577,108 @@
           </div>
         )}
 
-        {/* Modal d'aide */}
+        {/* Modal d'aide — Aide complète de l'application */}
         {showHelpModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-md p-4 animate-in fade-in duration-150">
-            <div className={`w-full max-w-sm rounded-2xl border p-5 shadow-2xl ${
+            <div className={`w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl border shadow-2xl ${
               isDarkMode ? "bg-slate-900 border-white/10 text-slate-100" : "bg-white border-slate-200 text-slate-900"
             }`}>
-              <h3 className="text-xs font-bold uppercase tracking-wider mb-4 text-indigo-500">Raccourcis Clavier</h3>
-              <div className="space-y-3 text-xs font-mono">
-                <div className="flex justify-between"><span className="text-slate-400">Ajouter Sommet</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">N</kbd></div>
-                <div className="flex justify-between"><span className="text-slate-400">Mode Arêtes/Liens</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">E</kbd></div>
-                <div className="flex justify-between"><span className="text-slate-400">Flèches Arcs (afficher/masquer)</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">F</kbd></div>
-                <div className="flex justify-between"><span className="text-slate-400">Basculer le Thème</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">M</kbd></div>
-                <div className="flex justify-between"><span className="text-slate-400">Annuler / Quitter</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">Echap</kbd></div>
+              {/* En-tête fixe */}
+              <div className={`flex items-center justify-between px-5 pt-5 pb-3 border-b ${isDarkMode ? "border-white/5" : "border-slate-100"}`}>
+                <div>
+                  <h3 className="text-sm font-bold text-indigo-500">Aide — Chemin Optimal</h3>
+                  <p className={`text-[11px] mt-0.5 ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                    Visualiseur de l'algorithme de Dantzig (plus court / plus long chemin)
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowHelpModal(false)}
+                  aria-label="Fermer"
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-lg flex-shrink-0 ${
+                    isDarkMode ? "hover:bg-white/10 text-slate-400" : "hover:bg-slate-100 text-slate-400"
+                  }`}
+                >×</button>
               </div>
-              <button onClick={() => setShowHelpModal(false)} className="mt-5 w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl transition-colors">
-                Compris !
-              </button>
+
+              {/* Corps scrollable */}
+              <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
+
+                {/* ── Édition du graphe ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Édition du graphe</h4>
+                  <ul className={`space-y-1.5 leading-relaxed ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    <li><strong>Glisser un sommet</strong> : cliquer-déposer directement sur le cercle.</li>
+                    <li><strong>Créer un arc</strong> : activer le mode arêtes (bouton ou touche <kbd className="px-1 rounded bg-slate-500/20">E</kbd>), cliquer le sommet source puis le sommet destination, puis saisir le poids. Cliquer deux fois le même sommet crée une boucle.</li>
+                    <li><strong>Modifier un poids</strong> : cliquer une fois sur l'étiquette du poids (le pastille sur l'arc), taper la nouvelle valeur, <kbd className="px-1 rounded bg-slate-500/20">Entrée</kbd> pour valider.</li>
+                    <li><strong>Courber un arc</strong> : cliquer-glisser n'importe où sur le trait de l'arc (hors de l'étiquette de poids).</li>
+                    <li><strong>Supprimer</strong> : clic droit sur un sommet ou un arc → "Supprimer", ou sélectionner un sommet puis <kbd className="px-1 rounded bg-slate-500/20">Suppr</kbd> / <kbd className="px-1 rounded bg-slate-500/20">Retour</kbd>.</li>
+                    <li><strong>Ajouter un sommet</strong> : bouton "＋" du dock ou touche <kbd className="px-1 rounded bg-slate-500/20">N</kbd>.</li>
+                    <li><strong>Éditeur matriciel</strong> : icône lignes (dock, en haut à gauche) pour éditer le graphe sous forme de texte/matrice.</li>
+                  </ul>
+                </section>
+
+                {/* ── Vue & navigation ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Vue &amp; navigation du canevas</h4>
+                  <ul className={`space-y-1.5 leading-relaxed ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    <li><strong>Zoom</strong> : molette de la souris (centré sur le curseur).</li>
+                    <li><strong>Déplacer la vue</strong> : clic molette (bouton du milieu) ou <kbd className="px-1 rounded bg-slate-500/20">Alt</kbd> + glisser.</li>
+                    <li><strong>Flèches sur les arcs</strong> : bouton dédié ou touche <kbd className="px-1 rounded bg-slate-500/20">F</kbd> — bascule entre notation fléchée et traits simples (notation du support de cours).</li>
+                    <li><strong>Thème clair/sombre</strong> : bouton soleil/lune ou touche <kbd className="px-1 rounded bg-slate-500/20">M</kbd>.</li>
+                  </ul>
+                </section>
+
+                {/* ── Algorithme ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Lancer l'algorithme</h4>
+                  <ul className={`space-y-1.5 leading-relaxed ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    <li><strong>MIN / MAX</strong> (en haut) : plus court chemin (Dantzig) ou plus long chemin (nécessite un graphe sans cycle).</li>
+                    <li>Le panneau de droite <strong>"Résolution pas à pas"</strong> détaille chaque tour k, les candidats en compétition (valeur λ) et le gagnant retenu, exactement selon la méthode du support de cours.</li>
+                    <li>Les commandes de lecture (bas de l'écran) permettent d'avancer/reculer étape par étape ou de sauter au début/à la fin.</li>
+                    <li>Toute modification du graphe pendant qu'un résultat est déjà affiché relance le calcul automatiquement en arrière-plan, sans perdre votre position dans les étapes.</li>
+                  </ul>
+                </section>
+
+                {/* ── Chemins multiples ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Chemins optimaux multiples</h4>
+                  <ul className={`space-y-1.5 leading-relaxed ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    <li>Quand plusieurs chemins ont exactement la même valeur optimale (égalité de poids), un sélecteur apparaît en haut à droite du canevas.</li>
+                    <li><strong>Chemin 1, Chemin 2, …</strong> : affiche un seul chemin à la fois, en bleu.</li>
+                    <li><strong>Chemin multiple</strong> : superpose tous les chemins optimaux, chacun avec sa propre couleur / son propre style de trait (voir la légende à côté du sélecteur).</li>
+                    <li>Le panneau "Résolution pas à pas" liste également chaque chemin (cliquable pour le sélectionner) à la dernière étape.</li>
+                  </ul>
+                </section>
+
+                {/* ── Import / Export ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Import / Export</h4>
+                  <ul className={`space-y-1.5 leading-relaxed ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    <li><strong>Importer</strong> : bouton dédié du dock, ou glisser-déposer un fichier <code className="px-1 rounded bg-slate-500/20">.json</code> n'importe où sur l'écran.</li>
+                    <li><strong>Exporter</strong> : bouton dédié du dock, télécharge le graphe courant (sommets, arcs, mode min/max) au format JSON.</li>
+                  </ul>
+                </section>
+
+                {/* ── Raccourcis clavier ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Raccourcis clavier</h4>
+                  <div className="space-y-2 font-mono">
+                    <div className="flex justify-between"><span className="text-slate-400">Ajouter Sommet</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">N</kbd></div>
+                    <div className="flex justify-between"><span className="text-slate-400">Mode Arêtes/Liens</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">E</kbd></div>
+                    <div className="flex justify-between"><span className="text-slate-400">Flèches Arcs (afficher/masquer)</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">F</kbd></div>
+                    <div className="flex justify-between"><span className="text-slate-400">Basculer le Thème</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">M</kbd></div>
+                    <div className="flex justify-between"><span className="text-slate-400">Supprimer le sommet sélectionné</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">Suppr</kbd></div>
+                    <div className="flex justify-between"><span className="text-slate-400">Annuler / Quitter</span><kbd className="px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">Echap</kbd></div>
+                  </div>
+                </section>
+              </div>
+
+              {/* Pied fixe */}
+              <div className={`p-4 border-t ${isDarkMode ? "border-white/5" : "border-slate-100"}`}>
+                <button onClick={() => setShowHelpModal(false)} className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl transition-colors">
+                  Compris !
+                </button>
+              </div>
             </div>
           </div>
         )}

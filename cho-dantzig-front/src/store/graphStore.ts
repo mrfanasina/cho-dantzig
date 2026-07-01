@@ -25,6 +25,21 @@ const ARRANGE_MAX_SCALE = 1.25;
  */
 type StepTarget = number | "end" | undefined;
 
+/**
+ * Sélection du/des chemin(s) optimal(aux) à mettre en évidence :
+ *  - un nombre  → index (0-based) dans `result.optimalPathsToTarget`, un
+ *    seul chemin affiché (en bleu, comportement historique).
+ *  - "all"      → tous les chemins optimaux distincts sont affichés
+ *    simultanément (voir MULTI_PATH_STYLES dans GraphCanvas.tsx).
+ */
+type PathDisplayMode = number | "all";
+
+interface OptimalPathEntry {
+  from: string;
+  to: string;
+  path: string[];
+}
+
 interface GraphStore {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -86,6 +101,29 @@ interface GraphStore {
 
   error: string | null;
   clearError: () => void;
+
+  // ── Chemins optimaux multiples ─────────────────────────────────────────
+  /**
+   * Chemin(s) actuellement sélectionné(s) pour l'affichage. Réinitialisé à
+   * 0 sur un calcul "normal" (bouton Lancer) ; clampé/préservé sur un
+   * recalcul en arrière-plan (`maybeRecompute`).
+   */
+  pathDisplayMode: PathDisplayMode;
+  setPathDisplayMode: (mode: PathDisplayMode) => void;
+  /** Liste brute de tous les chemins optimaux distincts vers la cible. */
+  getOptimalPathsList: () => OptimalPathEntry[];
+  /**
+   * Chemin(s) réellement à dessiner compte tenu de `pathDisplayMode`
+   * (un seul élément en mode "index", tous en mode "all").
+   */
+  getActivePaths: () => OptimalPathEntry[];
+  /**
+   * Pour un arc donné, indices (dans la liste COMPLÈTE, pas la liste
+   * filtrée) des chemins optimaux qui l'empruntent — utilisé uniquement en
+   * mode "all" par GraphCanvas pour dessiner un tracé par chemin avec sa
+   * propre couleur. Retourne toujours [] hors mode "all".
+   */
+  getPathIndicesForEdge: (from: string, to: string) => number[];
 
   getCurrentStep: () => DantzigStep | null;
   getNodeLambda: (nodeId: string) => number | null;
@@ -193,6 +231,49 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   error: null,
   clearError: () => set({ error: null }),
 
+  // ── Chemins optimaux multiples ─────────────────────────────────────────
+  pathDisplayMode: 0,
+  setPathDisplayMode: (mode) => set({ pathDisplayMode: mode }),
+
+  getOptimalPathsList: () => {
+    const r = get().result as any;
+    if (!r) return [];
+    return (r.optimalPathsToTarget as OptimalPathEntry[] | undefined)
+      ?? (r.optimalPath ? [r.optimalPath as OptimalPathEntry] : []);
+  },
+
+  getActivePaths: () => {
+    const { pathDisplayMode } = get();
+    const all = get().getOptimalPathsList();
+    if (!all.length) return [];
+    if (pathDisplayMode === "all") return all;
+    const idx = typeof pathDisplayMode === "number" ? pathDisplayMode : 0;
+    return all[idx] ? [all[idx]] : [all[0]];
+  },
+
+  getPathIndicesForEdge: (from, to) => {
+    const { result, currentStepIndex, pathDisplayMode } = get();
+    if (pathDisplayMode !== "all") return [];
+    const r = result as any;
+    if (!r?.optimalPath?.path) return [];
+    const step = (r.steps as any[])[currentStepIndex];
+    if (step?.pathRevealCount === undefined) return [];
+
+    const all = get().getOptimalPathsList();
+    const indices: number[] = [];
+    all.forEach((p, i) => {
+      const path = p.path;
+      const startIdx = path.length - 1 - step.pathRevealCount;
+      for (let k = Math.max(0, startIdx); k < path.length - 1; k++) {
+        if (path[k] === from && path[k + 1] === to) {
+          indices.push(i);
+          break;
+        }
+      }
+    });
+    return indices;
+  },
+
   maybeRecompute: () => {
     const { isComputed, currentStepIndex, totalSteps } = get();
     // Rien n'était affiché → rien à "faire semblant" de préserver, on ne
@@ -203,7 +284,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   executeDantzig: async (stepTarget) => {
-    const { nodes, edges, sourceNode, optimizationType } = get();
+    const { nodes, edges, sourceNode, optimizationType, pathDisplayMode } = get();
 
     // Important : on NE touche PAS à `isComputed`/`result` ici. Tant que le
     // nouveau résultat n'est pas prêt, l'ancien reste affiché tel quel —
@@ -230,24 +311,31 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       const result = response.data;
       console.log("DANTZIG RESULT =", result);
 
-      // ── Injection des étapes de révélation du chemin optimal ──────────────
+      // ── Injection des étapes de révélation du/des chemin(s) optimal(aux) ──
       // On ajoute des étapes synthétiques APRÈS les étapes Dantzig normales.
-      // Chaque étape révèle un arc supplémentaire, en remontant du nœud
-      // final vers la source (pathRevealCount arcs révélés depuis la fin).
-      if (result.optimalPath?.path && result.optimalPath.path.length >= 2) {
-        const path: string[] = result.optimalPath.path;
+      // Chaque étape révèle un arc supplémentaire de plus, en remontant du
+      // nœud final vers la source. `pathRevealCount` est commun à TOUS les
+      // chemins optimaux (au cas où ils auraient des longueurs différentes,
+      // on se cale sur le plus long pour que chacun ait le temps de se
+      // révéler entièrement) ; côté lecture, chaque chemin se contente de
+      // clamper ce compteur à sa propre longueur (voir isEdgeInOptimalPath).
+      const allTargetPaths: OptimalPathEntry[] =
+        (result as any).optimalPathsToTarget
+        ?? (result.optimalPath ? [result.optimalPath as unknown as OptimalPathEntry] : []);
+
+      if (allTargetPaths.length && allTargetPaths.some((p) => p.path.length >= 2)) {
+        const maxLen = Math.max(...allTargetPaths.map((p) => p.path.length));
         const lastStep = result.steps[result.steps.length - 1];
 
-        // k = path.length-1 → 1 : on remonte arc par arc depuis la fin
-        for (let k = path.length - 1; k >= 1; k--) {
+        for (let revealed = 1; revealed <= maxLen - 1; revealed++) {
           (result.steps as any[]).push({
             iteration: result.steps.length,
-            description: `Remontée chemin : ${path[k - 1]} → ${path[k]}`,
+            description: `Remontée du chemin optimal (${revealed}/${maxLen - 1})`,
             currentNode: undefined,
             lambdas: { ...lastStep.lambdas },
             markedNodes: [...lastStep.markedNodes],
-            // Nombre d'arcs révélés depuis la fin (1, 2, …, path.length-1)
-            pathRevealCount: path.length - k,
+            // Nombre d'arcs révélés depuis la fin (1, 2, …, maxLen-1)
+            pathRevealCount: revealed,
           });
         }
       }
@@ -266,12 +354,28 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
           ? Math.min(stepTarget, Math.max(0, newTotal - 1))
           : 0;
 
+      // Sélection du chemin affiché :
+      //  - calcul "normal" (stepTarget undefined)      → on repart sur le
+      //    premier chemin optimal (comportement historique, en bleu).
+      //  - recalcul en arrière-plan (maybeRecompute)    → on essaie de
+      //    conserver le choix précédent ("all" reste "all" ; un index est
+      //    clampé si le nouveau graphe a moins de chemins optimaux).
+      const nextPathDisplayMode: PathDisplayMode =
+        stepTarget === undefined
+          ? 0
+          : pathDisplayMode === "all"
+          ? "all"
+          : typeof pathDisplayMode === "number" && pathDisplayMode < allTargetPaths.length
+          ? pathDisplayMode
+          : 0;
+
       set({
         isRunning: false,
         isComputed: true,
         result,
         currentStepIndex: nextIndex,
         totalSteps: newTotal,
+        pathDisplayMode: nextPathDisplayMode,
       });
     } catch (error) {
       // Le recalcul a échoué (ex: source supprimée) : on laisse l'ancien
@@ -289,6 +393,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     currentStepIndex: 0,
     totalSteps: 0,
     error: null,
+    pathDisplayMode: 0,
   }),
 
   setCurrentStepIndex: (index) => {
@@ -372,33 +477,42 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     }
   },
 
+  // Un nœud est "dans le chemin optimal" s'il appartient à au moins UN des
+  // chemins actuellement actifs (un seul en mode index, plusieurs en mode
+  // "all") — la distinction visuelle par chemin (couleurs multiples) est
+  // gérée séparément par `getPathIndicesForEdge` côté GraphCanvas.
   isNodeInOptimalPath: (nodeId) => {
     const { result, currentStepIndex } = get();
-    if (!result?.optimalPath?.path) return false;
+    const r = result as any;
+    if (!r?.optimalPath?.path) return false;
 
-    const step = (result.steps as any[])[currentStepIndex];
+    const step = (r.steps as any[])[currentStepIndex];
     if (step?.pathRevealCount === undefined) return false;
 
-    const path = result.optimalPath.path;
-    // Les (pathRevealCount + 1) derniers nœuds du chemin sont révélés
-    const revealedNodes = path.slice(path.length - step.pathRevealCount - 1);
-    return revealedNodes.includes(nodeId);
+    const paths = get().getActivePaths();
+    return paths.some((p) => {
+      const revealedNodes = p.path.slice(Math.max(0, p.path.length - step.pathRevealCount - 1));
+      return revealedNodes.includes(nodeId);
+    });
   },
 
   isEdgeInOptimalPath: (from, to) => {
     const { result, currentStepIndex } = get();
-    if (!result?.optimalPath?.path) return false;
+    const r = result as any;
+    if (!r?.optimalPath?.path) return false;
 
-    const step = (result.steps as any[])[currentStepIndex];
+    const step = (r.steps as any[])[currentStepIndex];
     if (step?.pathRevealCount === undefined) return false;
 
-    const path = result.optimalPath.path;
-    // Révèle les (pathRevealCount) derniers arcs du chemin
-    const startIdx = path.length - 1 - step.pathRevealCount;
-    for (let i = Math.max(0, startIdx); i < path.length - 1; i++) {
-      if (path[i] === from && path[i + 1] === to) return true;
-    }
-    return false;
+    const paths = get().getActivePaths();
+    return paths.some((p) => {
+      const path = p.path;
+      const startIdx = path.length - 1 - step.pathRevealCount;
+      for (let i = Math.max(0, startIdx); i < path.length - 1; i++) {
+        if (path[i] === from && path[i + 1] === to) return true;
+      }
+      return false;
+    });
   },
 
   arrangeGraph: () => {

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useGraphStore } from "../../store/graphStore";
+import { MULTI_PATH_STYLES } from "./GraphCanvas";
 
 function cx(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
@@ -50,9 +51,18 @@ interface AlgoStep {
   // Champ injecté pour les étapes de révélation du chemin optimal
   pathRevealCount?: number;
 }
+interface OptimalPathEntry {
+  from: string;
+  to: string;
+  path: string[];
+}
 interface AlgoResult {
   steps: AlgoStep[];
-  optimalPaths: { from: string; to: string; path: string[] }[];
+  optimalPaths: OptimalPathEntry[];
+  // NOUVEAU : tous les chemins optimaux distincts (égalités de poids) vers
+  // le sommet cible — peut contenir plusieurs entrées.
+  optimalPathsToTarget?: OptimalPathEntry[];
+  optimalPath?: OptimalPathEntry;
   sourceNode: string;
   targetNode: string;
   optimalValue: number;
@@ -223,9 +233,42 @@ function ESet({ index, nodes, pivot }: { index: number; nodes: string[]; pivot: 
   );
 }
 
+// ─── Chemin (chips + flèches) ───────────────────────────────────────────────────
+function PathChips({
+  path, color, small = false,
+}: { path: string[]; color: string; small?: boolean }) {
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      {path.map((node, ni, arr) => (
+        <span key={ni} className="flex items-center gap-1">
+          <span
+            className={cx(
+              "rounded-full border-2 flex items-center justify-center font-mono font-bold bg-white",
+              small ? "w-6 h-6 text-[10px]" : "w-8 h-8 text-sm"
+            )}
+            style={{
+              borderColor: color,
+              color: ni === 0 || ni === arr.length - 1 ? "#475569" : color,
+              background: ni === 0 || ni === arr.length - 1 ? "#fde68a55" : "#fff",
+            }}
+          >
+            {node}
+          </span>
+          {ni < arr.length - 1 && (
+            <span style={{ color }} className="font-bold text-xs">→</span>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main ──────────────────────────────────────────────────────────────────────
 export default function StepsPanel() {
-  const { isComputed, isRunning, result, currentStepIndex, edges } = useGraphStore();
+  const {
+    isComputed, isRunning, result, currentStepIndex, edges,
+    pathDisplayMode, setPathDisplayMode,
+  } = useGraphStore();
   const [showPaths, setShowPaths] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -235,8 +278,8 @@ export default function StepsPanel() {
 
   if (!isComputed || !result) return <EmptyState isRunning={isRunning} />;
 
-  const typedResult = result as AlgoResult;
-  const { steps, sourceNode, optimalPaths, optimalValue } = typedResult;
+  const typedResult = result as unknown as AlgoResult;
+  const { steps, sourceNode, optimalValue } = typedResult;
   const totalSteps = steps.length;
   const progress = totalSteps > 1 ? currentStepIndex / (totalSteps - 1) : 1;
 
@@ -256,6 +299,20 @@ export default function StepsPanel() {
     ? allRounds.length
     : Math.max(0, Math.min(currentStepIndex - 1, allRounds.length));
   const visibleRounds = allRounds.slice(0, dantzigVisible);
+
+  // ── Chemins optimaux (multiples) ──────────────────────────────────────────
+  const allTargetPaths: OptimalPathEntry[] =
+    typedResult.optimalPathsToTarget
+    ?? (typedResult.optimalPath ? [typedResult.optimalPath] : []);
+  const hasMultiplePaths = allTargetPaths.length > 1;
+  const colorFor = (i: number) => MULTI_PATH_STYLES[i % MULTI_PATH_STYLES.length].stroke;
+
+  // Indices actuellement mis en avant dans le canvas (pour synchroniser la
+  // mise en évidence ici avec la sélection faite dans GraphPage / le canvas).
+  const selectedIndices: number[] =
+    pathDisplayMode === "all"
+      ? allTargetPaths.map((_, i) => i)
+      : [typeof pathDisplayMode === "number" ? pathDisplayMode : 0];
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -360,27 +417,64 @@ export default function StepsPanel() {
         {/* ─ Résultat final (uniquement à la toute dernière étape) ─ */}
         {showPathResult && optimalValue !== undefined && (
           <div className="mt-4 pt-4 border-t-2 border-indigo-200 dark:border-indigo-800/60 space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">
-              Chemin de valeur optimale
-            </p>
-
-            <div className="flex flex-wrap items-center gap-1.5">
-              {optimalPaths[optimalPaths.length - 1]?.path.map((node, ni, arr) => (
-                <span key={ni} className="flex items-center gap-1.5">
-                  <span className={cx(
-                    "w-8 h-8 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm",
-                    ni === 0 || ni === arr.length - 1
-                      ? "bg-amber-200 border-amber-300 text-slate-600 shadow-sm"
-                      : "bg-white border-indigo-400 text-indigo-600"
-                  )}>
-                    {node}
-                  </span>
-                  {ni < arr.length - 1 && (
-                    <span className="text-indigo-400 font-bold">→</span>
-                  )}
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">
+                {hasMultiplePaths ? "Chemins de valeur optimale" : "Chemin de valeur optimale"}
+              </p>
+              {hasMultiplePaths && (
+                <span className="text-[10px] font-mono text-slate-400">
+                  {allTargetPaths.length} chemins à égalité
                 </span>
-              ))}
+              )}
             </div>
+
+            {/* Un ou plusieurs chemins, chacun coloré comme dans le canvas
+                (voir MULTI_PATH_STYLES). Cliquer sur un chemin le sélectionne
+                aussi dans le canvas (synchronisé avec le sélecteur GraphPage). */}
+            <div className="space-y-2">
+              {allTargetPaths.map((p, i) => {
+                const isSelected = selectedIndices.includes(i);
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setPathDisplayMode(i)}
+                    className={cx(
+                      "w-full text-left rounded-lg border px-2.5 py-2 transition-all",
+                      isSelected
+                        ? "border-indigo-200 bg-indigo-50/60 dark:bg-indigo-950/20 dark:border-indigo-800/50"
+                        : "border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/30"
+                    )}
+                  >
+                    {hasMultiplePaths && (
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{ background: colorFor(i) }}
+                        />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          Chemin {i + 1}
+                        </span>
+                      </div>
+                    )}
+                    <PathChips path={p.path} color={colorFor(i)} />
+                  </button>
+                );
+              })}
+            </div>
+
+            {hasMultiplePaths && (
+              <button
+                onClick={() => setPathDisplayMode(pathDisplayMode === "all" ? 0 : "all")}
+                className={cx(
+                  "text-[11px] font-medium px-2.5 py-1 rounded-lg border transition-colors",
+                  pathDisplayMode === "all"
+                    ? "border-indigo-300 bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300"
+                    : "border-slate-200 text-slate-400 hover:text-indigo-500"
+                )}
+              >
+                {pathDisplayMode === "all" ? "✓ Afficher tous les chemins" : "Afficher tous les chemins ensemble"}
+              </button>
+            )}
 
             <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-1.5">
               <span className="text-xs text-slate-500">Valeur optimale :</span>
@@ -389,17 +483,17 @@ export default function StepsPanel() {
               </span>
             </div>
 
-            {optimalPaths.length > 1 && (
+            {typedResult.optimalPaths.length > 1 && (
               <div>
                 <button
                   onClick={() => setShowPaths((v) => !v)}
                   className="text-[11px] text-slate-400 hover:text-indigo-500 transition-colors underline underline-offset-2"
                 >
-                  {showPaths ? "▲ Masquer" : `▼ Tous les chemins (${optimalPaths.length})`}
+                  {showPaths ? "▲ Masquer" : `▼ Chemins vers tous les sommets (${typedResult.optimalPaths.length})`}
                 </button>
                 {showPaths && (
                   <div className="mt-2 space-y-1 pl-2 border-l-2 border-slate-200 dark:border-slate-700">
-                    {optimalPaths.map((p, i) => (
+                    {typedResult.optimalPaths.map((p, i) => (
                       <div key={i} className="flex flex-wrap items-center gap-1 text-[11px] font-mono text-slate-500">
                         {p.path.map((n, ni) => (
                           <span key={ni} className="flex items-center gap-1">
