@@ -1,39 +1,55 @@
 /**
  * GraphCanvas.tsx
  * ───────────────
- * SVG canvas for interactive directed-graph editing.
+ * Canevas SVG pour l'édition interactive d'un graphe orienté.
  *
- * Features
+ * Fonctionnalités
  * ─────────
- * • Drag nodes freely; pan with middle-button or Alt+drag; zoom with wheel.
- * • Add edges in "addEdgeMode": click source → hover shows animated ring on
- *   potential targets → click destination → enter weight → confirm.
- * • Right-click a node or edge to open a context-menu with a Delete option.
- * • Press Delete/Backspace to remove the currently selected node.
- * • Single-click an edge weight badge to edit inline — this is the badge's
- *   ONLY job now; it is never a drag target.
- * • Click-and-drag directly on an edge's line (anywhere along its arc, not
- *   on the weight badge) to adjust its curvature. There is no separate
- *   handle dot anymore — the arc itself is the drag target.
- * • Weight badges are offset perpendicularly just enough to stay readable
- *   without drifting far from the arc.
- * • Bidirectional edges are laterally offset so both arcs stay visible.
- * • Arrowheads can be toggled on/off for the whole graph (see `showArrows`)
- *   to match the plain-line notation used in the reference course material.
- * • When several optimal paths tie on weight ("chemin multiple" mode, see
- *   `pathDisplayMode` in the store), each is drawn as its own coloured
- *   overlay on top of the graph — see MULTI_PATH_STYLES below.
+ * • Déplacer les sommets librement ; navigation (pan) avec le bouton du
+ *   milieu ou Alt+glisser ; zoom avec la molette.
+ * • Ajouter des arcs en mode "addEdgeMode" : cliquer sur le sommet source →
+ *   un anneau animé apparaît sur les cibles potentielles au survol →
+ *   cliquer sur la destination → saisir le poids → confirmer.
+ * • Clic droit sur un sommet ou un arc pour ouvrir un menu contextuel avec
+ *   une option de suppression.
+ * • Touche Suppr/Retour arrière pour supprimer le sommet actuellement
+ *   sélectionné.
+ * • Un simple clic sur le badge de poids d'un arc permet de l'éditer en
+ *   ligne — c'est désormais son SEUL rôle ; il ne sert jamais de cible de
+ *   glisser-déposer.
+ * • Cliquer-glisser directement sur le tracé d'un arc (n'importe où le long
+ *   de sa courbe, sauf sur le badge de poids) permet d'ajuster sa courbure.
+ *   Il n'y a plus de poignée séparée — le tracé lui-même est la cible du
+ *   glisser-déposer.
+ * • Les badges de poids sont décalés perpendiculairement d'une distance
+ *   minimale, pour rester lisibles sans trop s'éloigner du tracé.
+ * • Les arcs bidirectionnels sont décalés latéralement pour que les deux
+ *   tracés restent visibles.
+ * • Les pointes de flèche peuvent être activées/désactivées globalement
+ *   (voir `showArrows`) pour correspondre à la notation en traits simples
+ *   utilisée dans le support de cours.
+ * • Quand plusieurs chemins optimaux sont à égalité de poids (mode "chemin
+ *   multiple", voir `pathDisplayMode` dans le store), chacun est dessiné en
+ *   surimpression avec sa propre couleur — voir MULTI_PATH_STYLES ci-dessous.
+ *     - Les tronçons partagés par plusieurs chemins sont désormais dessinés
+ *       comme plusieurs tracés parallèles légèrement décalés (façon plan de
+ *       métro), chacun dans SA couleur de chemin — plus de bleu générique
+ *       imposé sur le tronc commun qui cassait la continuité visuelle.
+ *     - Les sommets appartenant à un seul chemin optimal sont teintés dans
+ *       la couleur de ce chemin. Les sommets communs à plusieurs chemins
+ *       (points de convergence/divergence) affichent un anneau segmenté
+ *       multicolore, une couleur par chemin qui y passe.
  *
- * Store contract (useGraphStore)
+ * Contrat avec le store (useGraphStore)
  * ──────────────────────────────
- *   nodes, edges            – graph data
- *   moveNode(id, x, y)      – update node position
- *   addEdge(edge)           – insert a new edge
- *   updateEdgeWeight(id, w) – change weight on existing edge
- *   removeEdge(id)          – delete an edge by id
- *   removeNode(id)          – delete a node and its incident edges
- *   setCanvasSize(w, h)     – notify store of SVG dimensions
- *   getNodeLambda(id)       – λ value shown above node (optional)
+ *   nodes, edges            – données du graphe
+ *   moveNode(id, x, y)      – met à jour la position d'un sommet
+ *   addEdge(edge)           – insère un nouvel arc
+ *   updateEdgeWeight(id, w) – change le poids d'un arc existant
+ *   removeEdge(id)          – supprime un arc par son id
+ *   removeNode(id)          – supprime un sommet et ses arcs incidents
+ *   setCanvasSize(w, h)     – notifie le store des dimensions du SVG
+ *   getNodeLambda(id)       – valeur λ affichée au-dessus du sommet (optionnel)
  *   isNodeMarked / isCurrentNode / isSelectedEdge
  *   isNodeInOptimalPath / isEdgeInOptimalPath
  *   pathDisplayMode / getPathIndicesForEdge – chemins optimaux multiples
@@ -52,31 +68,32 @@ import { useGraphStore } from "../../store/graphStore";
 import type { GraphEdge, GraphNode, NodeColors } from "../../types/graph";
 import { Trash, Trash2 } from "lucide-react";
 
-// ─── Layout & visual constants ────────────────────────────────────────────────
+// ─── Constantes de mise en page & de style ────────────────────────────────
 
 const NODE_RADIUS = 23;
 
-/** Quadratic-bezier curvature: fraction of edge length, capped at MAX_CURVE */
+/** Courbure de la bézier quadratique : fraction de la longueur de l'arc, plafonnée à MAX_CURVE */
 const CURVE_FACTOR = 0.15;
 const MAX_CURVE    = 40;
 
 /**
- * Lateral shift (px) applied to each arc of a bidirectional pair so the two
- * arcs don't overlap.
+ * Décalage latéral (px) appliqué à chaque tracé d'une paire bidirectionnelle
+ * pour que les deux arcs ne se chevauchent pas.
  */
 const BIDIRECTIONAL_OFFSET = 14;
 
-/** How far (px) the weight badge is pushed perpendicularly off the arc path.
- *  Small value keeps the label close; 0 would centre it on the arc itself. */
+/** Distance (px) dont le badge de poids est poussé perpendiculairement hors
+ *  du tracé. Une petite valeur garde le libellé proche ; 0 le centrerait
+ *  directement sur le tracé lui-même. */
 const WEIGHT_PERP_OFFSET = -1;
 
 const ZOOM_MIN  = 0.15;
 const ZOOM_MAX  = 4;
 const ZOOM_STEP = 1.02;
 
-// Weight badge geometry
+// Géométrie du badge de poids
 const BADGE_H       = 20;
-const BADGE_PAD_X   = 8;   // horizontal padding inside the pill
+const BADGE_PAD_X   = 8;   // marge horizontale interne de la pastille
 const BADGE_MIN_W   = 24;
 
 // ────────────────────────────────────────────────────────────────────────
@@ -84,7 +101,10 @@ const BADGE_MIN_W   = 24;
 // ────────────────────────────────────────────────────────────────────────
 // Utilisé quand `pathDisplayMode === "all"` (sélecteur "Chemin multiple"
 // dans GraphPage) : chaque chemin optimal distinct est dessiné en overlay
-// avec le style d'index correspondant. S'il y a plus de chemins que
+// avec le style d'index correspondant, sur toute sa longueur — y compris
+// sur les tronçons partagés avec d'autres chemins (voir le rendu des arcs
+// plus bas, qui décale désormais chaque chemin latéralement au lieu de les
+// fusionner en un tronc bleu générique). S'il y a plus de chemins que
 // d'entrées ici, le tableau boucle (modulo) — les couleurs se répètent
 // mais le décalage latéral (MULTI_PATH_LATERAL_GAP) reste unique par
 // chemin, donc les tracés restent distinguables même au-delà de 6.
@@ -105,11 +125,11 @@ export const MULTI_PATH_STYLES = [
   {
     stroke: "#f97316",
     marker: "url(#arrow-orange)",
-    dash: "undefined",
+    dash: undefined,
     label: "Chemin 2",
   },
   {
-    stroke: "#f0f001",
+    stroke: "#16a34a",
     marker: "url(#arrow-green)",
     dash: "8 4",
     label: "Chemin 3",
@@ -127,7 +147,7 @@ export const MULTI_PATH_STYLES = [
     label: "Chemin 5",
   },
   {
-    stroke: "#eab308",
+    stroke: "#ca8a04",
     marker: "url(#arrow-yellow)",
     dash: "6 3",
     label: "Chemin 6",
@@ -136,23 +156,38 @@ export const MULTI_PATH_STYLES = [
 /**
  * Décalage latéral additionnel (px) entre deux chemins optimaux superposés
  * en mode "multiple", pour que les tracés parallèles restent visuellement
- * distincts même quand plusieurs chemins partagent un même arc.
+ * distincts même quand plusieurs chemins partagent un même arc. C'est ce
+ * décalage qui remplace désormais le tronc bleu générique : chaque chemin
+ * garde sa couleur d'un bout à l'autre, y compris là où il chevauche
+ * d'autres chemins.
  */
 export const MULTI_PATH_LATERAL_GAP = 9;
+
+/**
+ * Couleur unique du "tronc commun" — les tronçons d'arcs (et les sommets)
+ * partagés par au moins deux chemins optimaux. Volontairement une seule
+ * couleur fixe, distincte des entrées de MULTI_PATH_STYLES : un tronçon
+ * commun ne prend jamais la couleur d'un chemin individuel, et un chemin
+ * individuel ne prend jamais cette couleur. Les deux ne se mélangent
+ * jamais sur un même arc — chaque arc n'est colorié qu'UNE seule fois,
+ * soit en tronc commun, soit dans la couleur de son unique chemin.
+ */
+const MULTI_PATH_COMMON_COLOR = "#1d4ed8";
 
 /** Épaisseur des tracés d'overlay des chemins multiples. */
 const MULTI_PATH_STROKE_WIDTH = 2.4;
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Types ──────────────────────────────────────────────────────────────
 
 interface GraphCanvasProps {
-  /** When true the canvas is in "add-edge" mode: clicking nodes connects them. */
+  /** Quand true, le canevas est en mode "ajout d'arc" : cliquer sur les sommets les relie. */
   addEdgeMode?: boolean;
   /**
-   * Global toggle for arrowheads on every edge (new, preview, pending and
-   * existing). When false, edges render as plain lines — matching the
-   * undirected-looking notation used in the reference course material.
-   * This is intentionally NOT settable per-edge.
+   * Interrupteur global pour les pointes de flèche sur tous les arcs
+   * (nouveaux, en prévisualisation, en attente ou existants). Quand false,
+   * les arcs sont dessinés comme de simples traits — pour correspondre à la
+   * notation non orientée utilisée dans le support de cours. Volontairement
+   * PAS réglable arc par arc.
    */
   showArrows?: boolean;
   onEdgeModeCancel?: () => void;
@@ -161,16 +196,16 @@ interface GraphCanvasProps {
 interface PendingEdge {
   fromId: string;
   toId:   string;
-  /** SVG-space position of the arc midpoint, used to anchor the weight popup. */
+  /** Position en espace SVG du milieu de l'arc, utilisée pour ancrer le popup de poids. */
   midX:   number;
   midY:   number;
 }
 
 interface XY { x: number; y: number }
 
-// ─── Geometry helpers ─────────────────────────────────────────────────────────
+// ─── Fonctions utilitaires de géométrie ───────────────────────────────────
 
-/** Returns unit vector and length from `from` to `to`. */
+/** Retourne le vecteur unitaire et la longueur entre `from` et `to`. */
 function vec(from: XY, to: XY) {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
@@ -180,18 +215,21 @@ function vec(from: XY, to: XY) {
     : { dx: 0, dy: 0, len: 0, nx: 0, ny: 0 };
 }
 
-/** Bezier peak offset: proportional to edge length, capped to avoid wild curves. */
+/** Décalage du sommet de la courbe de Bézier : proportionnel à la longueur
+ *  de l'arc, plafonné pour éviter des courbes trop prononcées. */
 function curvature(len: number) {
   return Math.min(MAX_CURVE, len * CURVE_FACTOR);
 }
 
 /**
- * Build a quadratic-bezier SVG path between two node centres.
+ * Construit un tracé SVG en bézier quadratique entre les centres de deux sommets.
  *
- * @param lateralOffset  Additional perpendicular shift (used for bidirectional
- *                       pairs so the two arcs don't overlap).
- * @param startRadius    How far from `from`'s centre the path starts (default: NODE_RADIUS).
- * @param endRadius      How far from `to`'s centre the path ends.
+ * @param lateralOffset  Décalage perpendiculaire supplémentaire (utilisé pour
+ *                       les paires bidirectionnelles afin que les deux arcs
+ *                       ne se chevauchent pas, et pour les chemins multiples
+ *                       superposés).
+ * @param startRadius    Distance depuis le centre de `from` à laquelle le tracé démarre (par défaut : NODE_RADIUS).
+ * @param endRadius      Distance depuis le centre de `to` à laquelle le tracé se termine.
  */
 function buildEdgePath(
   from: XY, to: XY,
@@ -202,13 +240,13 @@ function buildEdgePath(
   const { len, nx, ny } = vec(from, to);
   if (len < 2) return "";
 
-  // Trim path start/end to the node circle boundaries
+  // Rogne le début/la fin du tracé aux limites des cercles des sommets
   const x1 = from.x + nx * startRadius;
   const y1 = from.y + ny * startRadius;
   const x2 = to.x   - nx * endRadius;
   const y2 = to.y   - ny * endRadius;
 
-  // Control point: midpoint shifted perpendicular to the edge direction
+  // Point de contrôle : milieu décalé perpendiculairement à la direction de l'arc
   const totalOffset = curvature(len) + lateralOffset;
   const mx = (x1 + x2) / 2 - ny * totalOffset;
   const my = (y1 + y2) / 2 + nx * totalOffset;
@@ -217,9 +255,9 @@ function buildEdgePath(
 }
 
 /**
- * Point on the quadratic bezier at t = 0.5 (i.e., visual midpoint of the arc).
- * This is where the weight badge is anchored, and the default position used
- * when computing the curvature-drag projection.
+ * Point sur la bézier quadratique à t = 0.5 (c'est-à-dire le milieu visuel
+ * du tracé). C'est là que le badge de poids est ancré, et la position par
+ * défaut utilisée pour calculer la projection lors du glisser de courbure.
  */
 function bezierMid(from: XY, to: XY, lateralOffset: number = 0): XY {
   const { len, ny, nx } = vec(from, to);
@@ -232,12 +270,12 @@ function bezierMid(from: XY, to: XY, lateralOffset: number = 0): XY {
 }
 
 /**
- * Position for the weight badge: the arc midpoint shifted a small amount
- * further along the perpendicular so the badge sits just beside the line,
- * not on top of it.
+ * Position du badge de poids : le milieu du tracé, décalé d'une petite
+ * distance supplémentaire le long de la perpendiculaire pour que le badge
+ * se place juste à côté du trait, pas dessus.
  *
- * Deliberately kept small (WEIGHT_PERP_OFFSET) — enough to avoid overlap
- * without pushing the label far away from its arc.
+ * Volontairement gardé petit (WEIGHT_PERP_OFFSET) — juste assez pour éviter
+ * le chevauchement sans éloigner le libellé de son tracé.
  */
 function weightBadgePos(from: XY, to: XY, lateralOffset: number, extraOffset: number): XY {
   const mid = bezierMid(from, to, lateralOffset + extraOffset);
@@ -249,7 +287,7 @@ function weightBadgePos(from: XY, to: XY, lateralOffset: number, extraOffset: nu
   };
 }
 
-/** Cubic self-loop path that starts and ends at the same node. */
+/** Tracé cubique de boucle réflexive, qui démarre et se termine au même sommet. */
 function buildSelfLoopPath(node: XY): string {
   const r = NODE_RADIUS;
   const x = node.x + r * 0.7;
@@ -258,29 +296,44 @@ function buildSelfLoopPath(node: XY): string {
           C ${x + 30} ${y - 40}, ${x + 50} ${y + 20}, ${node.x + r} ${node.y}`;
 }
 
-/** Approximate visual midpoint for a self-loop (for badge placement). */
+/** Milieu visuel approximatif d'une boucle réflexive (pour le placement du badge). */
 function selfLoopMid(node: XY): XY {
   return { x: node.x + NODE_RADIUS + 30, y: node.y - NODE_RADIUS - 20 };
 }
 
-/** Estimate rendered width of a monospace string for dynamic badge sizing. */
+/** Estime la largeur affichée d'une chaîne en police monospace, pour
+ *  dimensionner dynamiquement le badge. */
 function monoTextWidth(text: string, fontSize = 11): number {
   return text.length * fontSize * 0.62;
 }
 
-/** True for strings that parseFloat would accept as a finite, real weight. */
+/** Vrai pour les chaînes que parseFloat accepterait comme un poids fini et réel. */
 function isValidWeightInput(raw: string): boolean {
   if (raw.trim() === "") return false;
   return Number.isFinite(parseFloat(raw));
 }
 
-// ─── Inline SVG icon components ───────────────────────────────────────────────
-// Using pure SVG paths avoids any icon-library dependency and keeps the icons
-// crisp at any scale.
+/** Convertit une couleur hexadécimale en `rgba(...)` avec une opacité
+ *  donnée — utilisé pour teinter légèrement le remplissage des sommets
+ *  selon la couleur de leur chemin optimal, sans avoir à maintenir une
+ *  seconde palette de couleurs "claires" en double. */
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.replace("#", "");
+  const full  = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
+  const bigint = parseInt(full, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
-// ─── Reusable sub-components ──────────────────────────────────────────────────
+// ─── Composants SVG internes ──────────────────────────────────────────────
+// L'utilisation de tracés SVG purs évite toute dépendance à une librairie
+// d'icônes et garde les icônes nettes à n'importe quelle échelle.
 
-/** SVG <marker> for arrowheads — one per colour variant. */
+// ─── Sous-composants réutilisables ────────────────────────────────────────
+
+/** <marker> SVG pour les pointes de flèche — un par variante de couleur. */
 interface ArrowMarkerProps { id: string; fill: string }
 const ArrowMarker = memo(({ id, fill }: ArrowMarkerProps) => (
   <marker id={id} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
@@ -288,7 +341,7 @@ const ArrowMarker = memo(({ id, fill }: ArrowMarkerProps) => (
   </marker>
 ));
 
-// ── Weight-entry popup ───────────────────────────────────────────────────────
+// ── Popup de saisie du poids ───────────────────────────────────────────────
 interface WeightPopupProps {
   midX: number; midY: number;
   value: string;
@@ -300,9 +353,9 @@ interface WeightPopupProps {
 }
 
 /**
- * Floating popup that appears over the canvas (outside the zoom transform) to
- * collect the weight for a newly drawn edge.  Positioned in screen space so it
- * doesn't scale with zoom.
+ * Popup flottant qui apparaît au-dessus du canevas (hors de la transformation
+ * de zoom) pour recueillir le poids d'un arc nouvellement tracé. Positionné
+ * en espace écran pour ne pas être mis à l'échelle avec le zoom.
  */
 const WeightPopup = memo(({
   midX, midY, value, zoom, pan, onConfirm, onCancel, onChange, inputRef,
@@ -374,19 +427,20 @@ const WeightPopup = memo(({
   );
 });
 
-// ── Context menu ─────────────────────────────────────────────────────────────
+// ── Menu contextuel ────────────────────────────────────────────────────────
 interface ContextMenuProps {
-  /** Position in SVG graph-space (inside the zoom/pan transform). */
+  /** Position en espace graphe SVG (à l'intérieur de la transformation zoom/pan). */
   x: number; y: number;
-  /** Header label shown at the top of the menu ("Sommet" / "Arc"). */
+  /** Libellé d'en-tête affiché en haut du menu ("Sommet" / "Arc"). */
   label: string;
   onDelete: () => void;
   onClose:  () => void;
 }
 
 /**
- * Minimal right-click context menu rendered inside the SVG transform group.
- * Offers a single "Supprimer" action with a bin icon.
+ * Menu contextuel minimal (clic droit) rendu à l'intérieur du groupe de
+ * transformation SVG. Propose une unique action "Supprimer" avec une icône
+ * de corbeille.
  */
 const ContextMenu = memo(({ x, y, label, onDelete, onClose }: ContextMenuProps) => (
   <foreignObject x={x} y={y} width={164} height={60} style={{ overflow: "visible" }}>
@@ -403,7 +457,7 @@ const ContextMenu = memo(({ x, y, label, onDelete, onClose }: ContextMenuProps) 
       onPointerDown={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Header */}
+      {/* En-tête */}
       <div style={{
         padding: "4px 12px 5px",
         fontSize: 10, color: "#94a3b8", fontWeight: 600,
@@ -413,7 +467,7 @@ const ContextMenu = memo(({ x, y, label, onDelete, onClose }: ContextMenuProps) 
         {label}
       </div>
 
-      {/* Delete action */}
+      {/* Action de suppression */}
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(); onClose(); }}
         style={{
@@ -432,7 +486,7 @@ const ContextMenu = memo(({ x, y, label, onDelete, onClose }: ContextMenuProps) 
   </foreignObject>
 ));
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Composant principal ───────────────────────────────────────────────────
 
 export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: GraphCanvasProps) {
   const {
@@ -448,52 +502,54 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     removeNode,
   } = useGraphStore();
 
-  // ── Node interaction state ─────────────────────────────────────────────────
-  /** Id of the node currently being dragged. */
+  // ── État d'interaction des sommets ─────────────────────────────────────────
+  /** Id du sommet actuellement en cours de glisser-déposer. */
   const [dragging,  setDragging]  = useState<string | null>(null);
-  /** Id of the node that is "selected" (shown with a dashed ring). */
+  /** Id du sommet "sélectionné" (affiché avec un anneau en pointillés). */
   const [selected,  setSelected]  = useState<string | null>(null);
-  /** Id of the edge the mouse is currently hovering over. */
+  /** Id de l'arc actuellement survolé par la souris. */
   const [hovered,   setHovered]   = useState<string | null>(null);
   /**
-   * In addEdgeMode: the node the user clicked first (the source).
-   * An animated ring is shown around it until a destination is chosen.
+   * En addEdgeMode : le sommet cliqué en premier (la source).
+   * Un anneau animé est affiché autour de lui jusqu'à ce qu'une
+   * destination soit choisie.
    */
   const [edgeSource, setEdgeSource] = useState<string | null>(null);
   /**
-   * In addEdgeMode: the node the mouse is currently hovering while a source
-   * has already been selected.  A secondary animated ring (teal) is shown to
-   * indicate this would become the destination.
+   * En addEdgeMode : le sommet survolé par la souris quand une source a
+   * déjà été sélectionnée. Un second anneau animé (turquoise) est affiché
+   * pour indiquer que ce sommet deviendrait la destination.
    */
   const [edgeHoverTarget, setEdgeHoverTarget] = useState<string | null>(null);
-  /** Current SVG-space cursor position, used to draw the preview dashed arc. */
+  /** Position courante du curseur en espace SVG, utilisée pour dessiner l'arc de prévisualisation en pointillés. */
   const [cursorPos,  setCursorPos]  = useState<XY | null>(null);
-  /** Edge that has been drawn but not yet confirmed (waiting for weight input). */
+  /** Arc tracé mais pas encore confirmé (en attente de la saisie du poids). */
   const [pendingEdge, setPendingEdge] = useState<PendingEdge | null>(null);
-  /** Controlled value for the weight input inside WeightPopup. */
+  /** Valeur contrôlée du champ de poids à l'intérieur de WeightPopup. */
   const [weightInput, setWeightInput] = useState<string>("");
 
-  // ── Inline edge-weight editing ─────────────────────────────────────────────
-  /** Id of the edge whose weight is being edited inline. */
+  // ── Édition du poids d'un arc en ligne ──────────────────────────────────────
+  /** Id de l'arc dont le poids est en cours d'édition en ligne. */
   const [editingEdge,      setEditingEdge]      = useState<string | null>(null);
   const [editingEdgeValue, setEditingEdgeValue] = useState<string>("");
   const editInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Edge-curvature dragging ────────────────────────────────────────────────
+  // ── Glisser-déposer de la courbure d'un arc ─────────────────────────────────
   /**
-   * Id of the edge currently being curved by a click-drag directly on its
-   * line. There is no separate handle dot — the arc's own (wide, invisible)
-   * hit-zone is the drag target, so dragging works from anywhere along the
-   * line except the weight badge.
+   * Id de l'arc actuellement en cours de courbure par un cliquer-glisser
+   * directement sur son tracé. Il n'y a plus de poignée séparée — la zone
+   * de détection (large, invisible) du tracé lui-même est la cible du
+   * glisser-déposer, donc cela fonctionne depuis n'importe quel point du
+   * tracé sauf le badge de poids.
    */
   const [draggingEdge, setDraggingEdge] = useState<string | null>(null);
   /**
-   * Per-edge extra perpendicular offset accumulated by dragging the edge
-   * line.  Keyed by edge id.
+   * Décalage perpendiculaire supplémentaire accumulé par arc en glissant
+   * son tracé. Indexé par id d'arc.
    */
   const [edgeOffsets, setEdgeOffsets] = useState<Record<string, number>>({});
 
-  // ── Context menu ───────────────────────────────────────────────────────────
+  // ── Menu contextuel ──────────────────────────────────────────────────────────
   interface CtxMenu { x: number; y: number; type: "node" | "edge"; id: string }
   const [ctxMenu, setCtxMenu] = useState<CtxMenu | null>(null);
 
@@ -504,16 +560,16 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   const panStart    = useRef<XY>({ x: 0, y: 0 });
   const panOrigin   = useRef<XY>({ x: 0, y: 0 });
 
-  // ── Misc refs ──────────────────────────────────────────────────────────────
+  // ── Références diverses ──────────────────────────────────────────────────────
   const svgRef        = useRef<SVGSVGElement>(null);
   const dragOffset    = useRef<XY>({ x: 0, y: 0 });
   const weightInputRef = useRef<HTMLInputElement>(null);
-  /** Set to true as soon as the pointer moves during a drag; prevents click. */
+  /** Mis à true dès que le pointeur bouge pendant un glisser ; empêche le déclenchement d'un click. */
   const didDrag = useRef(false);
 
-  // ── Derived / memoised data ────────────────────────────────────────────────
+  // ── Données dérivées / mémoïsées ──────────────────────────────────────────────
 
-  /** Normalised node map with safe fallback coordinates. */
+  /** Map des sommets normalisée avec des coordonnées de repli sûres. */
   const nodeMap = useMemo<Map<string, GraphNode>>(
     () => new Map((nodes ?? []).map((n) => [n.id, {
       ...n,
@@ -527,8 +583,8 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   const safeEdges = useMemo(() => edges ?? [], [edges]);
 
   /**
-   * Set of edge keys (e.g. "A->B") that have a matching reverse edge.
-   * Used to decide when to apply BIDIRECTIONAL_OFFSET.
+   * Ensemble des clés d'arc (ex. "A->B") qui ont un arc inverse
+   * correspondant. Utilisé pour décider quand appliquer BIDIRECTIONAL_OFFSET.
    */
   const bidirectionalSet = useMemo<Set<string>>(() => {
     const keys = new Set<string>();
@@ -543,7 +599,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return bidi;
   }, [safeEdges]);
 
-  // Keep per-edge curvature offsets from leaking memory once an edge is deleted.
+  // Évite les fuites mémoire des décalages de courbure par arc une fois qu'un arc est supprimé.
   useEffect(() => {
     setEdgeOffsets((prev) => {
       const liveIds = new Set(safeEdges.map((e) => e.id));
@@ -565,7 +621,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     [bidirectionalSet]
   );
 
-  /** Full SVG path string for an edge (or self-loop). */
+  /** Chaîne de tracé SVG complète pour un arc (ou une boucle réflexive). */
   const getEdgePath = useCallback((edge: GraphEdge): string => {
     const from = getNode(edge.from);
     const to   = getNode(edge.to);
@@ -576,8 +632,8 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   }, [getNode, getLateralOffset, edgeOffsets]);
 
   /**
-   * Position for the weight badge, offset just slightly off the arc.
-   * See `weightBadgePos` for the rationale behind WEIGHT_PERP_OFFSET.
+   * Position du badge de poids, légèrement décalée hors du tracé.
+   * Voir `weightBadgePos` pour la logique derrière WEIGHT_PERP_OFFSET.
    */
   const getWeightBadgePos = useCallback((edge: GraphEdge): XY => {
     const from = getNode(edge.from);
@@ -588,7 +644,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return weightBadgePos(from, to, getLateralOffset(edge), extra);
   }, [getNode, getLateralOffset, edgeOffsets]);
 
-  /** Geometric midpoint of an edge arc (used to position the context menu). */
+  /** Milieu géométrique du tracé d'un arc (utilisé pour positionner le menu contextuel). */
   const getEdgeMid = useCallback((edge: GraphEdge): XY => {
     const from = getNode(edge.from);
     const to   = getNode(edge.to);
@@ -598,9 +654,38 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return bezierMid(from, to, getLateralOffset(edge) + extra);
   }, [getNode, getLateralOffset, edgeOffsets]);
 
-  // ── Coordinate conversion ──────────────────────────────────────────────────
+  /**
+   * Map sommet → ensemble des index de chemins optimaux qui passent par ce
+   * sommet, calculée uniquement en mode "chemin multiple" (pathDisplayMode
+   * === "all"). Construite côté canevas à partir de `getPathIndicesForEdge`
+   * (déjà exposé par le store pour les arcs) en agrégeant, pour chaque arc,
+   * ses index de chemin sur ses deux sommets extrémités — pas besoin d'une
+   * nouvelle méthode dédiée dans le store.
+   *
+   * Un sommet avec un seul index dans son ensemble n'appartient qu'à un
+   * chemin : il est teinté dans la couleur de ce chemin. Un sommet avec
+   * plusieurs index est un point de convergence/divergence entre plusieurs
+   * chemins optimaux : il reçoit un anneau segmenté multicolore (voir le
+   * rendu des sommets plus bas).
+   */
+  const nodePathIndices = useMemo<Map<string, Set<number>>>(() => {
+    const map = new Map<string, Set<number>>();
+    if (pathDisplayMode !== "all") return map;
+    safeEdges.forEach((edge) => {
+      const idxs = getPathIndicesForEdge(edge.from, edge.to);
+      if (!idxs.length) return;
+      [edge.from, edge.to].forEach((nodeId) => {
+        if (!map.has(nodeId)) map.set(nodeId, new Set());
+        const set = map.get(nodeId)!;
+        idxs.forEach((i) => set.add(i));
+      });
+    });
+    return map;
+  }, [pathDisplayMode, safeEdges, getPathIndicesForEdge]);
 
-  /** Client (screen) → SVG graph-space, accounting for current zoom/pan. */
+  // ── Conversion de coordonnées ─────────────────────────────────────────────
+
+  /** Espace client (écran) → espace graphe SVG, en tenant compte du zoom/pan courants. */
   const getSvgCoords = useCallback((clientX: number, clientY: number): XY => {
     if (!svgRef.current) return { x: 0, y: 0 };
     const rect = svgRef.current.getBoundingClientRect();
@@ -610,7 +695,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     };
   }, [pan, zoom]);
 
-  // ── Effect: reset edge-mode state when mode is exited ─────────────────────
+  // ── Effet : réinitialise l'état du mode d'ajout d'arc à la sortie du mode ────
   useEffect(() => {
     if (!addEdgeMode) {
       setEdgeSource(null);
@@ -621,7 +706,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     }
   }, [addEdgeMode]);
 
-  // ── Effect: auto-focus the weight input when the popup appears ────────────
+  // ── Effet : focus automatique du champ de poids à l'apparition du popup ─────
   useEffect(() => {
     if (pendingEdge && weightInputRef.current) {
       const t = setTimeout(() => weightInputRef.current?.focus(), 50);
@@ -629,14 +714,14 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     }
   }, [pendingEdge]);
 
-  // ── Effect: auto-select text in the inline edit input ─────────────────────
+  // ── Effet : sélection automatique du texte dans le champ d'édition en ligne ─
   useEffect(() => {
     if (editingEdge && editInputRef.current) {
       editInputRef.current.select();
     }
   }, [editingEdge]);
 
-  // ── Effect: close context menu on any outside pointer-down ────────────────
+  // ── Effet : ferme le menu contextuel sur tout clic extérieur ────────────────
   useEffect(() => {
     if (!ctxMenu) return;
     const close = () => setCtxMenu(null);
@@ -644,11 +729,12 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return () => window.removeEventListener("pointerdown", close);
   }, [ctxMenu]);
 
-  // ── Zoom helpers ───────────────────────────────────────────────────────────
+  // ── Fonctions utilitaires de zoom ────────────────────────────────────────────
 
   /**
-   * Apply a new zoom level, optionally pivoting around a screen-space point
-   * (clientX / clientY) so the content under the cursor stays fixed.
+   * Applique un nouveau niveau de zoom, en pivotant éventuellement autour
+   * d'un point en espace écran (clientX / clientY) pour que le contenu sous
+   * le curseur reste fixe.
    */
   const applyZoom = useCallback((nextZoom: number, pivotX?: number, pivotY?: number) => {
     setZoom((prev) => {
@@ -657,7 +743,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         const rect = svgRef.current.getBoundingClientRect();
         const px = pivotX - rect.left;
         const py = pivotY - rect.top;
-        // Adjust pan so the pivot point is invariant
+        // Ajuste le pan pour que le point pivot reste invariant
         setPan((p) => ({
           x: px - (px - p.x) * (z / prev),
           y: py - (py - p.y) * (z / prev),
@@ -670,7 +756,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   const zoomIn  = useCallback(() => applyZoom(zoom * ZOOM_STEP), [applyZoom, zoom]);
   const zoomOut = useCallback(() => applyZoom(zoom / ZOOM_STEP), [applyZoom, zoom]);
 
-  /** Fit all nodes inside the viewport with padding. */
+  /** Cadre tous les sommets dans la zone visible avec une marge. */
   const fitView = useCallback(() => {
     if (!svgRef.current || safeNodes.length === 0) return;
     const rect = svgRef.current.getBoundingClientRect();
@@ -691,15 +777,15 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     });
   }, [safeNodes]);
 
-  // ── SVG pointer events ─────────────────────────────────────────────────────
+  // ── Événements pointeur du SVG ───────────────────────────────────────────────
 
-  /** Wheel: zoom pivoting on cursor position (Figma behaviour). */
+  /** Molette : zoom en pivotant sur la position du curseur (comportement façon Figma). */
   const onWheel = useCallback((e: React.WheelEvent<SVGSVGElement>) => {
     e.preventDefault();
     applyZoom(zoom * (e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP), e.clientX, e.clientY);
   }, [applyZoom, zoom]);
 
-  /** Middle-button or Alt+left-drag starts panning. */
+  /** Bouton du milieu ou Alt+clic gauche+glisser démarre le pan. */
   const onPointerDownSvg = useCallback((e: ReactPointerEvent<SVGSVGElement>) => {
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       e.preventDefault();
@@ -711,7 +797,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   }, [pan]);
 
   const onPointerMoveSvg = useCallback((e: ReactPointerEvent<SVGSVGElement>) => {
-    // ── Panning ──
+    // ── Pan ──
     if (isPanning.current) {
       setPan({
         x: panOrigin.current.x + (e.clientX - panStart.current.x),
@@ -720,7 +806,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       return;
     }
 
-    // ── Edge-curvature dragging (started by pressing on the arc itself) ──
+    // ── Glisser-déposer de la courbure d'un arc (démarré en pressant sur le tracé lui-même) ──
     if (draggingEdge) {
       const svgC = getSvgCoords(e.clientX, e.clientY);
       const edge = safeEdges.find((ed) => ed.id === draggingEdge);
@@ -731,7 +817,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
           const { nx, ny } = vec(from, to);
           const midX = (from.x + to.x) / 2;
           const midY = (from.y + to.y) / 2;
-          // Project cursor displacement onto the perpendicular axis
+          // Projette le déplacement du curseur sur l'axe perpendiculaire
           const proj = (svgC.x - midX) * (-ny) + (svgC.y - midY) * nx;
           setEdgeOffsets((prev) => ({ ...prev, [draggingEdge]: proj - getLateralOffset(edge) }));
         }
@@ -739,7 +825,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       return;
     }
 
-    // ── Node dragging ──
+    // ── Glisser-déposer d'un sommet ──
     if (dragging) {
       didDrag.current = true;
       const { x, y } = getSvgCoords(e.clientX, e.clientY);
@@ -747,7 +833,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       return;
     }
 
-    // ── Preview arc while selecting destination ──
+    // ── Prévisualisation du tracé pendant la sélection de la destination ──
     if (addEdgeMode && edgeSource && !pendingEdge) {
       setCursorPos(getSvgCoords(e.clientX, e.clientY));
     }
@@ -765,11 +851,11 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     setDraggingEdge(null);
   }, []);
 
-  // ── Node events ────────────────────────────────────────────────────────────
+  // ── Événements sur les sommets ────────────────────────────────────────────────
 
   const onPointerDownNode = useCallback(
     (e: ReactPointerEvent<SVGGElement>, id: string) => {
-      if (addEdgeMode) return; // clicks are handled by onClickNode in this mode
+      if (addEdgeMode) return; // les clics sont gérés par onClickNode dans ce mode
       e.stopPropagation();
       setSelected(id);
       const node = nodeMap.get(id);
@@ -783,21 +869,21 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   );
 
   /**
-   * In addEdgeMode: first click picks the source, second click (on a different
-   * node) picks the destination and opens the weight popup.
-   * Clicking the same node twice creates a self-loop.
+   * En addEdgeMode : le premier clic choisit la source, le second clic (sur
+   * un sommet différent) choisit la destination et ouvre le popup de poids.
+   * Cliquer deux fois sur le même sommet crée une boucle réflexive.
    */
   const onClickNode = useCallback(
     (e: React.MouseEvent, id: string) => {
       if (!addEdgeMode) return;
       e.stopPropagation();
-      if (pendingEdge) return; // already waiting for weight input
+      if (pendingEdge) return; // déjà en attente de la saisie du poids
 
       if (!edgeSource) {
-        // Step 1: select source
+        // Étape 1 : sélection de la source
         setEdgeSource(id);
       } else if (edgeSource === id) {
-        // Step 2a: self-loop
+        // Étape 2a : boucle réflexive
         const node = nodeMap.get(id)!;
         setPendingEdge({
           fromId: id, toId: id,
@@ -808,7 +894,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         setEdgeSource(null);
         setEdgeHoverTarget(null);
       } else {
-        // Step 2b: normal edge
+        // Étape 2b : arc normal
         const from = nodeMap.get(edgeSource)!;
         const to   = nodeMap.get(id)!;
         const lat  = bidirectionalSet.has(`${edgeSource}->${id}`) ? BIDIRECTIONAL_OFFSET : 0;
@@ -823,7 +909,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     [addEdgeMode, pendingEdge, edgeSource, nodeMap, bidirectionalSet]
   );
 
-  /** Right-click a node → context menu. */
+  /** Clic droit sur un sommet → menu contextuel. */
   const onContextMenuNode = useCallback(
     (e: React.MouseEvent, id: string) => {
       if (addEdgeMode) return;
@@ -831,13 +917,13 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       e.stopPropagation();
       const node = nodeMap.get(id);
       if (!node) return;
-      // Position the menu near the node's right edge, in SVG space
+      // Positionne le menu près du bord droit du sommet, en espace SVG
       setCtxMenu({ x: node.x + NODE_RADIUS + 6, y: node.y - 14, type: "node", id });
     },
     [addEdgeMode, nodeMap]
   );
 
-  /** Right-click an edge → context menu. */
+  /** Clic droit sur un arc → menu contextuel. */
   const onContextMenuEdge = useCallback(
     (e: React.MouseEvent, edge: GraphEdge) => {
       if (addEdgeMode) return;
@@ -849,7 +935,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     [addEdgeMode, getEdgeMid]
   );
 
-  // ── Edge confirmation / cancellation ──────────────────────────────────────
+  // ── Confirmation / annulation d'un arc ───────────────────────────────────────
 
   const confirmEdge = useCallback(() => {
     if (!pendingEdge) return;
@@ -872,7 +958,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     setWeightInput("");
   }, []);
 
-  // ── Inline weight editing ──────────────────────────────────────────────────
+  // ── Édition du poids en ligne ────────────────────────────────────────────────
 
   const startEditEdge = useCallback((edge: GraphEdge) => {
     if (addEdgeMode) return;
@@ -881,9 +967,10 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
   }, [addEdgeMode]);
 
   /**
-   * Commit the inline weight edit. Bug fix: this now calls `updateEdgeWeight`
-   * — the action actually exposed by the store (the previous build called a
-   * function that didn't exist on the store, so edits silently no-opped).
+   * Valide l'édition du poids en ligne. Correction de bug : ceci appelle
+   * désormais `updateEdgeWeight` — l'action réellement exposée par le store
+   * (une version précédente appelait une fonction qui n'existait pas sur le
+   * store, donc les éditions ne faisaient rien silencieusement).
    */
   const confirmEditEdge = useCallback(() => {
     if (!editingEdge) return;
@@ -899,15 +986,16 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     setEditingEdgeValue("");
   }, []);
 
-  // ── Edge-curvature drag, started directly from the arc's own hit-zone ─────
+  // ── Glisser-déposer de la courbure, démarré directement depuis la zone de détection du tracé ─
 
   /**
-   * Pressing down anywhere on an edge's (wide, invisible) hit-zone starts a
-   * curvature drag. There is no separate handle dot anymore — the line
-   * itself is the drag target. The weight badge sits on top of the arc but
-   * has its own onClick (startEditEdge) and stops propagation, so pressing
-   * on the badge never starts a curvature drag — it's reserved purely for
-   * editing the weight value.
+   * Presser n'importe où sur la zone de détection (large, invisible) d'un
+   * arc démarre un glisser de courbure. Il n'y a plus de poignée séparée —
+   * le tracé lui-même est la cible du glisser-déposer. Le badge de poids
+   * est posé par-dessus le tracé mais possède son propre gestionnaire
+   * onClick (startEditEdge) et stoppe la propagation, donc presser sur le
+   * badge ne démarre jamais un glisser de courbure — il est réservé
+   * uniquement à l'édition de la valeur du poids.
    */
   const onPointerDownEdge = useCallback(
     (e: React.PointerEvent, edgeId: string) => {
@@ -918,7 +1006,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     [addEdgeMode]
   );
 
-  // ── SVG background click ───────────────────────────────────────────────────
+  // ── Clic sur l'arrière-plan du SVG ────────────────────────────────────────────
 
   const onClickSvg = useCallback((e: React.MouseEvent) => {
     if (e.defaultPrevented) return;
@@ -931,7 +1019,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     }
   }, [addEdgeMode, pendingEdge, cancelPendingEdge]);
 
-  // ── Keyboard shortcuts ─────────────────────────────────────────────────────
+  // ── Raccourcis clavier ─────────────────────────────────────────────────────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -939,7 +1027,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         else if (editingEdge)  cancelEditEdge();
         else                   setCtxMenu(null);
       }
-      // Delete/Backspace when a node is selected (and not inside an input)
+      // Suppr/Retour arrière quand un sommet est sélectionné (et pas dans un champ)
       if (
         (e.key === "Delete" || e.key === "Backspace")
         && selected
@@ -954,7 +1042,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return () => window.removeEventListener("keydown", onKey);
   }, [pendingEdge, editingEdge, selected, cancelPendingEdge, cancelEditEdge, removeNode]);
 
-  // ── Toolbar button events (dispatched via window) ─────────────────────────
+  // ── Événements des boutons de la barre d'outils (émis via window) ──────────────
   useEffect(() => {
     const handlers: [string, () => void][] = [
       ["graph-zoom-in",  zoomIn],
@@ -965,7 +1053,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return ()        => handlers.forEach(([ev, fn]) => window.removeEventListener(ev, fn));
   }, [zoomIn, zoomOut, fitView]);
 
-  // ── Canvas size tracking ───────────────────────────────────────────────────
+  // ── Suivi de la taille du canevas ────────────────────────────────────────────
   useEffect(() => {
     if (!svgRef.current) return;
     const update = () => {
@@ -978,7 +1066,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return () => ro.disconnect();
   }, [setCanvasSize]);
 
-  // ── Preview path (dashed arc following cursor) ────────────────────────────
+  // ── Tracé de prévisualisation (arc en pointillés qui suit le curseur) ───────
   const previewPath = useMemo(() => {
     if (!addEdgeMode || !edgeSource || pendingEdge || !cursorPos) return null;
     const from = nodeMap.get(edgeSource);
@@ -986,7 +1074,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return buildEdgePath(from, cursorPos, 0, NODE_RADIUS, 0);
   }, [addEdgeMode, edgeSource, pendingEdge, cursorPos, nodeMap]);
 
-  // ── Styling helpers ────────────────────────────────────────────────────────
+  // ── Fonctions utilitaires de style ───────────────────────────────────────────
 
   const nodeColors = useCallback((node: GraphNode): NodeColors => {
     if (addEdgeMode) {
@@ -1000,26 +1088,38 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     return { fill: "#ffffff", stroke: "#e2e8f0", text: "#334155" };
   }, [addEdgeMode, edgeSource, pendingEdge, isNodeInOptimalPath, isCurrentNode, isNodeMarked]);
 
+  /**
+   * En mode "chemin multiple" (pathDisplayMode === "all"), la coloration
+   * "optimal = bleu" du rendu de base est désactivée : c'est l'overlay des
+   * chemins multiples (plus bas) qui colore chaque arc, une seule fois,
+   * soit en bleu (tronc commun), soit dans la couleur de son chemin. Sans
+   * cette désactivation, un arc optimal serait peint deux fois — d'abord
+   * en bleu ici, puis dans sa vraie couleur par l'overlay — et le bleu de
+   * base, plus épais, dépasserait visiblement de sous la couleur du dessus.
+   */
   const edgeStrokeColor = useCallback((edge: GraphEdge): string => {
-    if (isEdgeInOptimalPath(edge.from, edge.to)) return "#2d6ef8";
+    if (isEdgeInOptimalPath(edge.from, edge.to) && pathDisplayMode !== "all") return "#2d6ef8";
     if (isSelectedEdge(edge.from, edge.to))      return "#f59e0b";
     if (hovered === edge.id)                      return "#64748b";
     return "#c1cfe0";
-  }, [isEdgeInOptimalPath, isSelectedEdge, hovered]);
+  }, [isEdgeInOptimalPath, isSelectedEdge, hovered, pathDisplayMode]);
 
   /**
-   * Arrowhead marker for a given edge. Returns `undefined` whenever
-   * `showArrows` is false so the edge renders as a plain line, matching the
-   * undirected-looking notation used in the reference course material. This
-   * is a single global switch — there is deliberately no per-edge override.
+   * Marqueur de pointe de flèche pour un arc donné. Retourne `undefined`
+   * dès que `showArrows` est faux, pour que l'arc soit rendu comme un
+   * simple trait, conformément à la notation non orientée du support de
+   * cours. C'est un interrupteur global unique — volontairement pas de
+   * dérogation par arc. Même logique que edgeStrokeColor ci-dessus : pas de
+   * flèche bleue "optimal" en mode chemin multiple, pour ne pas doubler la
+   * flèche que dessine déjà l'overlay.
    */
   const edgeMarker = useCallback((edge: GraphEdge): string | undefined => {
     if (!showArrows) return undefined;
-    if (isEdgeInOptimalPath(edge.from, edge.to)) return "url(#arrow-optimal)";
+    if (isEdgeInOptimalPath(edge.from, edge.to) && pathDisplayMode !== "all") return "url(#arrow-optimal)";
     if (isSelectedEdge(edge.from, edge.to))      return "url(#arrow-selected)";
     if (hovered === edge.id)                      return "url(#arrow-hover)";
     return "url(#arrow)";
-  }, [showArrows, isEdgeInOptimalPath, isSelectedEdge, hovered]);
+  }, [showArrows, isEdgeInOptimalPath, isSelectedEdge, hovered, pathDisplayMode]);
 
   const svgCursor = isPanning.current
     ? "grabbing"
@@ -1027,7 +1127,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     ? (edgeSource ? "crosshair" : "cell")
     : (dragging ? "grabbing" : "default");
 
-  // ─── Render ──────────────────────────────────────────────────────────────
+  // ─── Rendu ────────────────────────────────────────────────────────────────
 
   return (
     <svg
@@ -1043,7 +1143,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       onWheel={onWheel}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* ── Defs: arrowhead markers & filters ─────────────────────────────── */}
+      {/* ── Defs : marqueurs de flèche & filtres ──────────────────────────── */}
       <defs>
         <ArrowMarker id="arrow"          fill="#cbd5e1" />
         <ArrowMarker id="arrow-selected" fill="#f59e0b" />
@@ -1053,16 +1153,16 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         <ArrowMarker id="arrow-hover"    fill="#64748b" />
         <ArrowMarker id="arrow-blue"   fill="#2563eb" />
         <ArrowMarker id="arrow-orange" fill="#f97316" />
-        <ArrowMarker id="arrow-green"  fill="#f0f001" />
+        <ArrowMarker id="arrow-green"  fill="#16a34a" />
         <ArrowMarker id="arrow-pink"   fill="#db2777" />
         <ArrowMarker id="arrow-purple" fill="#8b5cf6" />
-        <ArrowMarker id="arrow-yellow" fill="#eab308" />
+        <ArrowMarker id="arrow-yellow" fill="#ca8a04" />
 
-        {/* Subtle drop-shadow for normal nodes */}
+        {/* Ombre portée discrète pour les sommets normaux */}
         <filter id="node-shadow" x="-30%" y="-30%" width="160%" height="160%">
           <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.10" />
         </filter>
-        {/* Glow filters for highlighted states */}
+        {/* Filtres de halo pour les états mis en évidence */}
         <filter id="glow-blue"   x="-40%" y="-40%" width="180%" height="180%">
           <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#3b82f6" floodOpacity="0.45" />
         </filter>
@@ -1077,16 +1177,18 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         </filter>
       </defs>
 
-      {/* ── Zoom / pan transform group ─────────────────────────────────────── */}
+      {/* ── Groupe de transformation zoom / pan ─────────────────────────────── */}
       <g transform={`translate(${pan.x} ${pan.y}) scale(${zoom})`}>
 
         {/* ════════════════════════════════════════════════════════════════════
-            EDGES
-            Rendered before nodes so they appear behind node circles.
+            ARCS
+            Rendus avant les sommets pour qu'ils apparaissent derrière les cercles.
             ════════════════════════════════════════════════════════════════════ */}
         {safeEdges.map((edge) => {
           const badgePos    = getWeightBadgePos(edge);
-          const isOptimal   = isEdgeInOptimalPath(edge.from, edge.to);
+          // Idem edgeStrokeColor/edgeMarker : pas de style "optimal" bleu
+          // ici en mode chemin multiple, c'est l'overlay qui colore l'arc.
+          const isOptimal   = isEdgeInOptimalPath(edge.from, edge.to) && pathDisplayMode !== "all";
           const isSel       = isSelectedEdge(edge.from, edge.to);
           const isHov       = hovered === edge.id;
           const isDragThis  = draggingEdge === edge.id;
@@ -1107,11 +1209,11 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               onContextMenu={(e) => onContextMenuEdge(e, edge)}
             >
               {/*
-                Invisible wide hit zone: this IS the drag target for adjusting
-                curvature now (no more separate handle dot). Pressing down
-                anywhere along the line — except on the weight badge, which
-                has its own handler and stops propagation — starts a
-                curvature drag.
+                Zone de détection large invisible : c'est ELLE la cible du
+                glisser pour ajuster la courbure (plus de poignée séparée).
+                Presser n'importe où le long du tracé — sauf sur le badge de
+                poids, qui a son propre gestionnaire et stoppe la
+                propagation — démarre un glisser de courbure.
               */}
               <path
                 d={path} fill="none" stroke="transparent" strokeWidth={18}
@@ -1119,7 +1221,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 onPointerDown={(e) => onPointerDownEdge(e, edge.id)}
               />
 
-              {/* Visible arc */}
+              {/* Tracé visible */}
               <path
                 d={path} fill="none"
                 stroke={color} strokeWidth={strokeW} strokeLinecap="round"
@@ -1127,10 +1229,11 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 style={{ transition: "stroke 0.12s, stroke-width 0.12s", pointerEvents: "none" }}
               />
 
-              {/* Weight badge — inline editor when clicked. Reserved ONLY for
-                  editing the weight value: it stops propagation on click so
-                  pressing it never starts (or interferes with) a curvature
-                  drag on the underlying arc. */}
+              {/* Badge de poids — éditeur en ligne au clic. Réservé
+                  UNIQUEMENT à l'édition de la valeur du poids : il stoppe
+                  la propagation au clic pour que le presser dessus ne
+                  démarre (ni n'interfère avec) jamais un glisser de
+                  courbure sur le tracé sous-jacent. */}
               {isEditing ? (
                 <foreignObject
                   x={badgePos.x - 32} y={badgePos.y - 16}
@@ -1161,7 +1264,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                   />
                 </foreignObject>
               ) : (
-                // Static badge — single-click to edit
+                // Badge statique — simple clic pour éditer
                 <g
                   style={{ cursor: addEdgeMode ? "default" : "text" }}
                   onPointerDown={(e) => e.stopPropagation()}
@@ -1191,7 +1294,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
           );
         })}
 
-        {/* ── Preview arc (dashed line tracking the cursor while selecting dest) */}
+        {/* ── Arc de prévisualisation (trait pointillé qui suit le curseur pendant la sélection de destination) */}
         {previewPath && (
           <path
             d={previewPath} fill="none"
@@ -1201,7 +1304,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
           />
         )}
 
-        {/* ── Pending arc (dashed, fixed; shown while the weight popup is open) */}
+        {/* ── Arc en attente (pointillé, fixe ; affiché pendant que le popup de poids est ouvert) */}
         {pendingEdge && (() => {
           const from = getNode(pendingEdge.fromId);
           const to   = getNode(pendingEdge.toId);
@@ -1220,26 +1323,57 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         })()}
 
         {/* ════════════════════════════════════════════════════════════════════
-            NODES
+            SOMMETS
             ════════════════════════════════════════════════════════════════════ */}
         {safeNodes.map((node) => {
-          const colors    = nodeColors(node);
           const lambdaVal = getNodeLambda?.(node.id) ?? null;
           const isSel     = selected === node.id;
           const isMarked  = isNodeMarked(node.id);
           const isCurrent = isCurrentNode(node.id);
           const isOptimal = isNodeInOptimalPath(node.id);
 
-          // In addEdgeMode: source node (clicked) and hover-target node
+          // En addEdgeMode : sommet source (cliqué) et sommet survolé comme cible
           const isEdgeSrc = addEdgeMode && edgeSource === node.id;
           const isEdgeTgt = addEdgeMode && pendingEdge?.toId === node.id;
           /**
-           * Hover target: node under cursor when a source is selected.
-           * Shows a teal animated ring — different from the blue source ring —
-           * to signal "this would be the destination".
+           * Cible survolée : sommet sous le curseur quand une source est
+           * déjà sélectionnée. Affiche un anneau animé turquoise —
+           * différent de l'anneau bleu de la source — pour signaler "ce
+           * sommet deviendrait la destination".
            */
           const isEdgeHovTarget = addEdgeMode && !!edgeSource && !pendingEdge
             && edgeHoverTarget === node.id && edgeHoverTarget !== edgeSource;
+
+          // ── Coloration par chemin optimal (mode "chemin multiple") ──
+          // Uniquement active hors addEdgeMode, et seulement quand le sommet
+          // n'est pas le sommet "courant" de l'algorithme pas-à-pas (surbrillance
+          // ambre prioritaire). NB : on n'exclut PAS les sommets "marqués"
+          // (isNodeMarked) — ce marquage reste vrai en permanence pour tout
+          // sommet visité, même une fois le calcul terminé ; l'exclure aurait
+          // désactivé la coloration par chemin pour la quasi-totalité des
+          // sommets du graphe final, ce qui expliquait le "tout reste bleu".
+          //
+          // Règle volontairement simple, symétrique à celle des arcs :
+          //   - un sommet touché par au moins un tronçon COMMUN (partagé
+          //     par 2+ chemins) est colorié dans l'unique couleur du tronc
+          //     commun (MULTI_PATH_COMMON_COLOR) ;
+          //   - un sommet qui n'appartient qu'à UN SEUL chemin est colorié
+          //     dans la couleur propre de ce chemin (MULTI_PATH_STYLES) ;
+          // → toujours la même couleur que l'arc auquel le sommet est
+          // rattaché, jamais un mélange, jamais une double coloration.
+          const showMultiPathStyle = pathDisplayMode === "all" && !addEdgeMode && !isCurrent;
+          const nodePathSet = showMultiPathStyle ? (nodePathIndices.get(node.id) ?? new Set<number>()) : undefined;
+          const nodePathArr = nodePathSet ? Array.from(nodePathSet).sort((a, b) => a - b) : [];
+          const isSinglePathNode = showMultiPathStyle && nodePathArr.length === 1;
+          const isCommonNode     = showMultiPathStyle && nodePathArr.length > 1;
+
+          let colors = nodeColors(node);
+          if (isSinglePathNode) {
+            const style = MULTI_PATH_STYLES[nodePathArr[0] % MULTI_PATH_STYLES.length];
+            colors = { fill: hexToRgba(style.stroke, 0.16), stroke: style.stroke, text: "#1e293b" };
+          } else if (isCommonNode) {
+            colors = { fill: hexToRgba(MULTI_PATH_COMMON_COLOR, 0.16), stroke: MULTI_PATH_COMMON_COLOR, text: "#1e293b" };
+          }
 
           const filter = isEdgeSrc       ? "url(#glow-blue)"
             : isEdgeTgt                  ? "url(#glow-purple)"
@@ -1252,10 +1386,11 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
             : isEdgeHovTarget                   ? "#0d9488"
             : (!addEdgeMode && isSel)           ? "#3b82f6"
             : isCurrent                         ? "#fcd34d"
+            : (isSinglePathNode || isCommonNode) ? colors.stroke
             : isOptimal                         ? "#60a5fa"
             : "#cbd5e1";
 
-          const strokeWidth = (isEdgeSrc || isEdgeTgt || isEdgeHovTarget || isCurrent || isOptimal)
+          const strokeWidth = (isEdgeSrc || isEdgeTgt || isEdgeHovTarget || isCurrent || isOptimal || isSinglePathNode || isCommonNode)
             ? 2.5
             : (!addEdgeMode && isSel) ? 2
             : 1.5;
@@ -1278,11 +1413,11 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               }}
               style={{
                 cursor: addEdgeMode ? "pointer" : dragging === node.id ? "grabbing" : "grab",
-                outline: "none", // native focus-ring suppressed; we draw our own
+                outline: "none", // anneau de focus natif supprimé ; on dessine le nôtre
               }}
               filter={filter}
             >
-              {/* ── Source animated ring (blue, clockwise) ── */}
+              {/* ── Anneau animé de la source (bleu, horaire) ── */}
               {isEdgeSrc && (
                 <circle
                   r={32} fill="none"
@@ -1295,7 +1430,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 </circle>
               )}
 
-              {/* ── Hover-target animated ring (teal, counter-clockwise, slightly larger) ── */}
+              {/* ── Anneau animé de la cible survolée (turquoise, anti-horaire, légèrement plus grand) ── */}
               {isEdgeHovTarget && (
                 <circle
                   r={34} fill="none"
@@ -1308,7 +1443,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 </circle>
               )}
 
-              {/* ── Selection ring (static dashes, only outside addEdgeMode) ── */}
+              {/* ── Anneau de sélection (pointillés statiques, uniquement hors addEdgeMode) ── */}
               {!addEdgeMode && isSel && dragging !== node.id && (
                 <circle
                   r={NODE_RADIUS + 5} fill="none"
@@ -1317,7 +1452,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 />
               )}
 
-              {/* ── λ value badge (shown above the node during algorithm runs) ── */}
+              {/* ── Badge de la valeur λ (affiché au-dessus du sommet pendant le déroulé de l'algorithme) ── */}
               {lambdaVal !== null && lambdaVal !== undefined && isMarked && (
                 <g transform="translate(0,-44)">
                   <rect
@@ -1349,14 +1484,25 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                 </g>
               )}
 
-              {/* ── Main circle ── */}
+              {/* ── Cercle principal ── */}
               <circle
                 r={NODE_RADIUS}
                 fill={colors.fill} stroke={strokeColor} strokeWidth={strokeWidth}
                 style={{ transition: "fill 0.15s, stroke 0.15s" }}
               />
 
-              {/* ── Node label ── */}
+              {/* Info-bulle d'accessibilité indiquant le statut de ce sommet
+                  vis-à-vis des chemins optimaux, en mode "chemin multiple". */}
+              {isCommonNode && (
+                <title>Nœud du tronc commun (partagé par plusieurs chemins optimaux)</title>
+              )}
+              {isSinglePathNode && (
+                <title>
+                  {`Nœud du ${MULTI_PATH_STYLES[nodePathArr[0] % MULTI_PATH_STYLES.length].label}`}
+                </title>
+              )}
+
+              {/* ── Libellé du sommet ── */}
               <text
                 textAnchor="middle" dominantBaseline="central"
                 fontSize={13} fontWeight={700} fill={colors.text}
@@ -1370,11 +1516,25 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
 
         {/* ════════════════════════════════════════════════════════════════════
             CHEMINS OPTIMAUX MULTIPLES — overlay ("Chemin multiple" mode)
-            Dessiné PAR-DESSUS les nœuds pour rester bien visible même là où
-            plusieurs chemins optimaux se superposent aux arcs normaux.
-            Un chemin sélectionné individuellement ("Chemin N") reste rendu
-            en bleu par le mécanisme normal ci-dessus (isEdgeInOptimalPath) ;
-            ce bloc ne s'active QU'en mode "all" (voir getPathIndicesForEdge).
+            Dessiné PAR-DESSUS les sommets pour rester bien visible même là où
+            plusieurs chemins optimaux se superposent aux arcs normaux. Ce
+            bloc ne s'active QU'en mode "all" (voir getPathIndicesForEdge).
+
+            RÈGLE STRICTE : chaque arc concerné n'est colorié qu'UNE SEULE
+            fois, avec UN SEUL tracé — jamais deux tracés superposés sur le
+            même arc, et jamais de mélange de couleurs.
+              • CAS 1 — l'arc est emprunté par 2 chemins optimaux ou plus
+                (tronc commun) : un unique tracé, dans l'unique couleur du
+                commun (MULTI_PATH_COMMON_COLOR), légèrement plus épais pour
+                signaler visuellement qu'il s'agit d'un tronc partagé.
+              • CAS 2 — l'arc n'est emprunté que par UN SEUL chemin optimal :
+                un unique tracé, dans la couleur propre de ce chemin
+                (jamais dans la couleur du commun).
+            Le rendu de base des arcs (plus haut) ne colore plus ces mêmes
+            arcs en bleu "optimal" quand ce mode est actif (voir
+            edgeStrokeColor / edgeMarker / le isOptimal local du bloc ARCS),
+            donc il n'y a jamais de double coloration ni de bleu qui dépasse
+            de sous une autre couleur.
             ════════════════════════════════════════════════════════════════════ */}
             {pathDisplayMode === "all" && safeEdges.map((edge) => {
               const pathIndices = getPathIndicesForEdge(edge.from, edge.to);
@@ -1386,38 +1546,32 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               if (!from || !to || from.id === to.id) return null;
 
               // Décalage de base pour les arcs parallèles normaux du graphe
+              // (bidirectionnels / courbure manuelle) — inchangé, pas de
+              // décalage supplémentaire propre aux chemins multiples.
               const baseOffset = getLateralOffset(edge) + (edgeOffsets[edge.id] ?? 0);
+              const overlayPath = buildEdgePath(from, to, baseOffset);
 
-              // CAS 1 : Plusieurs chemins partagent cet arc -> TRONC COMMUN
+              // CAS 1 : tronc commun — un seul tracé bleu, point.
               if (pathIndices.length > 1) {
-                // On génère un SEUL arc unique au centre (pas de multiplication par pIdx)
-                const overlayPath = buildEdgePath(from, to, baseOffset);
-                
                 return (
                   <path
-                    key={`${edge.id}-mp-shared`}
+                    key={`${edge.id}-mp-common`}
                     d={overlayPath}
                     fill="none"
-                    stroke="#2563eb"
+                    stroke={MULTI_PATH_COMMON_COLOR}
                     strokeWidth={MULTI_PATH_STROKE_WIDTH * 1.3}
                     strokeLinecap="round"
-                    markerEnd={showArrows ? "url(#arrow-blue)" : undefined}
-                    style={{
-                      pointerEvents: "none",
-                      opacity: 0.95,
-                    }}
+                    markerEnd={showArrows ? "url(#arrow-optimal)" : undefined}
+                    style={{ pointerEvents: "none", opacity: 0.95 }}
                   />
                 );
               }
 
-              // CAS 2 : Un seul chemin passe par cet arc -> CHEMIN UNIQUE / DIVERGENT
+              // CAS 2 : un seul chemin passe par cet arc — sa couleur propre,
+              // jamais bleue (sauf si ce chemin est justement le "Chemin 1"
+              // dont la couleur par défaut est bleue dans MULTI_PATH_STYLES).
               const pIdx = pathIndices[0];
               const style = MULTI_PATH_STYLES[pIdx % MULTI_PATH_STYLES.length];
-              
-              // Pas de décalage non plus ici (0 * GAP), l'arc s'alignera parfaitement 
-              // dans la continuité du tronc commun lorsqu'il se sépare.
-              const overlayPath = buildEdgePath(from, to, baseOffset);
-
               return (
                 <path
                   key={`${edge.id}-mp-${pIdx}`}
@@ -1428,15 +1582,12 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
                   strokeDasharray={style.dash}
                   strokeLinecap="round"
                   markerEnd={showArrows ? style.marker : undefined}
-                  style={{
-                    pointerEvents: "none",
-                    opacity: 0.92,
-                  }}
+                  style={{ pointerEvents: "none", opacity: 0.92 }}
                 />
               );
             })}
 
-        {/* ── Context menu (inside transform group so it follows zoom/pan) ── */}
+        {/* ── Menu contextuel (à l'intérieur du groupe de transformation pour suivre le zoom/pan) ── */}
         {ctxMenu && (
           <ContextMenu
             x={ctxMenu.x} y={ctxMenu.y}
@@ -1450,7 +1601,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
         )}
       </g>
 
-      {/* ── Weight popup (outside transform — fixed screen-space position) ── */}
+      {/* ── Popup de poids (hors transformation — position fixe en espace écran) ── */}
       {pendingEdge && (
         <WeightPopup
           midX={pendingEdge.midX} midY={pendingEdge.midY}
