@@ -639,6 +639,16 @@ import { useState, useEffect, useRef } from "react";
                   </ul>
                 </section>
 
+                {/* ── Chemins multiples ── */}
+                <section>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Chemins optimaux multiples</h4>
+                  <ul className={`space-y-1.5 leading-relaxed ${isDarkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    <li>Quand plusieurs chemins ont exactement la même valeur optimale (égalité de poids), un sélecteur apparaît en haut à droite du canevas.</li>
+                    <li><strong>Chemin 1, Chemin 2, …</strong> : affiche un seul chemin à la fois, en bleu.</li>
+                    <li><strong>Chemin multiple</strong> : superpose tous les chemins optimaux, chacun avec sa propre couleur / son propre style de trait (voir la légende à côté du sélecteur).</li>
+                    <li>Le panneau "Résolution pas à pas" liste également chaque chemin (cliquable pour le sélectionner) à la dernière étape.</li>
+                  </ul>
+                </section>
 
                 {/* ── Import / Export ── */}
                 <section>

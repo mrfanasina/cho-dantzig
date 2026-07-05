@@ -31,14 +31,32 @@
  * • Quand plusieurs chemins optimaux sont à égalité de poids (mode "chemin
  *   multiple", voir `pathDisplayMode` dans le store), chacun est dessiné en
  *   surimpression avec sa propre couleur — voir MULTI_PATH_STYLES ci-dessous.
- *     - Les tronçons partagés par plusieurs chemins sont désormais dessinés
- *       comme plusieurs tracés parallèles légèrement décalés (façon plan de
- *       métro), chacun dans SA couleur de chemin — plus de bleu générique
- *       imposé sur le tronc commun qui cassait la continuité visuelle.
- *     - Les sommets appartenant à un seul chemin optimal sont teintés dans
- *       la couleur de ce chemin. Les sommets communs à plusieurs chemins
- *       (points de convergence/divergence) affichent un anneau segmenté
- *       multicolore, une couleur par chemin qui y passe.
+ *     - Un arc (ou un sommet) emprunté par plusieurs chemins optimaux à la
+ *       fois n'a plus de couleur "tronc commun" fixe : il adopte la couleur
+ *       du PREMIER chemin (le plus petit index, dans l'ordre "Chemin 1",
+ *       "Chemin 2"...) à passer par lui. Les chemins suivants qui
+ *       l'empruntent aussi ne le recolorent jamais — la couleur du premier
+ *       arrivé est conservée, pour une représentation fidèle du parcours
+ *       réel plutôt qu'une couleur arbitraire imposée à tout tronc partagé.
+ *       Un tronçon partagé reste visuellement identifiable : trait plein
+ *       (jamais en pointillé) et légèrement plus épais qu'un tronçon à
+ *       chemin unique.
+ *     - Les sommets appartenant à un seul chemin optimal sont coloriés en
+ *       PLEIN dans la couleur de ce chemin (même traitement visuel que le
+ *       mode "chemin unique" — fond plein + texte blanc — mais avec la
+ *       couleur du chemin au lieu du bleu générique). Les sommets communs à
+ *       plusieurs chemins (points de convergence/divergence) suivent la même
+ *       règle du "premier chemin arrivé" que les arcs ci-dessus. Cette
+ *       coloration est recalculée entièrement à chaque rendu et ne peut
+ *       jamais retomber sur le bleu "optimal" générique du mode chemin
+ *       unique — voir le paramètre `suppressOptimalBlue` de `nodeColors`
+ *       plus bas, qui empêche explicitement cette fuite de couleur en mode
+ *       "chemin multiple".
+ * • Isolement visuel au survol (StepsPanel) : quand un chemin est survolé
+ *   dans le panneau des étapes (`hoveredPathIndex` dans le store), tous les
+ *   nœuds et arcs qui n'appartiennent PAS à ce chemin sont fortement
+ *   estompés ici, pour rester lisible même à 5 chemins ou plus. Effet
+ *   purement transitoire : il n'affecte jamais `pathDisplayMode`.
  *
  * Contrat avec le store (useGraphStore)
  * ──────────────────────────────
@@ -53,6 +71,11 @@
  *   isNodeMarked / isCurrentNode / isSelectedEdge
  *   isNodeInOptimalPath / isEdgeInOptimalPath
  *   pathDisplayMode / getPathIndicesForEdge – chemins optimaux multiples
+ *   currentStepIndex        – nécessaire pour invalider correctement les
+ *                             memos dérivés de l'étape courante (voir
+ *                             `nodePathIndices` plus bas)
+ *   hoveredPathIndex        – chemin actuellement survolé dans StepsPanel,
+ *                             ou null ; pilote l'estompage décrit ci-dessus
  */
 
 import {
@@ -101,13 +124,13 @@ const BADGE_MIN_W   = 24;
 // ────────────────────────────────────────────────────────────────────────
 // Utilisé quand `pathDisplayMode === "all"` (sélecteur "Chemin multiple"
 // dans GraphPage) : chaque chemin optimal distinct est dessiné en overlay
-// avec le style d'index correspondant, sur toute sa longueur — y compris
-// sur les tronçons partagés avec d'autres chemins (voir le rendu des arcs
-// plus bas, qui décale désormais chaque chemin latéralement au lieu de les
-// fusionner en un tronc bleu générique). S'il y a plus de chemins que
-// d'entrées ici, le tableau boucle (modulo) — les couleurs se répètent
-// mais le décalage latéral (MULTI_PATH_LATERAL_GAP) reste unique par
-// chemin, donc les tracés restent distinguables même au-delà de 6.
+// avec le style d'index correspondant, sur toute sa longueur. Un tronçon
+// partagé par plusieurs chemins adopte la couleur du PREMIER chemin (index
+// le plus petit) qui l'emprunte — voir le rendu des arcs plus bas. S'il y a
+// plus de chemins que d'entrées ici, le tableau boucle (modulo) — les
+// couleurs se répètent mais le décalage latéral (MULTI_PATH_LATERAL_GAP)
+// reste unique par chemin, donc les tracés restent distinguables même
+// au-delà de 6.
 //
 //   stroke : couleur du trait (n'importe quelle couleur CSS valide)
 //   dash   : motif strokeDasharray ; `undefined` = trait plein
@@ -125,7 +148,7 @@ export const MULTI_PATH_STYLES = [
   {
     stroke: "#f97316",
     marker: "url(#arrow-orange)",
-    dash: undefined,
+    dash: "8 4",
     label: "Chemin 2",
   },
   {
@@ -153,29 +176,23 @@ export const MULTI_PATH_STYLES = [
     label: "Chemin 6",
   },
 ];
+
+export const MULTI_PATH_COMMON_COLOR = "#1d4ed8"; // 
+
 /**
  * Décalage latéral additionnel (px) entre deux chemins optimaux superposés
  * en mode "multiple", pour que les tracés parallèles restent visuellement
- * distincts même quand plusieurs chemins partagent un même arc. C'est ce
- * décalage qui remplace désormais le tronc bleu générique : chaque chemin
- * garde sa couleur d'un bout à l'autre, y compris là où il chevauche
- * d'autres chemins.
+ * distincts même quand plusieurs chemins partagent un même arc.
  */
 export const MULTI_PATH_LATERAL_GAP = 9;
 
-/**
- * Couleur unique du "tronc commun" — les tronçons d'arcs (et les sommets)
- * partagés par au moins deux chemins optimaux. Volontairement une seule
- * couleur fixe, distincte des entrées de MULTI_PATH_STYLES : un tronçon
- * commun ne prend jamais la couleur d'un chemin individuel, et un chemin
- * individuel ne prend jamais cette couleur. Les deux ne se mélangent
- * jamais sur un même arc — chaque arc n'est colorié qu'UNE seule fois,
- * soit en tronc commun, soit dans la couleur de son unique chemin.
- */
-const MULTI_PATH_COMMON_COLOR = "#1d4ed8";
-
 /** Épaisseur des tracés d'overlay des chemins multiples. */
 const MULTI_PATH_STROKE_WIDTH = 2.4;
+
+/** Opacité appliquée aux nœuds/arcs qui n'appartiennent PAS au chemin
+ *  survolé, pendant qu'un survol est actif dans StepsPanel. Volontairement
+ *  bas pour que le chemin isolé ressorte nettement, même à 5+ chemins. */
+const HOVER_DIM_OPACITY = 0.14;
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -314,9 +331,10 @@ function isValidWeightInput(raw: string): boolean {
 }
 
 /** Convertit une couleur hexadécimale en `rgba(...)` avec une opacité
- *  donnée — utilisé pour teinter légèrement le remplissage des sommets
- *  selon la couleur de leur chemin optimal, sans avoir à maintenir une
- *  seconde palette de couleurs "claires" en double. */
+ *  donnée. Conservée pour d'éventuels usages futurs (halo, légendes...),
+ *  mais n'est plus utilisée pour le fond des sommets en mode "chemin
+ *  multiple" — celui-ci est désormais plein (voir plus bas), exactement
+ *  comme en mode "chemin unique". */
 function hexToRgba(hex: string, alpha: number): string {
   const clean = hex.replace("#", "");
   const full  = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
@@ -496,6 +514,13 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
     isNodeMarked, isCurrentNode, isSelectedEdge,
     isNodeInOptimalPath, isEdgeInOptimalPath,
     pathDisplayMode, getPathIndicesForEdge,
+    // currentStepIndex : nécessaire uniquement pour invalider correctement
+    // le useMemo `nodePathIndices` plus bas (voir son commentaire) — pas
+    // utilisé directement dans le JSX.
+    currentStepIndex,
+    // hoveredPathIndex : chemin survolé dans StepsPanel, pilote l'estompage
+    // des nœuds/arcs qui n'en font pas partie (lisibilité à 5+ chemins).
+    hoveredPathIndex,
     moveNode, addEdge,
     updateEdgeWeight,
     removeEdge,
@@ -662,11 +687,30 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
    * ses index de chemin sur ses deux sommets extrémités — pas besoin d'une
    * nouvelle méthode dédiée dans le store.
    *
+   * Recalculée entièrement à chaque rendu à partir des seuls chemins
+   * optimaux actuellement renvoyés par le store (aucun état intermédiaire
+   * conservé d'un rendu à l'autre) : avancer/reculer dans les étapes ne peut
+   * donc jamais laisser un sommet avec un ensemble de chemins obsolète.
+   *
+   * FIX (bug : les "fonds" de couleur sur les nœuds ne se réinitialisaient
+   * pas correctement en cliquant "Précédent" dans StepsPanel) : ce
+   * useMemo dépendait de `[pathDisplayMode, safeEdges, getPathIndicesForEdge]`.
+   * `getPathIndicesForEdge` est une référence de fonction STABLE exposée par
+   * le store (elle ne change jamais d'identité), mais elle lit
+   * `currentStepIndex` en interne via `get()`. Résultat : naviguer dans les
+   * étapes déclenchait bien un re-render du composant, mais PAS un
+   * recalcul de ce memo — React ne voyait aucune dépendance changée. Les
+   * nœuds gardaient donc la carte de couleurs de l'étape précédente,
+   * donnant l'impression que les fonds "ne disparaissaient pas". Ajout de
+   * `currentStepIndex` dans le tableau de dépendances : le memo est
+   * désormais recalculé à chaque changement d'étape, comme le sont déjà les
+   * arcs (calculés en direct dans le JSX, jamais mémoïsés).
+   *
    * Un sommet avec un seul index dans son ensemble n'appartient qu'à un
    * chemin : il est teinté dans la couleur de ce chemin. Un sommet avec
    * plusieurs index est un point de convergence/divergence entre plusieurs
-   * chemins optimaux : il reçoit un anneau segmenté multicolore (voir le
-   * rendu des sommets plus bas).
+   * chemins optimaux : il prend la couleur du PREMIER de ces chemins (voir
+   * le rendu des sommets plus bas).
    */
   const nodePathIndices = useMemo<Map<string, Set<number>>>(() => {
     const map = new Map<string, Set<number>>();
@@ -681,7 +725,7 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
       });
     });
     return map;
-  }, [pathDisplayMode, safeEdges, getPathIndicesForEdge]);
+  }, [pathDisplayMode, safeEdges, getPathIndicesForEdge, currentStepIndex]);
 
   // ── Conversion de coordonnées ─────────────────────────────────────────────
 
@@ -1076,13 +1120,24 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
 
   // ── Fonctions utilitaires de style ───────────────────────────────────────────
 
-  const nodeColors = useCallback((node: GraphNode): NodeColors => {
+  /**
+   * Couleurs de base d'un sommet. `suppressOptimalBlue` désactive
+   * explicitement la branche "bleu optimal" (mode chemin unique) : c'est
+   * ELLE qui provoquait la fuite "parfois tout redevient bleu" en mode
+   * "chemin multiple" — un sommet pouvait être considéré "optimal" par le
+   * store sans être retrouvé dans `nodePathIndices` (reconstruction locale
+   * basée sur les arcs), et retombait alors sur ce bleu générique au lieu
+   * d'une couleur neutre. En mode "chemin multiple", c'est TOUJOURS la
+   * coloration par chemin (ou neutre) plus bas qui doit avoir le dernier
+   * mot, jamais ce bleu de base.
+   */
+  const nodeColors = useCallback((node: GraphNode, suppressOptimalBlue: boolean = false): NodeColors => {
     if (addEdgeMode) {
       if (edgeSource === node.id)     return { fill: "#2563eb", stroke: "#60a5fa", text: "#fff" };
       if (pendingEdge?.toId === node.id) return { fill: "#7c3aed", stroke: "#a78bfa", text: "#fff" };
       return { fill: "#f8fafc", stroke: "#cbd5e1", text: "#475569" };
     }
-    if (isNodeInOptimalPath(node.id)) return { fill: "#2d6ef8", stroke: "#2d5ef8", text: "#fff" };
+    if (!suppressOptimalBlue && isNodeInOptimalPath(node.id)) return { fill: "#2d6ef8", stroke: "#2d5ef8", text: "#fff" };
     if (isCurrentNode(node.id))        return { fill: "#f59e0b", stroke: "#fcd34d", text: "#fff" };
     if (isNodeMarked(node.id))         return { fill: "#fef08a", stroke: "#eab308", text: "#713f12" };
     return { fill: "#ffffff", stroke: "#e2e8f0", text: "#334155" };
@@ -1092,10 +1147,10 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
    * En mode "chemin multiple" (pathDisplayMode === "all"), la coloration
    * "optimal = bleu" du rendu de base est désactivée : c'est l'overlay des
    * chemins multiples (plus bas) qui colore chaque arc, une seule fois,
-   * soit en bleu (tronc commun), soit dans la couleur de son chemin. Sans
-   * cette désactivation, un arc optimal serait peint deux fois — d'abord
-   * en bleu ici, puis dans sa vraie couleur par l'overlay — et le bleu de
-   * base, plus épais, dépasserait visiblement de sous la couleur du dessus.
+   * dans la couleur du premier chemin qui l'emprunte. Sans cette
+   * désactivation, un arc optimal serait peint deux fois — d'abord en bleu
+   * ici, puis dans sa vraie couleur par l'overlay — et le bleu de base,
+   * plus épais, dépasserait visiblement de sous la couleur du dessus.
    */
   const edgeStrokeColor = useCallback((edge: GraphEdge): string => {
     if (isEdgeInOptimalPath(edge.from, edge.to) && pathDisplayMode !== "all") return "#2d6ef8";
@@ -1197,6 +1252,14 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
           const path        = getEdgePath(edge);
           const isEditing   = editingEdge === edge.id;
 
+          // Estompage au survol d'un chemin (StepsPanel) : un arc qui ne fait
+          // partie d'AUCUN chemin optimal n'est jamais concerné par ce survol
+          // (il n'est ni mis en avant, ni davantage estompé qu'il ne l'est
+          // déjà normalement) — seuls les arcs appartenant à un chemin sont
+          // candidats à l'estompage s'ils n'appartiennent pas au chemin
+          // survolé. Le rendu de base (ici) n'est de toute façon actif comme
+          // "optimal" qu'en mode chemin unique ; en mode "all" c'est
+          // l'overlay plus bas qui porte l'effet de survol pour les arcs.
           const weightStr = String(edge.weight);
           const badgeW    = Math.max(BADGE_MIN_W, monoTextWidth(weightStr) + BADGE_PAD_X * 2);
           const editInvalid = isEditing && !isValidWeightInput(editingEdgeValue);
@@ -1353,27 +1416,51 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
           // désactivé la coloration par chemin pour la quasi-totalité des
           // sommets du graphe final, ce qui expliquait le "tout reste bleu".
           //
-          // Règle volontairement simple, symétrique à celle des arcs :
-          //   - un sommet touché par au moins un tronçon COMMUN (partagé
-          //     par 2+ chemins) est colorié dans l'unique couleur du tronc
-          //     commun (MULTI_PATH_COMMON_COLOR) ;
-          //   - un sommet qui n'appartient qu'à UN SEUL chemin est colorié
-          //     dans la couleur propre de ce chemin (MULTI_PATH_STYLES) ;
+          // Règle : un sommet prend la couleur du PREMIER chemin (index le
+          // plus petit dans `nodePathArr`, déjà trié croissant) qui passe
+          // par lui — qu'il n'appartienne qu'à un seul chemin ou qu'il soit
+          // un point de convergence/divergence partagé par plusieurs. Plus
+          // de couleur "tronc commun" fixe : le sommet reflète le chemin qui
+          // l'a réellement atteint en premier. `isSinglePathNode` /
+          // `isCommonNode` ne servent plus qu'à ajuster l'épaisseur du trait
+          // et le texte de l'info-bulle, jamais la couleur elle-même.
           // → toujours la même couleur que l'arc auquel le sommet est
-          // rattaché, jamais un mélange, jamais une double coloration.
+          // rattaché, jamais un mélange, jamais une double coloration, et
+          // surtout : jamais de retour furtif au bleu générique — voir
+          // `suppressOptimalBlue` passé à `nodeColors` ci-dessous, qui
+          // coupe cette fuite à la source.
           const showMultiPathStyle = pathDisplayMode === "all" && !addEdgeMode && !isCurrent;
           const nodePathSet = showMultiPathStyle ? (nodePathIndices.get(node.id) ?? new Set<number>()) : undefined;
           const nodePathArr = nodePathSet ? Array.from(nodePathSet).sort((a, b) => a - b) : [];
           const isSinglePathNode = showMultiPathStyle && nodePathArr.length === 1;
-          const isCommonNode     = showMultiPathStyle && nodePathArr.length > 1;
+          const isCommonNode = showMultiPathStyle && nodePathArr.length > 1;
 
-          let colors = nodeColors(node);
-          if (isSinglePathNode) {
-            const style = MULTI_PATH_STYLES[nodePathArr[0] % MULTI_PATH_STYLES.length];
-            colors = { fill: hexToRgba(style.stroke, 0.16), stroke: style.stroke, text: "#1e293b" };
-          } else if (isCommonNode) {
-            colors = { fill: hexToRgba(MULTI_PATH_COMMON_COLOR, 0.16), stroke: MULTI_PATH_COMMON_COLOR, text: "#1e293b" };
+          let colors = nodeColors(node, pathDisplayMode === "all");
+          if (nodePathArr.length > 0) {
+            const firstPathIdx = nodePathArr[0];
+            const style = MULTI_PATH_STYLES[firstPathIdx % MULTI_PATH_STYLES.length];
+            colors = { fill: style.stroke, stroke: style.stroke, text: "#fff" };
           }
+
+          // Estompage au survol d'un chemin dans StepsPanel (lisibilité à
+          // 5+ chemins). Un nœud qui appartient à au moins un chemin, mais
+          // PAS au chemin actuellement survolé, est fortement atténué le
+          // temps du survol — ce qui isole visuellement le chemin qu'on
+          // souhaite suivre sans changer `pathDisplayMode` ni aucun autre
+          // état persistant. Les nœuds hors de tout chemin (le reste du
+          // graphe) restent inchangés : seuls les chemins eux-mêmes sont
+          // concernés par ce contraste.
+          const isDimmedByHover =
+            hoveredPathIndex !== null &&
+            nodePathArr.length > 0 &&
+            !nodePathArr.includes(hoveredPathIndex);
+          const nodeOpacity = isDimmedByHover ? HOVER_DIM_OPACITY : 1;
+
+          // Le bleu "optimal" générique (bordure fine, mode chemin unique)
+          // ne doit jamais s'afficher en mode "chemin multiple" — sinon il
+          // réapparaîtrait ponctuellement sur des sommets non couverts par
+          // nodePathIndices, exactement le bug rapporté.
+          const optimalBlueAllowed = isOptimal && pathDisplayMode !== "all";
 
           const filter = isEdgeSrc       ? "url(#glow-blue)"
             : isEdgeTgt                  ? "url(#glow-purple)"
@@ -1381,16 +1468,19 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
             : isCurrent                  ? "url(#glow-amber)"
             : "url(#node-shadow)";
 
+          // NB : la sélection (`isSel`) n'a plus d'impact sur le contour
+          // principal — elle reste visible via l'anneau en pointillés dédié
+          // plus bas — pour ne jamais écraser la couleur d'un chemin.
           const strokeColor = isEdgeSrc        ? "#3b82f6"
             : isEdgeTgt                         ? "#7c3aed"
             : isEdgeHovTarget                   ? "#0d9488"
-            : (!addEdgeMode && isSel)           ? "#3b82f6"
             : isCurrent                         ? "#fcd34d"
             : (isSinglePathNode || isCommonNode) ? colors.stroke
-            : isOptimal                         ? "#60a5fa"
+            : (!addEdgeMode && isSel)           ? "#3b82f6"
+            : optimalBlueAllowed                ? "#60a5fa"
             : "#cbd5e1";
 
-          const strokeWidth = (isEdgeSrc || isEdgeTgt || isEdgeHovTarget || isCurrent || isOptimal || isSinglePathNode || isCommonNode)
+          const strokeWidth = (isEdgeSrc || isEdgeTgt || isEdgeHovTarget || isCurrent || optimalBlueAllowed || isSinglePathNode || isCommonNode)
             ? 2.5
             : (!addEdgeMode && isSel) ? 2
             : 1.5;
@@ -1414,6 +1504,8 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               style={{
                 cursor: addEdgeMode ? "pointer" : dragging === node.id ? "grabbing" : "grab",
                 outline: "none", // anneau de focus natif supprimé ; on dessine le nôtre
+                opacity: nodeOpacity,
+                transition: "opacity 0.15s",
               }}
               filter={filter}
             >
@@ -1494,7 +1586,9 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               {/* Info-bulle d'accessibilité indiquant le statut de ce sommet
                   vis-à-vis des chemins optimaux, en mode "chemin multiple". */}
               {isCommonNode && (
-                <title>Nœud du tronc commun (partagé par plusieurs chemins optimaux)</title>
+                <title>
+                  {`Nœud partagé par plusieurs chemins optimaux — coloré comme le ${MULTI_PATH_STYLES[nodePathArr[0] % MULTI_PATH_STYLES.length].label} (premier chemin à l'emprunter)`}
+                </title>
               )}
               {isSinglePathNode && (
                 <title>
@@ -1523,23 +1617,43 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
             RÈGLE STRICTE : chaque arc concerné n'est colorié qu'UNE SEULE
             fois, avec UN SEUL tracé — jamais deux tracés superposés sur le
             même arc, et jamais de mélange de couleurs.
-              • CAS 1 — l'arc est emprunté par 2 chemins optimaux ou plus
-                (tronc commun) : un unique tracé, dans l'unique couleur du
-                commun (MULTI_PATH_COMMON_COLOR), légèrement plus épais pour
-                signaler visuellement qu'il s'agit d'un tronc partagé.
-              • CAS 2 — l'arc n'est emprunté que par UN SEUL chemin optimal :
-                un unique tracé, dans la couleur propre de ce chemin
-                (jamais dans la couleur du commun).
+
+            COULEUR — un arc adopte la couleur du PREMIER chemin (index le
+            plus petit parmi ceux qui l'empruntent, dans l'ordre "Chemin 1",
+            "Chemin 2"...) à passer par lui :
+              • Si cet arc n'est emprunté que par un seul chemin optimal,
+                c'est simplement la couleur propre de ce chemin.
+              • Si l'arc est un tronc partagé par 2 chemins ou plus, il
+                prend la couleur du premier de ces chemins — plus de bleu
+                "tronc commun" fixe et déconnecté du parcours réel. Les
+                chemins suivants qui empruntent ce même arc ne le
+                recolorent jamais : la couleur du premier arrivé est
+                conservée.
+            Il reste visuellement distinguable d'un arc à chemin unique par
+            un trait plein (jamais en pointillé) et un peu plus épais.
+
+            SURVOL (lisibilité à 5+ chemins) : quand `hoveredPathIndex` est
+            défini, l'arc qui appartient à ce chemin est mis en avant (plus
+            épais, pleine opacité) et tous les autres sont fortement
+            estompés — sans jamais changer leur couleur propre ni
+            `pathDisplayMode`.
+
+            Ce calcul repart de zéro à chaque rendu à partir des seuls
+            chemins optimaux actuellement renvoyés par le store — rien
+            n'est mémorisé d'un rendu à l'autre — donc avancer/reculer dans
+            les étapes ne peut jamais laisser un arc avec une couleur
+            obsolète.
+
             Le rendu de base des arcs (plus haut) ne colore plus ces mêmes
             arcs en bleu "optimal" quand ce mode est actif (voir
             edgeStrokeColor / edgeMarker / le isOptimal local du bloc ARCS),
-            donc il n'y a jamais de double coloration ni de bleu qui dépasse
-            de sous une autre couleur.
+            donc il n'y a jamais de double coloration ni de couleur qui
+            dépasse de sous une autre.
             ════════════════════════════════════════════════════════════════════ */}
             {pathDisplayMode === "all" && safeEdges.map((edge) => {
-              const pathIndices = getPathIndicesForEdge(edge.from, edge.to);
+              const rawIndices = getPathIndicesForEdge(edge.from, edge.to);
               // S'il n'y a aucun chemin sur cet arc, on n'affiche rien
-              if (!pathIndices.length) return null;
+              if (!rawIndices.length) return null;
 
               const from = getNode(edge.from);
               const to   = getNode(edge.to);
@@ -1551,38 +1665,36 @@ export default function GraphCanvas({ addEdgeMode = false, showArrows = true }: 
               const baseOffset = getLateralOffset(edge) + (edgeOffsets[edge.id] ?? 0);
               const overlayPath = buildEdgePath(from, to, baseOffset);
 
-              // CAS 1 : tronc commun — un seul tracé bleu, point.
-              if (pathIndices.length > 1) {
-                return (
-                  <path
-                    key={`${edge.id}-mp-common`}
-                    d={overlayPath}
-                    fill="none"
-                    stroke={MULTI_PATH_COMMON_COLOR}
-                    strokeWidth={MULTI_PATH_STROKE_WIDTH * 1.3}
-                    strokeLinecap="round"
-                    markerEnd={showArrows ? "url(#arrow-optimal)" : undefined}
-                    style={{ pointerEvents: "none", opacity: 0.95 }}
-                  />
-                );
-              }
+              // Tri croissant : l'index le plus petit = le PREMIER chemin
+              // (dans l'ordre "Chemin 1", "Chemin 2"...) à emprunter cet
+              // arc. Recalculé intégralement à chaque rendu à partir des
+              // seuls chemins optimaux courants.
+              const sortedIndices = [...rawIndices].sort((a, b) => a - b);
+              const firstIdx = sortedIndices[0];
+              const isShared = sortedIndices.length > 1;
+              const style = MULTI_PATH_STYLES[firstIdx % MULTI_PATH_STYLES.length];
 
-              // CAS 2 : un seul chemin passe par cet arc — sa couleur propre,
-              // jamais bleue (sauf si ce chemin est justement le "Chemin 1"
-              // dont la couleur par défaut est bleue dans MULTI_PATH_STYLES).
-              const pIdx = pathIndices[0];
-              const style = MULTI_PATH_STYLES[pIdx % MULTI_PATH_STYLES.length];
+              // Survol depuis StepsPanel : isole le chemin survolé (plus
+              // épais, pleine opacité) et estompe fortement tous les autres.
+              const isHoveredPath = hoveredPathIndex !== null && sortedIndices.includes(hoveredPathIndex);
+              const isDimmedPath  = hoveredPathIndex !== null && !isHoveredPath;
+              const baseWidth = isShared ? MULTI_PATH_STROKE_WIDTH * 1.3 : MULTI_PATH_STROKE_WIDTH;
+
               return (
                 <path
-                  key={`${edge.id}-mp-${pIdx}`}
+                  key={`${edge.id}-mp-${firstIdx}${isShared ? "-shared" : ""}`}
                   d={overlayPath}
                   fill="none"
                   stroke={style.stroke}
-                  strokeWidth={MULTI_PATH_STROKE_WIDTH}
-                  strokeDasharray={style.dash}
+                  strokeWidth={isHoveredPath ? baseWidth * 1.6 : baseWidth}
+                  strokeDasharray={isShared ? undefined : style.dash}
                   strokeLinecap="round"
                   markerEnd={showArrows ? style.marker : undefined}
-                  style={{ pointerEvents: "none", opacity: 0.92 }}
+                  style={{
+                    pointerEvents: "none",
+                    opacity: isDimmedPath ? HOVER_DIM_OPACITY : (isShared ? 0.95 : 0.92),
+                    transition: "opacity 0.15s, stroke-width 0.15s",
+                  }}
                 />
               );
             })}

@@ -1,3 +1,4 @@
+// store/graphStore.ts
 import { create } from "zustand";
 import type { DantzigResult, DantzigStep, GraphNode, GraphEdge, ApiGraph } from "../types/graph";
 import { graphService } from "../services/graphService";
@@ -31,6 +32,11 @@ type StepTarget = number | "end" | undefined;
  *    seul chemin affiché (en bleu, comportement historique).
  *  - "all"      → tous les chemins optimaux distincts sont affichés
  *    simultanément (voir MULTI_PATH_STYLES dans GraphCanvas.tsx).
+ *
+ * "all" est désormais la valeur PAR DÉFAUT (état initial, resetResult, et
+ * calcul "normal") — demandé explicitement : dès qu'il y a plusieurs
+ * chemins optimaux, on les montre tous d'emblée plutôt que d'en cacher
+ * arbitrairement tous sauf le premier.
  */
 type PathDisplayMode = number | "all";
 
@@ -105,11 +111,22 @@ interface GraphStore {
   // ── Chemins optimaux multiples ─────────────────────────────────────────
   /**
    * Chemin(s) actuellement sélectionné(s) pour l'affichage. Réinitialisé à
-   * 0 sur un calcul "normal" (bouton Lancer) ; clampé/préservé sur un
+   * "all" sur un calcul "normal" (bouton Lancer) ; clampé/préservé sur un
    * recalcul en arrière-plan (`maybeRecompute`).
    */
   pathDisplayMode: PathDisplayMode;
   setPathDisplayMode: (mode: PathDisplayMode) => void;
+  /**
+   * Index du chemin actuellement SURVOLÉ (dans StepsPanel), utilisé pour
+   * isoler visuellement ce chemin sur le canvas — les autres chemins sont
+   * estompés le temps du survol. `null` = aucun survol en cours (aucun
+   * changement visuel). Volontairement séparé de `pathDisplayMode` : le
+   * survol est un effet temporaire, la sélection d'affichage reste stable.
+   * Répond au problème de lisibilité à 5+ chemins (demande d'un mode qui
+   * met davantage en évidence le chemin choisi).
+   */
+  hoveredPathIndex: number | null;
+  setHoveredPathIndex: (index: number | null) => void;
   /** Liste brute de tous les chemins optimaux distincts vers la cible. */
   getOptimalPathsList: () => OptimalPathEntry[];
   /**
@@ -232,8 +249,11 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   clearError: () => set({ error: null }),
 
   // ── Chemins optimaux multiples ─────────────────────────────────────────
-  pathDisplayMode: 0,
+  pathDisplayMode: "all",
   setPathDisplayMode: (mode) => set({ pathDisplayMode: mode }),
+
+  hoveredPathIndex: null,
+  setHoveredPathIndex: (index) => set({ hoveredPathIndex: index }),
 
   getOptimalPathsList: () => {
     const r = get().result as any;
@@ -284,7 +304,17 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   executeDantzig: async (stepTarget) => {
-    const { nodes, edges, sourceNode, optimizationType, pathDisplayMode } = get();
+    // FIX (bug #3 — le select "Chemin multiple / Chemin N" changeait tout
+    // seul) : `pathDisplayMode` n'est PLUS lu ici, avant le `await` réseau.
+    // Avant ce fix, on capturait sa valeur dès l'appel de la fonction ; si
+    // l'utilisateur changeait de chemin (ou de mode) PENDANT qu'un recalcul
+    // tournait en arrière-plan (déclenché par une modif du graphe), la
+    // réponse arrivait ensuite avec cette valeur périmée et écrasait le
+    // choix plus récent de l'utilisateur — une race condition classique.
+    // On relit désormais `get().pathDisplayMode` juste avant de calculer
+    // `nextPathDisplayMode`, une fois la réponse arrivée, pour toujours
+    // respecter le choix le plus à jour.
+    const { nodes, edges, sourceNode, optimizationType } = get();
 
     // Important : on NE touche PAS à `isComputed`/`result` ici. Tant que le
     // nouveau résultat n'est pas prêt, l'ancien reste affiché tel quel —
@@ -354,20 +384,23 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
           ? Math.min(stepTarget, Math.max(0, newTotal - 1))
           : 0;
 
-      // Sélection du chemin affiché :
-      //  - calcul "normal" (stepTarget undefined)      → on repart sur le
-      //    premier chemin optimal (comportement historique, en bleu).
-      //  - recalcul en arrière-plan (maybeRecompute)    → on essaie de
-      //    conserver le choix précédent ("all" reste "all" ; un index est
-      //    clampé si le nouveau graphe a moins de chemins optimaux).
+      // Sélection du chemin affiché — lu FRAÎCHEMENT ici (voir commentaire
+      // en tête de fonction) plutôt que capturé avant le `await` :
+      //  - calcul "normal" (stepTarget undefined) → "all" par défaut : on
+      //    montre tous les chemins optimaux d'emblée.
+      //  - recalcul en arrière-plan (maybeRecompute) → on conserve le choix
+      //    courant de l'utilisateur ("all" reste "all" ; un index est
+      //    préservé s'il est encore valide, sinon on retombe sur "all"
+      //    plutôt que sur un index arbitraire).
+      const currentPathDisplayMode = get().pathDisplayMode;
       const nextPathDisplayMode: PathDisplayMode =
         stepTarget === undefined
-          ? 0
-          : pathDisplayMode === "all"
           ? "all"
-          : typeof pathDisplayMode === "number" && pathDisplayMode < allTargetPaths.length
-          ? pathDisplayMode
-          : 0;
+          : currentPathDisplayMode === "all"
+          ? "all"
+          : typeof currentPathDisplayMode === "number" && currentPathDisplayMode < allTargetPaths.length
+          ? currentPathDisplayMode
+          : "all";
 
       set({
         isRunning: false,
@@ -393,7 +426,8 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     currentStepIndex: 0,
     totalSteps: 0,
     error: null,
-    pathDisplayMode: 0,
+    pathDisplayMode: "all",
+    hoveredPathIndex: null,
   }),
 
   setCurrentStepIndex: (index) => {
