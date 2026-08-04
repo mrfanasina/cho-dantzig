@@ -1,0 +1,75 @@
+[{
+  "_id": {
+    "$oid": "68175f0fc990ebb3c4d4a796"
+  },
+  "numSec": "0001",
+  "nom": "Fanaja",
+  "telephone": "0348556214",
+  "createdAt": {
+    "$date": "2025-05-04T12:35:27.551Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:35:27.551Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68175f30c990ebb3c4d4a79b"
+  },
+  "numSec": "0002",
+  "nom": "Koto",
+  "telephone": "0386547924",
+  "createdAt": {
+    "$date": "2025-05-04T12:36:00.596Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:37:24.257Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68175fbdc990ebb3c4d4a7a1"
+  },
+  "numSec": "0003",
+  "nom": "Fenitra",
+  "telephone": "0324962478",
+  "createdAt": {
+    "$date": "2025-05-04T12:38:21.271Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:38:21.271Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68175ff2c990ebb3c4d4a7a5"
+  },
+  "numSec": "0004",
+  "nom": "Romuald",
+  "telephone": "0324157896",
+  "createdAt": {
+    "$date": "2025-05-04T12:39:14.867Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:39:14.867Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68176012c990ebb3c4d4a7a8"
+  },
+  "numSec": "0005",
+  "nom": "Luciano",
+  "telephone": "0384562479",
+  "createdAt": {
+    "$date": "2025-05-04T12:39:46.975Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:39:46.975Z"
+  },
+  "__v": 0
+}]

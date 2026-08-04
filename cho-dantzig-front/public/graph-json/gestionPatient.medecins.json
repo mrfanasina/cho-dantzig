@@ -1,0 +1,72 @@
+[{
+  "_id": {
+    "$oid": "68175de6c990ebb3c4d4a786"
+  },
+  "matricule": "M1000",
+  "nom": "Georges Buch",
+  "type": "cardiologue",
+  "email": "georgesbuch@gmail.com",
+  "cin": "124012987354",
+  "telephone": "0332568795",
+  "createdAt": {
+    "$date": "2025-05-04T12:30:30.826Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:30:30.826Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68175e9cc990ebb3c4d4a792"
+  },
+  "matricule": "M1001",
+  "nom": "Jean Claude",
+  "type": "generaliste",
+  "email": "jeanclaude@gmail.com",
+  "cin": "354216987522",
+  "telephone": "0348956214",
+  "createdAt": {
+    "$date": "2025-05-04T12:33:32.590Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:33:32.590Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681760a0c990ebb3c4d4a7ae"
+  },
+  "matricule": "M1002",
+  "nom": "Herinasandratra",
+  "type": "dermatologue",
+  "email": "herinasandratra@gmail.com",
+  "cin": "489652314758",
+  "telephone": "0334758964",
+  "createdAt": {
+    "$date": "2025-05-04T12:42:08.270Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:42:08.270Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681760f0c990ebb3c4d4a7b3"
+  },
+  "matricule": "M1003",
+  "nom": "Haja Roberto",
+  "type": "generaliste",
+  "email": "hajaroberto@gmail.com",
+  "cin": "465321789654",
+  "telephone": "0324259865",
+  "createdAt": {
+    "$date": "2025-05-04T12:43:28.992Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T12:44:06.311Z"
+  },
+  "__v": 0
+}]

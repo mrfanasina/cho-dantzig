@@ -1,0 +1,2746 @@
+[
+  {
+    "id": 23,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 1,
+    "verse_number": 23,
+    "corrected_verse": "Dia nisy ny hariva, ary nisy maraina, andro fahadimy izany."
+  },
+  {
+    "id": 124,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 5,
+    "verse_number": 18,
+    "corrected_verse": "Ary rehefa roa amby enim-polo amby zato taona ny andro niainan'i Jareda dia niteraka an'i Enoka izy."
+  },
+  {
+    "id": 274,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 11,
+    "verse_number": 7,
+    "corrected_verse": "Aoka isika hidina, ka eny no hanorokoroantsika ny fiteniny, mba tsy hifankahalala teny izy."
+  },
+  {
+    "id": 395,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 16,
+    "verse_number": 13,
+    "corrected_verse": "Ary Hagara nanonona ny anaran'i Jehovah, Izay niteny taminy hoe: Ianao no Andriamanitra Izay mahita; fa hoy izy: Tsy teto va no mbola velona aho aorian'ny fahitana?"
+  },
+  {
+    "id": 427,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 18,
+    "verse_number": 2,
+    "corrected_verse": "dia nanopy ny masony izy ka nijery, ary, indreo, nisy telo lahy nijanona teo tandrifiny, ka nony nahita ireo izy, dia niala teo am-baravaran'ny lainy ka nihazakazaka hitsena azy, dia niankohoka tamin'ny tany"
+  },
+  {
+    "id": 501,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 20,
+    "verse_number": 5,
+    "corrected_verse": "Tsy ralehilahy va no nilaza tamiko hoe: Anabaviko izy? ary ravehivavy koa nanao hoe: Anadahiko izy; koa tamin'ny fahatsoran'ny foko sy ny fahadiovan'ny tanako no nanaovako izany."
+  },
+  {
+    "id": 561,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 22,
+    "verse_number": 13,
+    "corrected_verse": "Ary Abrahama niherika nijery ka, indro, nisy ondrilahy teo ivohony, voasarangotry ny kirihitrala ny tandrony; dia lasa Abrahama ka naka ny ondrilahy ary nanatitra azy ho fanatitra dorana ho solon'ny zanany."
+  },
+  {
+    "id": 590,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 23,
+    "verse_number": 18,
+    "corrected_verse": "tamin'i Abrahama ho fananana, teo imason'ny taranak'i Heta, dia izay rehetra niditra teo ambavahadin'ny tanànany."
+  },
+  {
+    "id": 607,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 24,
+    "verse_number": 15,
+    "corrected_verse": "Ary raha tsy mbola nitsaha-niteny izy, dia, indro, tamy Rebeka, izay naterak'i Betoela, zanakalahin'i Milka, vadin'i Nahora, rahalahin'i Abrahama, nilanja ny sininy teny an-tsorony."
+  },
+  {
+    "id": 757,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 27,
+    "verse_number": 29,
+    "corrected_verse": "Hanompo anao anie ny firenena maro, Ary hiankohoka eo anatrehanao ny firenena samy hafa. Ho tompoin'ny rahalahinao anie ianao, ary aoka hiankohoka eo anatrehanao ny zanaky ny reninao. Ho voaozona anie izay rehetra manozona anao, ary hohasoavina anie izay manisy soa anao."
+  },
+  {
+    "id": 807,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 29,
+    "verse_number": 11,
+    "corrected_verse": "Ary Jakoba nanoroka an-dRahely, dia nanandratra ny feony ka nitomany."
+  },
+  {
+    "id": 909,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 31,
+    "verse_number": 35,
+    "corrected_verse": "Ary hoy Rahely tamin'ny rainy: Azafady aho, tompokolahy, fa tsy mahazo mitsangana eto anatrehanao aho, satria azon'ny fombam-behivavy. Dia nikaroka fatratra izy, fa tsy nahita ny sampy."
+  },
+  {
+    "id": 935,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 32,
+    "verse_number": 7,
+    "corrected_verse": "Dia niverina tany amin'i Jakoba ny iraka ka nanao hoe: Tafahaona tamin'i Esao rahalahinao izahay, ary izy koa dia avy hitsena anao mitondra olona efa-jato lahy."
+  },
+  {
+    "id": 999,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 34,
+    "verse_number": 18,
+    "corrected_verse": "Dia sitrak'i Hamora sy Sekema zanany izany teniny izany."
+  },
+  {
+    "id": 1127,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 38,
+    "verse_number": 7,
+    "corrected_verse": "Fa ratsy fanahy teo imason'i Jehovah Era, lahimatoan'i Joda; dia novonoin'i Jehovah izy."
+  },
+  {
+    "id": 1268,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 42,
+    "verse_number": 15,
+    "corrected_verse": "dia izao ary no hamantarana anareo: Raha velona koa Farao, tsy hiala aty ianareo, raha tsy tonga aty izany zandrinareo faralahy izany."
+  },
+  {
+    "id": 1329,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 44,
+    "verse_number": 4,
+    "corrected_verse": "Ary rehefa tafavoaka ny tanàna izy ka tsy mbola lasan-davitra, dia hoy Josefa tamin'ny mpikarakara ny tao an-tranony: Andeha araho ireny lehilahy ireny; ary rehefa tratranao izy, dia ataovy aminy hoe: Nahoana ianareo namaly ratsy ny soa?"
+  },
+  {
+    "id": 1389,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 46,
+    "verse_number": 2,
+    "corrected_verse": "Ary Andriamanitra niteny tamin'Isiraely tao amin'ny fahitana nony alina ka nanao hoe : Ry Jakoba, ry Jakoba o! Ary hoy kosa izy: Inty aho."
+  },
+  {
+    "id": 1403,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 46,
+    "verse_number": 16,
+    "corrected_verse": "Ary ny zanakalahin'i Gada dia Zifiona sy Hagy sy Sony sy Ezbona sy Ery sy Aroda ary Arely."
+  },
+  {
+    "id": 1485,
+    "book_number": 1,
+    "book_name": "Genesisy",
+    "chapter": 49,
+    "verse_number": 11,
+    "corrected_verse": "Mamatotra ny borikiny tanora eo amin'ny tahom-boaloboka izy. Ary ny zanaky ny borikivaviny eo amin'ny tahom-boaloboka tsara; nanasa ny fitafiany tamin'ny divay izy, ary ny akanjony tamin'ny ranom-boaloboka."
+  },
+  {
+    "id": 1916,
+    "book_number": 2,
+    "book_name": "Eksodosy",
+    "chapter": 14,
+    "verse_number": 26,
+    "corrected_verse": "Ary hoy Jehovah tamin'i Mosesy: Ahinjiro eo ambonin'ny ranomasina ny tananao, mba hikatonan'ny rano amin'ny Egyptiana mbamin'ny kalesiny sy ny mpitaingin-tsoavaliny."
+  },
+  {
+    "id": 1946,
+    "book_number": 2,
+    "book_name": "Eksodosy",
+    "chapter": 15,
+    "verse_number": 25,
+    "corrected_verse": "Ary dia nitaraina tamin'i Jehovah izy, ka dia nanehoan'i Jehovah hazo anankiray, ary rehefa natsipiny tao anatin'ny rano izany, dia tonga mamy ny rano. Tao no nanomezan'i Jehovah lalàna sy fitsipika ho azy, ary tao no nizahany toetra azy,"
+  },
+  {
+    "id": 2048,
+    "book_number": 2,
+    "book_name": "Eksodosy",
+    "chapter": 19,
+    "verse_number": 21,
+    "corrected_verse": "Ary hoy Jehovah tamin'i Mosesy: Midìna, ka pepero ny olona, fandrao hisisika hankao amin'i Jehovah izy mba hijery ka hahafatesana maro."
+  },
+  {
+    "id": 2349,
+    "book_number": 2,
+    "book_name": "Eksodosy",
+    "chapter": 29,
+    "verse_number": 12,
+    "corrected_verse": "ary analao ny ran'ny vantotr'ombilahy, dia atenteno eo amin'ny tandroky ny alitara amin'ny fanondronao, ary ny rà sisa rehetra dia aidino eo am-bodin'ny alitara;"
+  },
+  {
+    "id": 2370,
+    "book_number": 2,
+    "book_name": "Eksodosy",
+    "chapter": 29,
+    "verse_number": 33,
+    "corrected_verse": "Ary izy no hihinana izany zavatra izany, izay nanaovana fanavotana ho azy, mba hanokanana sy hanamasinana azy; fa ny vahiny tsy mba hihinana, satria masina izany."
+  },
+  {
+    "id": 3105,
+    "book_number": 3,
+    "book_name": "Levitikosy",
+    "chapter": 13,
+    "verse_number": 52,
+    "corrected_verse": "Dia hodorana ny fitafiana, na izay ho an'ny tenany, na izay ho fahany, na volon'ondry, na rongony, na izay zavatra natao tamin'ny hoditra, izay misy aretina; fa habokana mafy izany, ka dia hodorana amin'ny afo."
+  },
+  {
+    "id": 3120,
+    "book_number": 3,
+    "book_name": "Levitikosy",
+    "chapter": 14,
+    "verse_number": 8,
+    "corrected_verse": "Ary ilay hodiovina dia hanasa ny fitafiany sy hanaratra ny volon-dohany rehetra ary handro amin'ny rano, ka hadio izy; ary rehefa afaka izany dia hankeo an-toby izy, kanefa hitoetra eo ivelan'ny lainy hafitoana."
+  },
+  {
+    "id": 4000,
+    "book_number": 4,
+    "book_name": "Nomery",
+    "chapter": 10,
+    "verse_number": 11,
+    "corrected_verse": "Ary tamin'ny andro faharoa-polo tamin'ny volana faharoa, tamin'ny taona faharoa, no niakaran'ny rahona niala teo ambonin'ny tabernakelin'ny Vavolombelona."
+  },
+  {
+    "id": 4567,
+    "book_number": 4,
+    "book_name": "Nomery",
+    "chapter": 27,
+    "verse_number": 12,
+    "corrected_verse": "Ary hoy Jehovah tamin'i Mosesy: Miakara amin'ity tendrombohitra Abarima ity, ka tazano ny tany izay omeko ny Zanak'Isiraely."
+  },
+  {
+    "id": 4596,
+    "book_number": 4,
+    "book_name": "Nomery",
+    "chapter": 28,
+    "verse_number": 18,
+    "corrected_verse": "Amin'ny andro voalohany dia hisy fivoriana masina; aza manao taozavatra akory;"
+  },
+  {
+    "id": 4712,
+    "book_number": 4,
+    "book_name": "Nomery",
+    "chapter": 31,
+    "verse_number": 47,
+    "corrected_verse": "ny antsasany an'ny Zanak'Isiraely dia nanalan'i Mosesy iray isan-dimam-polo, na olona, na biby fiompy, ka nomeny ho an'ny Levita mpitandrina ny anjara-raharaha momba ny tabernakelin'i Jehovah izany, araka izay efa nandidian'i Jehovah an'i Mosesy."
+  },
+  {
+    "id": 5024,
+    "book_number": 5,
+    "book_name": "Deoteronomia",
+    "chapter": 4,
+    "verse_number": 19,
+    "corrected_verse": "Ary andrao raha miandrandra ny lanitra ianao ka mahita ny masoandro sy ny volana ary ny kintana, dia izay rehetra eny amin'ny lanitra, dia ho voataona ianao hiankohoka eo anatrehany sy hanompo azy, izay nataon'i Jehovah Andriamanitrao ho anjaran'ny firenena rehetra ambanin'ny lanitra."
+  },
+  {
+    "id": 5205,
+    "book_number": 5,
+    "book_name": "Deoteronomia",
+    "chapter": 10,
+    "verse_number": 21,
+    "corrected_verse": "Izy no fideranao, ary Izy no Andriamanitrao, Izay efa nanao ireo zavatra lehibe sy mahatahotra ireo taminao, izay efa hitan'ny masonao."
+  },
+  {
+    "id": 6555,
+    "book_number": 7,
+    "book_name": "Mpitsara",
+    "chapter": 2,
+    "verse_number": 13,
+    "corrected_verse": "Eny, nahafoy an'i Jehovah izy ka nanompo an'i Bala sy Astarta."
+  },
+  {
+    "id": 6793,
+    "book_number": 7,
+    "book_name": "Mpitsara",
+    "chapter": 9,
+    "verse_number": 42,
+    "corrected_verse": "Ary nony ampitson'iny dia nivoaka ho any an-tsaha ny olona; ary nolazaina tamin'i Abimeleka izany,"
+  },
+  {
+    "id": 7104,
+    "book_number": 7,
+    "book_name": "Mpitsara",
+    "chapter": 21,
+    "verse_number": 5,
+    "corrected_verse": "Ary hoy ny Zanak'Isiraely: Iza amin'ny firenen'Isiraely rehetra no tsy niakatra teo amin'ny fiangonana hanatona an'i Jehovah? fa efa nisy fianianana lehibe ny amin'izay tsy niakatra ho any amin'i Jehovah tany Mizpa hoe: Hatao maty tokoa izy."
+  },
+  {
+    "id": 7211,
+    "book_number": 9,
+    "book_name": "1 Samoela",
+    "chapter": 1,
+    "verse_number": 2,
+    "corrected_verse": "Ary nampirafy izy, Hana no anaran'ny vadiny anankiray, ary Penina no anaran'ny anankiray; ary Penina nanan-janaka, fa Hana kosa tsy mba nanana."
+  },
+  {
+    "id": 7497,
+    "book_number": 9,
+    "book_name": "1 Samoela",
+    "chapter": 13,
+    "verse_number": 15,
+    "corrected_verse": "Dia niainga Samoela ka niala tany Gilgala hankany Gibean'ny Benjamina. Ary Saoly nandamina ny olona izay teo aminy, dia tokony ho enin-jato lahy ireny."
+  },
+  {
+    "id": 7579,
+    "book_number": 9,
+    "book_name": "1 Samoela",
+    "chapter": 15,
+    "verse_number": 22,
+    "corrected_verse": "Fa hoy Samoela: Sitrak'i Jehovah moa ny fanatitra dorana sy ny fanatitra hafa alatsa-drà mihoatra noho ny mihaino ny feon'i Jehovah? He! ny manaraka no tsara noho ny fanatitra, ary ny mihaino no tsara noho ny saboran'ondrilahy."
+  },
+  {
+    "id": 7664,
+    "book_number": 9,
+    "book_name": "1 Samoela",
+    "chapter": 17,
+    "verse_number": 49,
+    "corrected_verse": "Ary natsofok'i Davida tao an-kitapo ny tanany, ka naka vato tao izy, ka dia nalefany tamin'ny antsamotady, ka nahavoa ilay Filistina tamin'ny handriny, ary nilentika tamin'ny handriny ny vato, dia potraka niankohoka tamin'ny tany izy."
+  },
+  {
+    "id": 7713,
+    "book_number": 9,
+    "book_name": "1 Samoela",
+    "chapter": 19,
+    "verse_number": 10,
+    "corrected_verse": "Ary Saoly nikendry hamely an'i Davida tamin'ny lefona, ka hataony miboroaka mihatra amin'ny rindrina; fa izy nisoroka niala teo anatrehan'i Saoly, ka ny rindrina no voan'ny lefona; dia nandositra Davida ka afaka tamin'iny alina iny ihany."
+  },
+  {
+    "id": 7931,
+    "book_number": 9,
+    "book_name": "1 Samoela",
+    "chapter": 27,
+    "verse_number": 3,
+    "corrected_verse": "Ary nitoetra tao amin'i Akisy tao Gata Davida, dia izy sy ny olony, samy nomban'ny ankohonany avy, ary Davida mbamin'ny vadiny roa, dia Ahinoama Jezirelita sy Abigaila Karmelita, ilay novinadin'i Nabala."
+  },
+  {
+    "id": 8470,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 17,
+    "verse_number": 23,
+    "corrected_verse": "Ary nony hitan'i Ahitofela fa tsy narahina ny hevitra nataony, dia nasiany lasely ny borikiny, dia niainga izy dia nody tany an-tranony tany an-tanànany; ary nanafatra ny ankohonany izy, dia nanaton-tena, ka dia maty ary nalevina tao amin'ny fasan-drainy."
+  },
+  {
+    "id": 8525,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 19,
+    "verse_number": 17,
+    "corrected_verse": "Ary Simey, zanak'i Gera, Benjamita avy any Bahorina, dia nidodododo nidina araka tamin'ny lehilahy amin'ny Joda hitsena an'i Davida mpanjaka."
+  },
+  {
+    "id": 8535,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 19,
+    "verse_number": 27,
+    "corrected_verse": "Fa hoy izy: Ry mpanjaka tompoko, nofitahin'ny mpanompoko aho; Fa hoy izaho mpanomponao : Hanisy lasely ny boriky aho hitaingenako ka hankany amin'ny mpanjaka; fa malemy tongotra ny mpanomponao."
+  },
+  {
+    "id": 8536,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 19,
+    "verse_number": 28,
+    "corrected_verse": "Nefa nendrikendrehiny tamin'ny mpanjaka tompoko izaho mpanomponao; fa ny mpanjaka tompoko dia toy Ilay Anjelin'Andriamanitra; koa ataovy izay sitrakao."
+  },
+  {
+    "id": 8546,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 19,
+    "verse_number": 38,
+    "corrected_verse": "Trarantitra ianao, aoka aho mpanomponao hody ihany ka ho faty any amin'ny vohitro ao akaikin'ny fasan'ikaky sy ineny. Fa indro Kimama mpanomponao; aoka izy no hiaraka amin'ny mpanjaka tompoko, ary ataovy aminy izay sitrakao."
+  },
+  {
+    "id": 8551,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 19,
+    "verse_number": 43,
+    "corrected_verse": "Ary ny lehilahy rehetra amin'ny Joda dia namaly ny lehilahy amin'ny Isiraely hoe: Satria havanay akaiky ny mpanjaka; ka ahoana no mahatezitra anareo amin'izany? Nandany ny mpanjaka va izahay? Na nanome zavatra anay akory va izy?"
+  },
+  {
+    "id": 8696,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 24,
+    "verse_number": 6,
+    "corrected_verse": "Dia tonga tany Gileada izy, tany amin'ny tanin'i Tatima-hodsy, dia tonga tany Danajana izy, ka nanodidina hatrany Sidona, "
+  },
+  {
+    "id": 8698,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 24,
+    "verse_number": 8,
+    "corrected_verse": "Ary nony efa nitety ny tany rehetra izy, dia tonga tany Jerosalema, rehefa afaka sivy volana sy roa-polo andro."
+  },
+  {
+    "id": 8714,
+    "book_number": 10,
+    "book_name": "2 Samoela",
+    "chapter": 24,
+    "verse_number": 24,
+    "corrected_verse": "Ary hoy ny mpanjaka tamin'i Araona: Tsia, fa hovidiko aminao mihitsy araka izay tokom-bidiny ireo; fa tsy hanatitra fanatitra dorana ho an'i Jehovah Andriamanitro amin'izay azoko fotsiny aho. Ka dia novidin'i Davida sekely volafotsy dimam-polo ny famoloana sy ny omby."
+  },
+  {
+    "id": 8721,
+    "book_number": 11,
+    "book_name": "1 Mpanjaka",
+    "chapter": 1,
+    "verse_number": 6,
+    "corrected_verse": "Ary ny rainy tsy mbola niteny mafy azy atory hatrizay niainany nanao hoe: Nahoana ianao no manao toy izao ? sady lehilahy tsara tarehy tokoa izy; ary izy no natera-dreniny nanarakaraka an'i Absaloma."
+  },
+  {
+    "id": 8835,
+    "book_number": 11,
+    "book_name": "1 Mpanjaka",
+    "chapter": 3,
+    "verse_number": 21,
+    "corrected_verse": "Ary nony nifoha maraina hampinono ny zanako aho, indro fa maty izy; kanjo rehefa nofantariko sy nony maraina, dia indro fa tsy ny zanako naterako."
+  },
+  {
+    "id": 8882,
+    "book_number": 11,
+    "book_name": "1 Mpanjaka",
+    "chapter": 5,
+    "verse_number": 20,
+    "corrected_verse": "Koa dia mba asaovy misy mikapa hazo sedera any Libanona ho ahy; ary ny vahoakako hiaraka amin'ny vahoakanao, ka ny karaman'ny vahoakanao dia homeko anao araka izay hotononinao; fa fantatrao fa tsy mba misy olona aty aminay mahay mikapa hazo tahaka ny Sidoniana."
+  },
+  {
+    "id": 9220,
+    "book_number": 11,
+    "book_name": "1 Mpanjaka",
+    "chapter": 14,
+    "verse_number": 4,
+    "corrected_verse": "Dia nanao araka izany ny vadin'i Jeroboama ka niainga nankany Silo izy, dia nankao an-tranon'i Ahia. Ary Ahia tsy nahita, fa efa pahina ny masony noho ny fahanterany."
+  },
+  {
+    "id": 9392,
+    "book_number": 11,
+    "book_name": "1 Mpanjaka",
+    "chapter": 19,
+    "verse_number": 7,
+    "corrected_verse": "Ary avy fanindroany indray Ilay Anjelin'i Jehovah, dia nanohina azy ka nanao hoe: Mifohaza, ka homàna, fa lavitra loatra ny halehanao."
+  },
+  {
+    "id": 10673,
+    "book_number": 13,
+    "book_name": "1 Tantara",
+    "chapter": 11,
+    "verse_number": 1,
+    "corrected_verse": "Ary dia nivory teo amin'i Davida tao Hebrona ny Isiraely rehetra ka nanao hoe: Indreto izahay, fa taolanao sy nofonao."
+  },
+  {
+    "id": 10969,
+    "book_number": 13,
+    "book_name": "1 Tantara",
+    "chapter": 22,
+    "verse_number": 6,
+    "corrected_verse": "Ary niantso an'i Solomona zanany izy ka nandidy azy hanao trano ho an'i Jehovah, andriamanitry ny Isiraely,"
+  },
+  {
+    "id": 11196,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 1,
+    "verse_number": 4,
+    "corrected_verse": "Fa ny fiaran'Andriamanitra efa nampakarin'i Davida avy tany Kiriata-jearima ho ao amin'izay efa namboariny ho azy; fa efa nanorina lay ho azy tany Jerosalema izy."
+  },
+  {
+    "id": 11226,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 2,
+    "verse_number": 16,
+    "corrected_verse": "Ary Solomona nanisa ny lehilahy hafa firenena rehetra izay nonina tamin'ny tanin'ny Isiraely araka ny nanisan'i Davida rainy azy, ary ny isany dia enin-jato amby telo arivo amby dimy alina sy iray hetsy."
+  },
+  {
+    "id": 11244,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 3,
+    "verse_number": 17,
+    "corrected_verse": "Ary ny andry natsangany teo anoloan'ny tempoly, ny iray tamin'ny ankavanana, ary ny iray tamin'ny ankavia; ary ny anaran'ny teo amin'ny ankavanana nataony hoe Jakina, ary ny anaran'ny teo amin'ny ankavia kosa nataony hoe Boaza.  "
+  },
+  {
+    "id": 11253,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 4,
+    "verse_number": 9,
+    "corrected_verse": "Ary nanao ny kianjan'ny mpisorona sy ny kianja lehibe sy ny lela-vavahadin'ny kianja izy, ary nopetahany takela-barahina ny lela-vavahady."
+  },
+  {
+    "id": 11254,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 4,
+    "verse_number": 10,
+    "corrected_verse": "Ary ny tavin-drano lehibe nataony tamin'ny ankavanana, dia teo amin'ny atsimo-atsinanana. "
+  },
+  {
+    "id": 11264,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 4,
+    "verse_number": 20,
+    "corrected_verse": "ary ny fanaovan-jiro sy ny lela fanaovan-jirony mba hampirehetina eo anoloan'ny efitra anatiny araka ny fanao dia samy volamena tsara;"
+  },
+  {
+    "id": 11275,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 5,
+    "verse_number": 9,
+    "corrected_verse": "Ary lava ny bao, ka hita ny lohany, raha eo amin'ny fiara eo anoloan'ny efitra anatiny nefa tsy hita eny ivelany, ary mbola ao mandraka androany izy."
+  },
+  {
+    "id": 11297,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 6,
+    "verse_number": 17,
+    "corrected_verse": "Koa ankehitriny, ry Jehovah, Andriamanitry ny Isiraely o, mifona aminao aho, aoka ho to anie ny teninao, izay nolazainao tamin'i Davida mpanomponao."
+  },
+  {
+    "id": 11319,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 6,
+    "verse_number": 39,
+    "corrected_verse": "dia henoy any an-danitra fonenanao ny fivavany sy ny fifonany ka omeo rariny izy; ary mamelà ny olonao izay efa nanota taminao."
+  },
+  {
+    "id": 11320,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 6,
+    "verse_number": 40,
+    "corrected_verse": "Ankehitriny, ry Andriamanitro o, mifona aminao aho, aoka hihiratra ny masonao, ary aoka ny sofinao hihaino ny vavaka atao amin'ity fitoerana ity."
+  },
+  {
+    "id": 11330,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 7,
+    "verse_number": 8,
+    "corrected_verse": "Ary tamin'izany andro izany Solomona sy ny Isiraely rehetra izay teo aminy, dia ny fiangonana lehibe hatrany akaikin'i Hamata ka hatramin'ny lohasahan-driak'i Egypta, dia nitandrina ny andro firavoravoana hafitoana."
+  },
+  {
+    "id": 11332,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 7,
+    "verse_number": 10,
+    "corrected_verse": "Ary nony tamin'ny andro fahatelo amby roa-polo tamin'ny volana fahafito dia nampodiny ho any an-dainy avy ny olona, ary faly sy ravoravo izy noho ny soa nataon'i Jehovah tamin'i Davida sy Solomona ary ny Isiraely olony."
+  },
+  {
+    "id": 11333,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 7,
+    "verse_number": 11,
+    "corrected_verse": "Toy izany no nahavitan'i Solomona ny tranon'i Jehovah sy ny lapan'andriana, ary samy nataon'i Solomona lavorary avokoa izay rehetra efa voaheviny hatao tao an-tranon'i Jehovah sy tao an-dapany."
+  },
+  {
+    "id": 11345,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 8,
+    "verse_number": 1,
+    "corrected_verse": "Ary nony afaka ny roa-polo taona nanaovan'i Solomona ny tranon'i Jehovah sy ny lapan'ny tenany,"
+  },
+  {
+    "id": 11363,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 9,
+    "verse_number": 1,
+    "corrected_verse": "Ary ny mpanjakavavin'i Sheba, rehefa nahare ny lazan'i Solomona, dia tonga tany Jerosalema hizaha toetra azy tamin'ny fanontaniana sarotra, ary maro be ny mpanaraka azy, sady be koa ny rameva izay nitondra zava-manitra sy volamena sesehena ary vato soa; ary rehefa tonga tao amin'i Solomona izy, dia niresaka taminy ny amin'izay rehetra tao am-pony."
+  },
+  {
+    "id": 11544,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 18,
+    "verse_number": 4,
+    "corrected_verse": "Ary hoy Josafata tamin'ny mpanjakan'ny Isiraely; Masïna ianao, anontanio aloha ny tenin'i Jehovah."
+  },
+  {
+    "id": 11561,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 18,
+    "verse_number": 21,
+    "corrected_verse": "Dia hoy izy: Hivoaka aho ka ho tonga fanahy mandainga ao am-bavan'ny mpaminaniny rehetra. Dia hoy indray Jehovah: Ho voataonanao ihany izy, ka hahatanteraka ianao; mivoaha ary, ka ataovy izany."
+  },
+  {
+    "id": 11564,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 18,
+    "verse_number": 24,
+    "corrected_verse": "Dia hoy Mikaia: Indro, ho hitanao izany amin'ny andro hidiranao ao amin'ny efi-trano anatiny hierenao. "
+  },
+  {
+    "id": 11568,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 18,
+    "verse_number": 28,
+    "corrected_verse": "Dia niakatra nankany Ramota-gileada ny mpanjakan'ny Isiraely sy Josafata, mpanjakan'ny Joda."
+  },
+  {
+    "id": 11569,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 18,
+    "verse_number": 29,
+    "corrected_verse": "Ary hoy ny mpanjakan'ny Isiraely tamin'i Josafata: Hody olon-kafa aho ka hitsarapaka any anatin'ny ady, fa ianao kosa dia miakanjoa ny akanjonao ihany. Dia nody olon-kafa ny mpanjakan'ny Isiraely ka nitsarapaka tany anatin'ny ady."
+  },
+  {
+    "id": 11711,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 25,
+    "verse_number": 9,
+    "corrected_verse": "Fa hoy Amazia tamin'ilay lehilahin'Andriamanitra: Ka hataontsika ahoana ny amin'ny talenta zato nomeko ny miaramilan'ny Isiraely? Ary hoy ilay lehilahin'Andriamanitra taminy: Jehovah mahay manome anao mihoatra lavitra noho izany."
+  },
+  {
+    "id": 11732,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 26,
+    "verse_number": 2,
+    "corrected_verse": "Izy no nanamboatra an'i Elota ka nampody azy ho an'ny Joda indray, rehefa lasa nodimandry any amin'ny razany ny mpanjaka."
+  },
+  {
+    "id": 11746,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 26,
+    "verse_number": 16,
+    "corrected_verse": "Ary nony nahery izy, dia niavonavona ny fony, ka nanao izay ratsy izy, fa nivadika tamin'i Jehovah Andriamaniny ka niditra tao amin'ny tempolin'i Jehovah handoro ditin-kazo manitra teo amin'ny alitara fandoroana ditin-kazo manitra."
+  },
+  {
+    "id": 11772,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 28,
+    "verse_number": 10,
+    "corrected_verse": "Ary ankehitriny ny taranak'i Joda sy Jerosalema dia kasainareo handevozina ho andevolahinareo sy ho andevovavinareo; ka moa ianareo ireo va tsy mba manan-keloka amin'i Jehovah Andriamanitrareo koa?"
+  },
+  {
+    "id": 11778,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 28,
+    "verse_number": 16,
+    "corrected_verse": "tamin'izany andro izany Ahaza mpanjaka naniraka tany amin'ny mpanjakan'i Asyria nangataka ny any hanampy azy."
+  },
+  {
+    "id": 11884,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 32,
+    "verse_number": 11,
+    "corrected_verse": "Tsy Hezekia ihany va no manambosy anareo hanolo-tena ho faty mosary sy hetaheta ka manao hoe: Jehovah Andriamanitsika hamonjy antsika amin'ny tanan'ny mpanjakan'i Syria?"
+  },
+  {
+    "id": 11886,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 32,
+    "verse_number": 13,
+    "corrected_verse": "Tsy fantatrareo va izay nataoko, dia izaho sy ny razako, tamin'ny firenena rehetra tany amin'ny tany hafa ? Moa ireny andriamanitry ny firenena tany amin'ny tany hafa ireny va nisy nahavonjy ny taniny akory tamin'ny tanako?"
+  },
+  {
+    "id": 11890,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 32,
+    "verse_number": 17,
+    "corrected_verse": "sady nanoratra taratasy hihaika an'i Jehovah, Andriamanitry ny Isiraely, sy hiteny ratsy Azy ka nanao hoe: Tahaka ny tsy nahavonjen'ireny andriamanitry ny firenena tany amin'ny tany hafa ny olony tamin'ny tanako no tsy hahavonjen'ny Andriamanitr'i Hezekia ny olony koa amin'ny tanako."
+  },
+  {
+    "id": 11908,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 33,
+    "verse_number": 2,
+    "corrected_verse": "Ary nanao izay ratsy eo imason'i Jehovah izy tahaka ny fahavetavetan'ny firenena izay noroahin'i Jehovah tsy ho eo anoloan'ny Zanak'isiraely."
+  },
+  {
+    "id": 11909,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 33,
+    "verse_number": 3,
+    "corrected_verse": "Fa namboariny indray ny fitoerana avo, izay efa noravan'i Hezekia rainy, ka nanangana alitara ho an'ireo Bala izy sady nanao Aseraha sy niankohoka teo anatrehan'izay rehetra eny amin'ny lanitra ka nanompo azy"
+  },
+  {
+    "id": 11926,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 33,
+    "verse_number": 20,
+    "corrected_verse": "Ary Manase lasa nodimandry any amin'ny razany, dia nalevina tao an-tranony; ary Amona zanany no nanjaka nandimby azy."
+  },
+  {
+    "id": 11971,
+    "book_number": 14,
+    "book_name": "2 Tantara",
+    "chapter": 35,
+    "verse_number": 7,
+    "corrected_verse": "Ary ny vahoaka izay vory teo dia nomen'i Josia zanak'ondry sy zanak'osy, telo alina no isany hatao Paska avokoa ireo sy omby telo arivo; avy tamin'ny fananan'ny mpanjaka ireo."
+  },
+  {
+    "id": 12344,
+    "book_number": 16,
+    "book_name": "Nehemia",
+    "chapter": 3,
+    "verse_number": 19,
+    "corrected_verse": "Ary manarakaraka ireo dia nisy namboarin'i Ezera, zanak'i Jesoa, komandin'i Mizpa, teo amin'ny tandrifin'ny fiakarana ho any amin'ny trano fitehirizam-piadiana eo amin'ny fiolahana."
+  },
+  {
+    "id": 12394,
+    "book_number": 16,
+    "book_name": "Nehemia",
+    "chapter": 5,
+    "verse_number": 14,
+    "corrected_verse": "Ary koa, hatramin'ny andro nanendrena ahy ho governora amin'ny tany Joda, dia hatramin'ny taona faharoa-polo ka hatramin'ny taona faharoa amby telo-polo nanjakan'i Artaksersesy, dia roa ambin'ny folo taona izay, izaho sy ny rahalahiko tsy mba nihinana izay anjara-fiveloman'ny governora."
+  },
+  {
+    "id": 12529,
+    "book_number": 16,
+    "book_name": "Nehemia",
+    "chapter": 9,
+    "verse_number": 20,
+    "corrected_verse": "Ary ny Fanahinao tsara dia nomenao azy koa hampianatra azy, ary tsy niaro ny mananao tamin'ny vavany Ianao sady nanome azy rano, raha nangetaheta izy;"
+  },
+  {
+    "id": 12616,
+    "book_number": 16,
+    "book_name": "Nehemia",
+    "chapter": 11,
+    "verse_number": 30,
+    "corrected_verse": "sy Zanoa sy Adolama sy ny zana-bohiny, sy tany Lakisy sy ny sahany, ary tany Azeka sy ny zana-bohiny. Ary nonina hatrany Beri-sheba ka hatramin'ny lohasahan'i Himona izy."
+  },
+  {
+    "id": 12732,
+    "book_number": 17,
+    "book_name": "Estera",
+    "chapter": 2,
+    "verse_number": 10,
+    "corrected_verse": "Nefa Estera tsy mbola nilaza ny fireneny na ny fianakaviany, satria nofeperan'i Mordekay mba tsy hilaza izany izy."
+  },
+  {
+    "id": 12942,
+    "book_number": 18,
+    "book_name": "Joba",
+    "chapter": 4,
+    "verse_number": 14,
+    "corrected_verse": "Dia azon-tahotra sy hovitra aho, ka nampihorohoro ny taolako rehetra izany."
+  },
+  {
+    "id": 13329,
+    "book_number": 18,
+    "book_name": "Joba",
+    "chapter": 20,
+    "verse_number": 5,
+    "corrected_verse": "Dia vetivety foana ny firavoravoan'ny ratsy fanahy, ary indray mipi-maso monja ny fifalian'ny mpihatsaravelatsihy?"
+  },
+  {
+    "id": 13432,
+    "book_number": 18,
+    "book_name": "Joba",
+    "chapter": 23,
+    "verse_number": 15,
+    "corrected_verse": "Toa Izany no mampangovitra ahy eo anatrehany; Raha misaintsaina izany aho, dia matahotra Azy."
+  },
+  {
+    "id": 13433,
+    "book_number": 18,
+    "book_name": "Joba",
+    "chapter": 23,
+    "verse_number": 16,
+    "corrected_verse": "Fa Andriamanitra no mandreraka ny foko, ary ny Tsitoha no mampangovitra ahy;"
+  },
+  {
+    "id": 13634,
+    "book_number": 18,
+    "book_name": "Joba",
+    "chapter": 32,
+    "verse_number": 8,
+    "corrected_verse": "Kanefa ny fanahy izay ao anatin'ny zanak'olombelona sy ny fofonain'ny Tsitoha no mahahendry azy. "
+  },
+  {
+    "id": 13956,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 3,
+    "verse_number": 1,
+    "corrected_verse": "Jehovah ô, akory izato hamaroan'ny mampahory ahy! Maro no mitsangana hanohitra ahy."
+  },
+  {
+    "id": 14058,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 11,
+    "verse_number": 1,
+    "corrected_verse": "Jehovah no ialofako; ahoana no anaovanareo amin'ny fanahiko hoe: mandosira ho any an-tendrombohitrareo toy ny voron-kely? "
+  },
+  {
+    "id": 14117,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 18,
+    "verse_number": 1,
+    "corrected_verse": "mamiko indrindra Ianao, Jehovah Heriko o."
+  },
+  {
+    "id": 14248,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 24,
+    "verse_number": 9,
+    "corrected_verse": "Asandrato ny lohanareo, ry vavahady; ary manandrata ny lohanareo, ry varavarana fahagola, mba hidiran'ny Mpanjakan'ny voninahitra. "
+  },
+  {
+    "id": 14250,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 25,
+    "verse_number": 1,
+    "corrected_verse": "Aminao, Jehovah ô, no anandratako ny fanahiko."
+  },
+  {
+    "id": 14272,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 26,
+    "verse_number": 1,
+    "corrected_verse": "Tsarao aho, Jehovah ô, fa mandeha amin'ny fahamarinako aho; ary Jehovah no itokiako, ka tsy miahanahana aho."
+  },
+  {
+    "id": 14284,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 27,
+    "verse_number": 1,
+    "corrected_verse": "Jehovah no fahazavako sy famonjena ahy; iza no hatahorako? Jehovah no fiarovana mafy ho an'ny aiko; iza no hangovitako?"
+  },
+  {
+    "id": 14298,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 28,
+    "verse_number": 1,
+    "corrected_verse": "Ianao no antsoiko, Jehovah ô, Ry vatolampiko o, aza manentsin-tadiny amiko; fandrao, raha mangina amiko Ianao, dia ho tahaka izay midina any an-davaka aho."
+  },
+  {
+    "id": 14354,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 32,
+    "verse_number": 1,
+    "corrected_verse": "Maskila. Sambatra ny olona izay voavela ny helony sy voasarona ny fahotany."
+  },
+  {
+    "id": 14409,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 35,
+    "verse_number": 1,
+    "corrected_verse": "Jehovah ô, mamalia izay manana ady amiko; miadia amin'izay mamely ahy."
+  },
+  {
+    "id": 14429,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 35,
+    "verse_number": 21,
+    "corrected_verse": "Dia mitanatana vava amiko izy ka manao hoe: Hià! sakoa izay! efa hitan'ny masonay."
+  },
+  {
+    "id": 14437,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 36,
+    "verse_number": 1,
+    "corrected_verse": ", mpanompon'i Jehovah. Ny ota milaza ato am-poko ny amin'ny ratsy fanahy hoe: tsy misy fahatahorana an'Andriamanitra ao aminy. "
+  },
+  {
+    "id": 14449,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 37,
+    "verse_number": 1,
+    "corrected_verse": "Aoka tsy hirehitra ny fahatezeranao noho ny amin'ny mpanao ratsy; Ary aza mialona ny mpanao meloka;"
+  },
+  {
+    "id": 14460,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 37,
+    "verse_number": 12,
+    "corrected_verse": "Ny ratsy fanahy manao hevi-dratsy hamelezana ny marina ka mihidy vazana aminy."
+  },
+  {
+    "id": 14767,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 57,
+    "verse_number": 1,
+    "corrected_verse": "Ho an'ny mpiventy hira. Al-tasheth. Miktama nataon'i Davida tamin'ny nandosirany an'i Saoly tao anaty zohy. Mamindrà fo amiko. Andriamanitra o, mamindrà fo amiko; fa Ianao no ialofan'ny fanahiko; eny, ao amin'ny aloky ny elatrao no ialofako, mandra-pahalasan'ny loza."
+  },
+  {
+    "id": 14789,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 59,
+    "verse_number": 1,
+    "corrected_verse": "Afaho amin'ny fahavaloko aho, Andriamanitro o; asondroty eo amin'ny avo aho tsy ho azon'izay miodina amiko."
+  },
+  {
+    "id": 14970,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 70,
+    "verse_number": 1,
+    "corrected_verse": "Ho fampahatsiarovana. Andriamanitra o, faingàna hanafaka ahy; Jehovah ô, faingàna hamonjy ahy."
+  },
+  {
+    "id": 15000,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 72,
+    "verse_number": 2,
+    "corrected_verse": "Hitsara ny olonao amin'ny fahamarinana izy. Ary ny malahelonao amin'ny fahitsiana. "
+  },
+  {
+    "id": 15002,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 72,
+    "verse_number": 4,
+    "corrected_verse": "Hitsara ny olona ory izy sy hamonjy ny zanaky ny mahantra ary hanorotoro ny mpampahory. "
+  },
+  {
+    "id": 15003,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 72,
+    "verse_number": 5,
+    "corrected_verse": "Hatahotra anao ny olona, raha mbola maharitra koa ny masoandro sy ny volana hatramin'ny taranaka fara mandimby. "
+  },
+  {
+    "id": 15004,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 72,
+    "verse_number": 6,
+    "corrected_verse": "Hidina tahaka ny ranonorana amin'ny saha voajinja izy, tahaka ny ranonorana mivatravatra amin'ny tany. "
+  },
+  {
+    "id": 15005,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 72,
+    "verse_number": 7,
+    "corrected_verse": "Ny marina hitrebona amin'ny androny, ary ho be ny fiadanana mandra-paha-tsy hisy volana intsony. "
+  },
+  {
+    "id": 15321,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 88,
+    "verse_number": 15,
+    "corrected_verse": "Ory aho ka efa ho faty hatramin'ny fahazazako; Raha itambesaran'ny fampitahoranao aho, dia very hevitra;"
+  },
+  {
+    "id": 15427,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 93,
+    "verse_number": 3,
+    "corrected_verse": "Manandra-peo ny riaka, Jehovah ô, Eny, manandra-peo ny riaka; Mampirohondrohona ny feony ny riaka."
+  },
+  {
+    "id": 15487,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 97,
+    "verse_number": 11,
+    "corrected_verse": "Ny fahazavana no voafafy ho an'ny marina, Ary ny fifaliana ho an'ny mahitsy fo."
+  },
+  {
+    "id": 15515,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 101,
+    "verse_number": 4,
+    "corrected_verse": "Ny fo maditra hiala amiko; Tsy hankasitraka izay ratsy aho, "
+  },
+  {
+    "id": 15610,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 105,
+    "verse_number": 6,
+    "corrected_verse": "Ry taranak'i Abrahama mpanompony, Dia ianareo olom-boafidiny, taranak'i Jakoba."
+  },
+  {
+    "id": 15698,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 107,
+    "verse_number": 1,
+    "corrected_verse": "Miderà an'i Jehovah, fa tsara Izy. Fa mandrakizay ny famindram-pony."
+  },
+  {
+    "id": 15754,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 109,
+    "verse_number": 1,
+    "corrected_verse": "RY Andriamanitra fiderako o, aza mangina Ianao,"
+  },
+  {
+    "id": 16230,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 138,
+    "verse_number": 1,
+    "corrected_verse": "Hidera Anao amin'ny foko rehetra aho; Eo anatrehan'ireo andriamanitra no hankalazako Anao."
+  },
+  {
+    "id": 16296,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 143,
+    "verse_number": 5,
+    "corrected_verse": "Mahatsiaro ny andro fahiny aho Ary misaina ny asanao rehetra; Ny asan'ny tananao no eritreretiko."
+  },
+  {
+    "id": 16300,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 143,
+    "verse_number": 9,
+    "corrected_verse": "Jehovah ô, vonjeo amin'ny fahavaloko aho; Ao aminao no iereko."
+  },
+  {
+    "id": 16304,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 144,
+    "verse_number": 1,
+    "corrected_verse": "Isaorana anie Jehovah Vatolampiko, Izay mampianatra ny tanako hamely Sy ny rantsan-tanako hiady,"
+  },
+  {
+    "id": 16331,
+    "book_number": 19,
+    "book_name": "Salamo",
+    "chapter": 145,
+    "verse_number": 13,
+    "corrected_verse": "Fanjakana mandrakizay ny fanjakanao, Ary hihatra amin'ny taranaka fara mandimby ny fanapahanao."
+  },
+  {
+    "id": 16527,
+    "book_number": 20,
+    "book_name": "Ohabolana",
+    "chapter": 5,
+    "verse_number": 12,
+    "corrected_verse": "Dia hanao hoe ianao: Nahoana re no nankahala famaizana aho? Ary nahoana no naniratsira fananarana ny foko,"
+  },
+  {
+    "id": 16540,
+    "book_number": 20,
+    "book_name": "Ohabolana",
+    "chapter": 6,
+    "verse_number": 2,
+    "corrected_verse": "Ka voafandriky ny teny naloaky ny vavanao ianao Sady voasaringotry ny teny naloaky ny vavanao,"
+  },
+  {
+    "id": 16603,
+    "book_number": 20,
+    "book_name": "Ohabolana",
+    "chapter": 8,
+    "verse_number": 3,
+    "corrected_verse": "Eo anilan'ny vavahady, amin'ny fidirana ho ao an-tanàna, Sy eo anaty vavahady no iantsoany mafy hoe:"
+  },
+  {
+    "id": 17359,
+    "book_number": 21,
+    "book_name": "Mpitoriteny",
+    "chapter": 3,
+    "verse_number": 2,
+    "corrected_verse": "Ao ny andro ahaterahana, ary ao ny andro ahafatesana; Ao ny andro ambolena, ary ao ny andro anongotana ny nambolena;"
+  },
+  {
+    "id": 17435,
+    "book_number": 21,
+    "book_name": "Mpitoriteny",
+    "chapter": 7,
+    "verse_number": 8,
+    "corrected_verse": "Tsara ny iafaran'ny raharaha noho ny iandohany; tsara ny mahari-po noho ny miavonavom-panahy."
+  },
+  {
+    "id": 17618,
+    "book_number": 22,
+    "book_name": "Tononkiran’i Solomona",
+    "chapter": 6,
+    "verse_number": 6,
+    "corrected_verse": "Ny nifinao dia tahaka ny ondrivavy andiany, izay miakatra avy eo amin'ny fampandroana; Samy kambana avy ireo. Fa tsy misy tsy mana-namana,"
+  },
+  {
+    "id": 17623,
+    "book_number": 22,
+    "book_name": "Tononkiran’i Solomona",
+    "chapter": 6,
+    "verse_number": 11,
+    "corrected_verse": "Lasa nidina nankany an-tsaha tsara hazo aho, hijerijery ny zava-maitso an-dohasaha, hizaha raha mitsimoka ny voaloboka sy mamony ny ampongaben-danitra. "
+  },
+  {
+    "id": 17633,
+    "book_number": 22,
+    "book_name": "Tononkiran’i Solomona",
+    "chapter": 7,
+    "verse_number": 9,
+    "corrected_verse": "Hoy izaho: Hananika ny rofia aho ka handray ny rantsany; Ary aoka ny nononao ho toy ny sampam-boaloboka amiko, ary ny fofonainao ho tahaka ny an'ny poma, "
+  },
+  {
+    "id": 17675,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 1,
+    "verse_number": 23,
+    "corrected_verse": "Ny lehibenao dia mpiodina sady naman'ny mpangalatra; Samy tia kolikoly sy fatra-nitady tambitamby avokoa izy rehetra; Ny kamboty tsy mba omeny rariny, Ary ny adin'ny mpitondratena tsy avelany ho entina eo anatrehany."
+  },
+  {
+    "id": 17680,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 1,
+    "verse_number": 28,
+    "corrected_verse": "Ary samy haringana avokoa ny mpiodina sy ny mpanota, Eny, ho lany ritra izay mahafoy an'i Jehovah."
+  },
+  {
+    "id": 17906,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 13,
+    "verse_number": 2,
+    "corrected_verse": "Manangàna faneva eo an-tampon'izay tendrombohitra mangadihady ianareo, manandrata feo hiantso azy, hofay tanana izy hiditra amin'ny vavahadin'ireo mpanapaka."
+  },
+  {
+    "id": 18059,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 22,
+    "verse_number": 9,
+    "corrected_verse": "Ary hitanareo fa banga be ihany ny tanànan'i Davida; Ary mamory ny rano avy amin'ny kamory ambany ianareo."
+  },
+  {
+    "id": 18061,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 22,
+    "verse_number": 11,
+    "corrected_verse": "Mihady lavaka famorian-drano eo anelanelan'ny manda roa ianareo handehan'ny rano avy amin'ny kamory ela; Kanefa tsy mijery Izay efa nanomana izao zavatra izao ianareo, na mahita Izay nikasa azy hatry ny fony ela."
+  },
+  {
+    "id": 18063,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 22,
+    "verse_number": 13,
+    "corrected_verse": "Kanjo he izato hafaliana sy haravoravoana! Sy famonoana omby sy ondry aman'osy ary fihinanan-kena sy fisotroan-divay! Aoka isika hihinana sy hisotro, fa rahampitso dia ho faty."
+  },
+  {
+    "id": 18068,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 22,
+    "verse_number": 18,
+    "corrected_verse": "Dia hovolavolainy toy ny kodiarana ka hakodiadiany ho any amin'ny tany malalaka; Dia any no hahafaty anao, ary ho any koa ny kalesin'ny voninahitrao ry ilay henatry ny mpianakavin'ny tomponao."
+  },
+  {
+    "id": 18074,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 22,
+    "verse_number": 24,
+    "corrected_verse": "Ary hahantona eo aminy ny havesatry ny voninahitry ny mpianakavin-drainy rehetra, izay zanaka sy tera-drainy rehetra, dia ny fanaka madinika rehetra hatramin'ny lovia ka hatramin'ny siny samy hafa rehetra."
+  },
+  {
+    "id": 18205,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 29,
+    "verse_number": 14,
+    "corrected_verse": "Dia, indro koa, mbola hanao zava-mahagaga amin'ity firenena ity Aho, dia zava-mahagaga sy mahatalanjona; Ka ho foana ny fahendren'ny olon-kendriny, ary tsy ho hita ny fahalalan'ny mazava sainany."
+  },
+  {
+    "id": 18297,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 33,
+    "verse_number": 20,
+    "corrected_verse": "Tsinjovy Ziona, dia ilay tanàna fihaonantsika tamin'ny fotoam-pivavahana; Ny masonao hahita an'i Jerosalema ho fonenana mandry fahizay, dia lay izay tsy hafindra, ny tsimatra aminy tsy hongotana mandrakizay, ary tsy hisy hotapahina ny kofehiny."
+  },
+  {
+    "id": 18438,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 40,
+    "verse_number": 20,
+    "corrected_verse": "Izay malahelo ka tsy manan-katerina dia mifidy hazo tsy mety ho lo ary mitady mpiasa mahay zavatra mba hamorona sarin-javatra voasokitra izay tsy hihozongozona."
+  },
+  {
+    "id": 18493,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 42,
+    "verse_number": 15,
+    "corrected_verse": "Hataoko mariry ny tendrombohitra sy ny havoana, hataoko maina ny ahitra rehetra ao aminy, ary ny ony ho tonga nosy, Ary hataoko tankina ny farihy."
+  },
+  {
+    "id": 18520,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 43,
+    "verse_number": 17,
+    "corrected_verse": "Izay mamoaka ny kalesy sy ny soavaly, ny miaramila sy ny lehilahy mahery miara-mandry avokoa izy ka tsy hiarina intsony, mitsilopilopy izy, ka dia maty toy ny jiro:"
+  },
+  {
+    "id": 18557,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 44,
+    "verse_number": 26,
+    "corrected_verse": "Ary mahatò ny tenin'ny mpanompoko sy mahatanteraka ny saina atolotry ny irako, ary manao amin'i Jerosalema hoe: Honenana ianao, sy amin'ny tanànan'ny Joda hoe: Hatsangana ianareo, ka hamboariko izay rava eo,  "
+  },
+  {
+    "id": 18567,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 45,
+    "verse_number": 8,
+    "corrected_verse": "Manateteva avy any ambony, ry lanitra, ary aoka ny habakabaka hampilatsaka fahamarinana; Aoka ny tany hisokatra, Ary aoka ho vokatra avy amin'ireo ny famonjena; Ary aoka hitsimoka miaraka amin'izay ny fahamarinana. Izaho Jehovah no efa nahatonga izany."
+  },
+  {
+    "id": 18570,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 45,
+    "verse_number": 11,
+    "corrected_verse": "Izao no lazain'i Jehovah ny Iray Masin'ny Isiraely, dia ny namorona azy: Ny amin'ny zavatra ho avy no anontanio Ahy; ary ny zanako sy ny asan'ny tanako dia aoka ho adidiko ihany."
+  },
+  {
+    "id": 18590,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 46,
+    "verse_number": 6,
+    "corrected_verse": "Izay mandraraka volamena avy ao an-kitapo sy mandanja volafotsy amin'ny mizana dia manakarama mpanefy volamena mba hanao izany ho andriamanitra, hiankohofany sy hivavahany."
+  },
+  {
+    "id": 18624,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 48,
+    "verse_number": 12,
+    "corrected_verse": "Mihainoa Ahy, ry Jakoba, sy ry Isiraely izay nantsoiko: Tsy miova Aho; Izaho no voalohany, ary Izaho koa no farany."
+  },
+  {
+    "id": 18672,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 51,
+    "verse_number": 1,
+    "corrected_verse": "Mihainoa Ahy, ianareo izay miezaka mitady fahamarinana, dia izay mitady an'i Jehovah: Tsarovy ny vatolampy izay nakana anareo sy ny ati-lavaka izay nihadiana anareo. "
+  },
+  {
+    "id": 18675,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 51,
+    "verse_number": 4,
+    "corrected_verse": "Mihainoa Ahy, ry vahoakako, ary atongilano amiko ny sofinareo, ry oloko; fa hisy lalàna hivoaka avy amiko, ary ny fitsipiko dia hampitoeriko ho fanazavana ny firenena."
+  },
+  {
+    "id": 18679,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 51,
+    "verse_number": 8,
+    "corrected_verse": "Fa ny kalalao hihinana azy tahaka ny fihinan-damba, ary ny lolo fotsy hihinana azy tahaka ny fihinam-bolon'ondry; fa ny fahamarinako haharitra mandrakizay, ary ny famonjeko hihatra amin'ny taranaka fara-mandimby."
+  },
+  {
+    "id": 18682,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 51,
+    "verse_number": 11,
+    "corrected_verse": "Eny, ny navotan'i Jehovah hiverina ka hankany Ziona amin'ny fihobiana, ary ny fifaliana mandrakizay no ho eny an-dohany; hahazo fifaliana sy faharavoravoana izy, ka dia handositra ny alahelo sy ny fisentoana."
+  },
+  {
+    "id": 18813,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 59,
+    "verse_number": 15,
+    "corrected_verse": "Eny, tsy eo ny fahamarinana; ary izay mifady ny ratsy dia hoatra ny manolo-tena hobabon'ny sasany. Ary hitan'i Jehovah ny tsy fisian'ny rariny, ka nataony fa ratsy izany;"
+  },
+  {
+    "id": 18844,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 61,
+    "verse_number": 3,
+    "corrected_verse": "Hanolotra ho an'ny malahelo ao Ziona, eny, hanome azy hamama ho solon'ny lavenona, sy diloilo fifaliana ho solon'ny fahalahelovana, ary fitafiana fiderana ho solon'ny fanahy reradreraka, mba hanaovana azy hoe Hazon'ny fahamarinana, nambolen'i Jehovah ho fampisehoam-boninahitra."
+  },
+  {
+    "id": 18862,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 62,
+    "verse_number": 10,
+    "corrected_verse": "Mivoaha, mivoaha amin'ny vavahady, amboary ny lalana halehan'ny olona; Asandrato ho avo ny lalambe; Esory ny vato eny aminy; Manangàna faneva ho tazan'ny firenena."
+  },
+  {
+    "id": 18869,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 63,
+    "verse_number": 5,
+    "corrected_verse": "Nitsinjo Aho, nefa tsy nisy hamonjy, ary talanjona Aho, satria tsy nisy hanohana, ka dia ny sandriko ihany no nanao famonjena ho Ahy, ary ny fahavinirako no nanohana Ahy."
+  },
+  {
+    "id": 18895,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 65,
+    "verse_number": 1,
+    "corrected_verse": "Notadiavin'izay tsy naniry Aho sy hitan'izay tsy nitady; hoy Izaho tamin'ny firenena izay tsy nantsoina tamin'ny anarako: Inty Aho! Inty Aho!"
+  },
+  {
+    "id": 18933,
+    "book_number": 23,
+    "book_name": "Isaia",
+    "chapter": 66,
+    "verse_number": 14,
+    "corrected_verse": "Dia hahita izany ianareo, ka ho faly ny fonareo, Ary ny taolanareo ho tsara fitombo tahaka ny ahi-maitso; Ary ny tanan'i Jehovah dia ataony fantatry ny mpanompony, Fa ho tezitra amin'ny fahavalony kosa Izy."
+  },
+  {
+    "id": 19483,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 23,
+    "verse_number": 2,
+    "corrected_verse": "Koa izao no lazain'i Jehovah, Andriamanitry ny Isiraely, ny amin'ireo mpiandry izay miandry ny oloko: Ianareo efa nampihahaka ny ondriko sy nandronjindronjina azy, fa tsy nanolokolo azy; Koa, indro, hovaliako ianareo noho ny faharatsian'ny ataonareo, hoy Jehovah"
+  },
+  {
+    "id": 19709,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 31,
+    "verse_number": 21,
+    "corrected_verse": "Manangàna famantaran-dàlana ho anao ianao, manorena tsangam-bato; Saino tsara ny lalana efa voavoatra, dia ilay lalana efa nalehanao; Miverena indray, ry Isiraely virijina, miverena indray ho amin'ireto tanànanao ireto."
+  },
+  {
+    "id": 19711,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 31,
+    "verse_number": 23,
+    "corrected_verse": "Izao no lazain'i Jehovah, Tompon'ny maro, Andriamanitry ny Isiraely: Mbola holazaina indray ao amin'ny tanin'ny Joda sy ao amin'ny tanànany izao teny izao, raha hampodiko avy amin'ny fahababoany izy: Hotahin'i Jehovah anie ianao, ry fonenan'ny fahamarinana, sy ry tendrombohitry ny fahamasinana!"
+  },
+  {
+    "id": 19826,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 35,
+    "verse_number": 6,
+    "corrected_verse": "Fa hoy kosa ireo: Tsy hisotro divay izahay; fa Jonadaba, zanak'i Rekaba, razanay efa nanafatra anay hoe: Aza mba misotro divay ianareo na ny taranakareo mandrakizay;"
+  },
+  {
+    "id": 19863,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 36,
+    "verse_number": 24,
+    "corrected_verse": "Nefa tsy natahotra akory ireo na nandriatra ny fitafiany, na ny mpanjaka, na ny mpanompony rehetra, izay efa nandre izany teny rehetra izany."
+  },
+  {
+    "id": 19947,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 40,
+    "verse_number": 9,
+    "corrected_verse": "Ary Gedalia, zanak'i Ahikama, zanak'i Safana, dia nianiana taminy sy tamin'ny olom-peheziny nanao hoe: Aza matahotra hanompo ny Kaldeana; monena amin'ny tany, ka manompoa ny mpanjakan'i Babylona, dia hahita soa ianareo."
+  },
+  {
+    "id": 20037,
+    "book_number": 24,
+    "book_name": "Jeremia",
+    "chapter": 44,
+    "verse_number": 30,
+    "corrected_verse": "Izao no lazain'i Jehovah: Indro, Farao-hofra, mpanjakan'i Egypta, hatolotro eo an-tanan'ny fahavalony sy eo an-tanan'izay mitady ny ainy, toy ny efa nanolorako an'i Zedekia, mpanjakan'ny Joda, ho eo an-tanan'i Nebokadnezara, mpanjakan'i Babylona, izay fahavalony nitady ny ainy."
+  },
+  {
+    "id": 20498,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 2,
+    "verse_number": 9,
+    "corrected_verse": "Ary hitako fa, indro, nisy tanana nahinjitra tamiko, ary, indro, nisy horonan-taratasy eny aminy."
+  },
+  {
+    "id": 20499,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 2,
+    "verse_number": 10,
+    "corrected_verse": "Dia novelariny teo anatrehako izany, ary nisy soratra teo anatiny sy teo ivohony; ary fitomaniana sy fidradradradrana loza no voasoratra teo."
+  },
+  {
+    "id": 20541,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 4,
+    "verse_number": 15,
+    "corrected_verse": "Dia hoy Izy tamiko: Indro, tain'omby no omeko anao hisolo ny diky, ka izany no hataonao kitay hanendasanao ny mofonao."
+  },
+  {
+    "id": 20560,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 5,
+    "verse_number": 17,
+    "corrected_verse": "Dia hanaterako mosary sy biby masiaka eo aminareo, izay hahalany fara anareo; ary handroso eo aminao ny areti-mandringana sy ny fandatsahan-drà, ary hataoko mihatra aminao ny sabatra. Izaho Jehovah no niteny izany"
+  },
+  {
+    "id": 20564,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 6,
+    "verse_number": 4,
+    "corrected_verse": "Ary hokororohina ny alitaranareo, ary hosimbana ny tsangan-kazonareo ho an'ny masoandro; ary hataoko mitsitra eo anoloan'ny sampinareo ny fatinareo; "
+  },
+  {
+    "id": 20612,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 8,
+    "verse_number": 11,
+    "corrected_verse": "Ary nisy olona fito-polo lahy, isan'ny loholon'ny taranak'Isiraely, nitsangana teo anoloan'ireo, ary Jazania, zanak'i Safana, nitsangana teo afovoany, samy nitondra ny loviany fandoroana ditin-kazo manitra teny an-tanany avy, ary ny setroky ny ditin-kazo manitra dia nidonaka."
+  },
+  {
+    "id": 20622,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 9,
+    "verse_number": 3,
+    "corrected_verse": "Ary ny voninahitr'Andriamanitry ny Isiraely efa niakatra niala teo amin'ny kerobima, izay nitoerany, ho eo amin'ny tokonam-baravaran'ny trano, ary Izy niantso ilay olona nitafy rongony fotsy izay nisy fitoeran-dranomaintin'ny mpanoratra teo am-balahany."
+  },
+  {
+    "id": 20849,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 18,
+    "verse_number": 3,
+    "corrected_verse": "Raha velona koa Aho, hoy Jehovah Tompo, tsy hisy hanaovanareo izany ohabolana izany ao amin'ny Isiraely intsony."
+  },
+  {
+    "id": 20855,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 18,
+    "verse_number": 9,
+    "corrected_verse": "ary mandeha araka ny lalàko sy ny mitandrina ny fitsipiko ka manao izay marina, dia marina izy ka ho velona tokoa, hoy Jehovah Tompo."
+  },
+  {
+    "id": 20933,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 20,
+    "verse_number": 41,
+    "corrected_verse": "Hankasitrahako toy ny hanitra ankasitrahana ianareo amin'ny hitondrako anareo mivoaka avy any amin'ny firenena sy ny hamoriako anareo avy any amin'ny tany samy hafa nampielezana anareo, ka dia hiseho ho masina eo anatrehan'ny jentilisa Aho amin'ny hataoko aminareo."
+  },
+  {
+    "id": 20949,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 21,
+    "verse_number": 13,
+    "corrected_verse": "Dia tonga tamiko ny tenin'i Jehovah nanao hoe:"
+  },
+  {
+    "id": 20987,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 22,
+    "verse_number": 14,
+    "corrected_verse": "Hahatoha va ny fonao, na hahazaka va ny tananao, amin'ny andro izay hisehoako aminao? Izaho Jehovah no nilaza sady hahatanteraka izany. "
+  },
+  {
+    "id": 21031,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 23,
+    "verse_number": 27,
+    "corrected_verse": "Ary hatsahatro ny fahavetavetanao, dia ny fijangajanganao izay fanaonao hatrany amin'ny tany Egypta, fa tsy handrandrainao aminy intsony ny masonao, sady tsy hotsarovanao intsony Egypta."
+  },
+  {
+    "id": 21034,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 23,
+    "verse_number": 30,
+    "corrected_verse": "Ho avy aminao izany zavatra izany noho ny nijangajanganao nanaraka ny jentilisa sy noho ny nandotoanao tena tamin'ny sampiny."
+  },
+  {
+    "id": 21080,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 24,
+    "verse_number": 27,
+    "corrected_verse": "amin'izany andro izany dia hisokatra miaraka amin'ny an'ilay mandositra ny vavanao, ka dia hiteny ianao, fa tsy ho moana intsony; ary ho famantarana mahagaga aminy ianao; ka dia ho fantany fa Izaho no Jehovah."
+  },
+  {
+    "id": 21098,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 26,
+    "verse_number": 1,
+    "corrected_verse": "Ary tamin'ny andro voalohany amin'ny volana tamin'ny taona fahiraika ambin'ny folo dia tonga tamiko ny tenin'Jehovah nanao hoe:"
+  },
+  {
+    "id": 21109,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 26,
+    "verse_number": 12,
+    "corrected_verse": "Hobaboiny ny harenao, horobainy ny rantonao, harodany ny mandanao, horavany ny tranonao mahafinantra; ary ny vatonao sy ny hazonao sy ny vovokao dia hataony any amin'ny rano."
+  },
+  {
+    "id": 21113,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 26,
+    "verse_number": 16,
+    "corrected_verse": "Dia hidina hiala amin'ny seza fiandrianany ireo andrianan'ny ranomasina rehetra ka hiala akanjo sy hanaisotra ny fitafiany misoratsoratra; Hovotra no hitafiany, ka hipetraka amin'ny tany izy; ary hangovitra isaky ny indray mipi-maso izy ka ho gaga anao."
+  },
+  {
+    "id": 21158,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 28,
+    "verse_number": 4,
+    "corrected_verse": "Ny fahendrenao sy ny fahalalanao no nahazoanao harena. Eny, izany no nahazoanao volamena sy volafotsy ho ao amin'ny rakitrao"
+  },
+  {
+    "id": 21276,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 32,
+    "verse_number": 31,
+    "corrected_verse": "Ireny dia ho hitan'i Farao, ka dia hionona izy ny amin'ny vahoakany maro be. Voatrabaky ny sabatra i Farao mbamin'ny miaramilany rehetra, hoy Jeehovah Tompo."
+  },
+  {
+    "id": 21281,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 33,
+    "verse_number": 4,
+    "corrected_verse": "nefa tsy mety taitra izay mandre ny feon'ny anjomara, dia tonga ny sabatra ka mandripaka azy, dia ho eo an-dohany ihany ny ràny."
+  },
+  {
+    "id": 21332,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 34,
+    "verse_number": 22,
+    "corrected_verse": "dia hovonjeko ny ondriko, ary tsy ho babo intsony izy, ary hotsaraiko ny adin'ny ondry amin'ny ondry namany."
+  },
+  {
+    "id": 21336,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 34,
+    "verse_number": 26,
+    "corrected_verse": "Ary izy sy ny manodidina ny havoanako dia hataoko fitahiana, ary hampilatsaka ranonorana amin'ny fotoany Aho, dia ranonoram-pitahiana mivatravatra."
+  },
+  {
+    "id": 21354,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 35,
+    "verse_number": 13,
+    "corrected_verse": "Ary nanao teny miavonavona namely Ahy ianareo sy nanamaro ny teninareo namely Ahy; efa reko izany."
+  },
+  {
+    "id": 21356,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 35,
+    "verse_number": 15,
+    "corrected_verse": "Toy ny nifalianao ny amin'ny lovan'ny taranak'Isiraely, satria nofoanana ireny, dia toy izany kosa no hataoko aminao: Ho foana ianao, ry tendrombohitra Seàra sy Edoma rehetra; Ka dia ho fantatra fa Izaho no Jehovah."
+  },
+  {
+    "id": 21430,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 38,
+    "verse_number": 8,
+    "corrected_verse": "Rehefa afaka andro maro, dia hotadiavina ianao, raha mby any am-parany, dia ho tonga any amin'ny tany izay novonjena ka afaka tamin'ny sabatra ianao, dia tany novorina avy tany amin'ny firenena maro, any an-tendrombohitry ny Isiraely, izay efa lao hatry ny ela; fa efa navoaka avy tany amin'ny firenena izy, ka dia mandry fahizay izy rehetra."
+  },
+  {
+    "id": 21445,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 38,
+    "verse_number": 23,
+    "corrected_verse": "Ka dia hasehoko ny fahalehibiazako sy ny fahamasinako; ary ho fantatra eo imason'ny firenena maro Aho: ka dia ho fantany fa Izaho no Jehovah."
+  },
+  {
+    "id": 21457,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 39,
+    "verse_number": 12,
+    "corrected_verse": "Ary fito volana mipaka no handevenan'ny taranak'Isiraely azy, hanadiovany ny tany."
+  },
+  {
+    "id": 21494,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 40,
+    "verse_number": 20,
+    "corrected_verse": "Ary norefesiny koa ny lavany sy ny sakan'ny vavahadin'ny kianja ivelany, izay nanatrika ny avaratra."
+  },
+  {
+    "id": 21523,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 40,
+    "verse_number": 49,
+    "corrected_verse": "Roa-polo hakiho ny lavan'ny lavarangana fidirana, ary iraika ambin'ny folo hakiho ny sakany; ary ambaratonga no fiakarana ao; ary nisy tongo-bato teo anilan'ny tolana, iray tamin'ny lafiny iray, ary iray tamin'ny lafiny iray koa."
+  },
+  {
+    "id": 21565,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 42,
+    "verse_number": 16,
+    "corrected_verse": "Norefesiny tamin'ny volotara fandrefesana ny lafiny atsinanana, ka indiman-jaton'ny volotara manodidina, raha amin'ny volatara fandrefesana."
+  },
+  {
+    "id": 21570,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 43,
+    "verse_number": 1,
+    "corrected_verse": "Ary nentiny ho any amin'ny vavahady aho, dia ilay vavahady manatrika ny atsinanana."
+  },
+  {
+    "id": 21577,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 43,
+    "verse_number": 8,
+    "corrected_verse": "tamin'ny nametrahany ny tokonam-baravaran'ireny teo anilan'ny tokonam-baravarako sy ny tolanan'ireny teo anilan'ny tolanako, rindrina ihany no teo anelanelako sy ireny, dia nolotoiny tamin'ny fahavetavetana nataony ny anarako masina; ka dia nahalany ringana azy tamin'ny fahatezerako Aho."
+  },
+  {
+    "id": 21585,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 43,
+    "verse_number": 16,
+    "corrected_verse": "Roa ambin'ny folo hakiho ny lavan'ny fatana, ary roa ambin'ny folo hakiho koa ny sakany, ary efa-joro sokera izy,"
+  },
+  {
+    "id": 21599,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 44,
+    "verse_number": 3,
+    "corrected_verse": "Kanefa kosa ny mpanjaka no mahazo mipetraka ao hihinan-kanina eo anatrehan'i Jehovah, satria mpanjaka izy; amin'ny lalana mankamin'ny lavarangan'ny vavahady no hidirany, ary amin'ny lalana nalehany ihany koa no hivoahany."
+  },
+  {
+    "id": 21615,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 44,
+    "verse_number": 19,
+    "corrected_verse": "Ary raha mivoaka ho any amin'ny kianja ivelany hankany amin'ny olona izy, dia hesoriny ilay fitafiana nentiny nanao fanompoam-pivavahana, ka havelany ao amin'ny efitrano masina, ary hitafy fitafiana hafa izy, fa tsy hanamasina ny olona amin'ireny fitafiany ireny."
+  },
+  {
+    "id": 21629,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 45,
+    "verse_number": 2,
+    "corrected_verse": "Ary io dia hanalana efa-joro sokera ho tany masina, dimam-jato ny lavany, ary dimanjato koa ny sakany; ary ho dimam-polo hakiho ny tany manodidina azy."
+  },
+  {
+    "id": 21672,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 46,
+    "verse_number": 20,
+    "corrected_verse": "Dia hoy izy tamiko: Io no fitoerana fahandroan'ny mpisorona ny fanati-panonerana sy ny fanatitra noho ny ota sy hanendasany ny fanatitra hohanina, mba tsy hitondrany azy mivoaka ho any amin'ny kianja ivelany hanamasina ny olona."
+  },
+  {
+    "id": 21710,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 48,
+    "verse_number": 11,
+    "corrected_verse": "Ho an'ny mpisorona izay nohamasinina avy amin'ny taranak'i Zadoka izany, dia ireo nitandrina ny nasaiko notandremana ka tsy nivily tamin'ny nivilian'ny zanak'Isiraely, tahaka ny nivilian'ny Levita,"
+  },
+  {
+    "id": 21715,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 48,
+    "verse_number": 16,
+    "corrected_verse": "Ary izao no ohany: Ny avaratra ho diman-jato amby efatra arivo, ary ny atsimo ho diman-jato amby efatra arivo, ary ny atsinanana ho diman-jato amby efatra arivo, ary ny andrefana ho diman-jato amby efatra arivo."
+  },
+  {
+    "id": 21720,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 48,
+    "verse_number": 21,
+    "corrected_verse": "Ary ho an'ny mpanjaka ny sisa an-daniny roa amin'ny anjara masina voatokana sy ny zara-tany momba ny tanàna; mifanolotra amin'ny dimy arivo amby roa alina amin'ny anjara voatokana hatramin'ny faritany atsinanana, ary mifanolotra amin'ny dimy arivo amby roa alina hatramin'ny faritany andrefana, mifanolotra amin'ireo anjaran'ny sasany, ho an'ny mpanjaka izany; ary ny anjara masina voatokana sy ny trano fitoerana masina no ho eo afovoany."
+  },
+  {
+    "id": 21721,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 48,
+    "verse_number": 22,
+    "corrected_verse": "Ary hatramin'ny zara-tanin'ny Levita sy ny zara-tany momba ny tanàna, sy ao ampovoan'ny an'ny mpanjaka, anelanelan'ny faritanin'i Joda sy Benjamina, dia ho an'ny mpanjaka izany."
+  },
+  {
+    "id": 21728,
+    "book_number": 26,
+    "book_name": "Ezekiela",
+    "chapter": 48,
+    "verse_number": 29,
+    "corrected_verse": "Izany no tany hozarainareo amin'ny filokana ho an'ny firenen'Isiraely ho lovany, ary izany no ho anjarany avy, hoy Jehovah Tompo."
+  },
+  {
+    "id": 21825,
+    "book_number": 27,
+    "book_name": "Daniel",
+    "chapter": 3,
+    "verse_number": 21,
+    "corrected_verse": "Dia nafatotra ireo lehilahy ireo, nefa mbola teny aminy ihany ny lobany sy ny akanjony ary ny kapôtiny mbamin'ny fitafiany hafa koa, ka dia natsipy teo anatin'ny lafaoro nisy afo mirehitra izy;"
+  },
+  {
+    "id": 21887,
+    "book_number": 27,
+    "book_name": "Daniel",
+    "chapter": 5,
+    "verse_number": 16,
+    "corrected_verse": "ary efa reko ny aminao, fa ianao no mahalaza hevitra sy mahay mampiseho hevitra miafina; koa raha mahavaky ny soratra sy mampahafantatra ahy ny heviny ianao, dia hampiakanjoina volomparasy, sy hasiana rojo volamena ny vozonao, ary ho isan'ny mpanapaka telo lahy amin'ny fanjakana ianao."
+  },
+  {
+    "id": 21931,
+    "book_number": 27,
+    "book_name": "Daniel",
+    "chapter": 7,
+    "verse_number": 1,
+    "corrected_verse": "Tamin'ny taona voalohany nanjakan'i Belsazara, mpanjakan'i Babylona, dia nanonofy Daniela sady nahita fahitana tao am-pandriany, ary nosoratany ny nofy, ka nambarany ny fotopototry ny teny. "
+  },
+  {
+    "id": 21972,
+    "book_number": 27,
+    "book_name": "Daniel",
+    "chapter": 8,
+    "verse_number": 14,
+    "corrected_verse": "Ary hoy izy tamiko: Telon-jato sy roa arivo andro; ary nony afaka izany, dia amin'izay vao hodiovina ny fitoerana masina.  "
+  },
+  {
+    "id": 21987,
+    "book_number": 27,
+    "book_name": "Daniel",
+    "chapter": 9,
+    "verse_number": 2,
+    "corrected_verse": "tamin'ny taona voalohany nanjakany, izaho Daniela nahalala tamin'ny boky ny isan'ny taona nampahafantarin'ny tenin'i Jehovah an'i Jeremia mpaminany, izay hahataperan'ny fito-polo taona amin'ny hahafoanan'i Jerosalema."
+  },
+  {
+    "id": 22065,
+    "book_number": 27,
+    "book_name": "Daniel",
+    "chapter": 11,
+    "verse_number": 32,
+    "corrected_verse": "Ary izay mivadika ny fanekena dia hambosiny amin'ny fandroboana; fa ny olona izay mahalala an'Andriamaniny kosa dia hifikitra amin'izany ka hankatò azy. "
+  },
+  {
+    "id": 22097,
+    "book_number": 28,
+    "book_name": "Hosea",
+    "chapter": 1,
+    "verse_number": 6,
+    "corrected_verse": "Ary nanan'anaka indray ravehivavy ka nitera-bavy. Dia hoy Jehovah taminy: Ataovy Lô-rohama no anarany; fa tsy hamindra fo amin'ny taranak'Isiraely intsony Aho, eny, tsy havelako mihitsy ny helony.  "
+  },
+  {
+    "id": 22099,
+    "book_number": 28,
+    "book_name": "Hosea",
+    "chapter": 1,
+    "verse_number": 8,
+    "corrected_verse": "Ary rehefa notazana Lô-rohama, dia nanan'anaka indray reniny ka nitera-dahy."
+  },
+  {
+    "id": 22100,
+    "book_number": 28,
+    "book_name": "Hosea",
+    "chapter": 1,
+    "verse_number": 9,
+    "corrected_verse": "Dia hoy Jehovah: Ataovy Lô-amy no anarany; fa ianareo tsy oloko, ary Izaho tsy ho Andriamanitrareo.  "
+  },
+  {
+    "id": 22125,
+    "book_number": 28,
+    "book_name": "Hosea",
+    "chapter": 2,
+    "verse_number": 25,
+    "corrected_verse": "Dia hafafiko ho Ahy amin'ny tany izy; Ary hamindra fo amin'i Lô-rohama Aho sady hanao amin'i Lô-amy hoe: Oloko ianao; Ary izy kosa hanao hoe: Andriamanitro Ianao. "
+  },
+  {
+    "id": 22367,
+    "book_number": 30,
+    "book_name": "Amosa",
+    "chapter": 1,
+    "verse_number": 6,
+    "corrected_verse": "Izao no lazain'i Jehovah: Noho ny fahotana telon'i Gaza, eny, efatra aza, dia tsy havelako izy, satria lasany ho babo avokoa ny olona hatolony ho any Edoma; "
+  },
+  {
+    "id": 22419,
+    "book_number": 30,
+    "book_name": "Amosa",
+    "chapter": 4,
+    "verse_number": 12,
+    "corrected_verse": "Koa izao no hataoko aminao, ry Isiraely, satria hanao izany aminao Aho, dia miomàna hihaona amin'Andriamanitrao, ry Isiraely o."
+  },
+  {
+    "id": 22422,
+    "book_number": 30,
+    "book_name": "Amosa",
+    "chapter": 5,
+    "verse_number": 2,
+    "corrected_verse": "Lavo Isiraely virijina ka tsy hahatsangana intsony; Nazera tamin'ny taniny izy, ka tsy misy manangana azy."
+  },
+  {
+    "id": 22430,
+    "book_number": 30,
+    "book_name": "Amosa",
+    "chapter": 5,
+    "verse_number": 10,
+    "corrected_verse": "Halàny eo am-bavahady izay mananatra, ary ataony ho fahavetavetana izay miteny ny marina. "
+  },
+  {
+    "id": 22485,
+    "book_number": 30,
+    "book_name": "Amosa",
+    "chapter": 8,
+    "verse_number": 7,
+    "corrected_verse": "Jehovah nianiana tamin'ny Reharehan'i Jakoba ka nanao hoe: Tsy hisy hohadinoiko mandrakizay ny asany na dia iray akory aza!"
+  },
+  {
+    "id": 22738,
+    "book_number": 35,
+    "book_name": "Habakoka",
+    "chapter": 1,
+    "verse_number": 10,
+    "corrected_verse": "Izy manakora ny mpanjaka, Ary ihomehezany ny mpanapaka; Ny tanàna mimanda rehetra dia ihomehezany, Ka dia manandratra tovon-tany izy ka mahafaka azy. "
+  },
+  {
+    "id": 23099,
+    "book_number": 39,
+    "book_name": "Malakia",
+    "chapter": 1,
+    "verse_number": 13,
+    "corrected_verse": "Hoy koa ianareo: Tsy mba hasasarana lahy ! ary ikifinanareo izany, hoy Jehovah, Tompon'ny maro; entinareo ny nalaina an-keriny sy ny mandringa sy ny marary, ka dia aterinareo ho fanatitra; moa ta-handray izany amin'ny tenanareo va Aho ? hoy Jehovah."
+  },
+  {
+    "id": 23115,
+    "book_number": 39,
+    "book_name": "Malakia",
+    "chapter": 2,
+    "verse_number": 15,
+    "corrected_verse": "Moa tsy nisy anankiray nanao izany va, nefa mbola nanam-panahy ihany ? Fa inona anefa no notadiavin'ilay anankiray? Taranaka araka an'Andriamanitra. Koa dia tandremo ny fanahinareo, ary aoka tsy hisy hamitaka ny vadin'ny fahatanorany. "
+  },
+  {
+    "id": 23139,
+    "book_number": 39,
+    "book_name": "Malakia",
+    "chapter": 3,
+    "verse_number": 22,
+    "corrected_verse": "Tsarovinareo ny làlan'i Mosesy mpanompoko, izay nandidiako azy tao Horeba ny amin'ny Isiraely rehetra, dia ny didy sy ny fitsipika."
+  },
+  {
+    "id": 23235,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 5,
+    "verse_number": 4,
+    "corrected_verse": "Sambatra ny ory; fa izy no hampifaliana."
+  },
+  {
+    "id": 23319,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 7,
+    "verse_number": 6,
+    "corrected_verse": "Aza omena ny alika izay masina; ary aza atsipy eo anoloan'ny kisoa ny vatosoanareo, fandrao hanitsaka azy izy, dia hifotitra ka hamiravira anareo. "
+  },
+  {
+    "id": 23326,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 7,
+    "verse_number": 13,
+    "corrected_verse": "Midira amin'ny vavahady èty ianareo; fa lehibe ny vavahady, ary malalaka ny làlana izay mankany amin'ny fahaverezana, ka maro ny miditra any."
+  },
+  {
+    "id": 23389,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 9,
+    "verse_number": 13,
+    "corrected_verse": "Fa mandehana ka mianara izay hevitry ny teny hoe: Famindram-po no sitrako, fa tsy fanatitra alatsa-drà (Hosea 6:6) fa tsy tonga hiantso ny marina Aho, fa ny mpanota."
+  },
+  {
+    "id": 23831,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 21,
+    "verse_number": 8,
+    "corrected_verse": "Ary ny ankabeazan'ny vahoaka dia namelatra ny lambany teny an-dàlana; ary ny sasany nanapaka rantsan-kazo, dia nahahany teny an-dàlana koa izany."
+  },
+  {
+    "id": 23919,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 23,
+    "verse_number": 4,
+    "corrected_verse": "Eny, mamehy entana sady mavesatra no sarotra entina izy ka manaingina izany eo amin'ny soroky ny olona, nefa ny tenany tsy mety manetsika izany na dia amin'ny rantsan-tanany anankiray aza."
+  },
+  {
+    "id": 23920,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 23,
+    "verse_number": 5,
+    "corrected_verse": "Ary ny asany rehetra dia ataony mba ho hitan'ny olona; fa ataony lehibe ny filakiterany, ary ataony vaventy ny somotraviaviny."
+  },
+  {
+    "id": 24037,
+    "book_number": 40,
+    "book_name": "Matio",
+    "chapter": 25,
+    "verse_number": 32,
+    "corrected_verse": "ary ny firenena rehetra hangonina eo anatrehany, dia hanavaka azy izy , tahaka ny mpiandry ondry manavaka ny ondry amin'ny osy; "
+  },
+  {
+    "id": 24278,
+    "book_number": 41,
+    "book_name": "Marka",
+    "chapter": 2,
+    "verse_number": 21,
+    "corrected_verse": "Tsy misy olona manjaitra tapa-damba tsy mbola voalòna amin'ny lamba tonta; fa raha izany, ny vaovao izay natampina dia handrovitra ny tonta, ka hitatra ny triatra."
+  },
+  {
+    "id": 24570,
+    "book_number": 41,
+    "book_name": "Marka",
+    "chapter": 9,
+    "verse_number": 35,
+    "corrected_verse": "Ary rehefa tafapetraka Jesoa, dia niantso ny roa ambin'ny folo lahy Izy ka nanao taminy hoe: Raha misy te-ho voalohany, dia hatao farany amin'izy rehetra sy ho mpanompon'izy rehetra izy."
+  },
+  {
+    "id": 25031,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 3,
+    "verse_number": 9,
+    "corrected_verse": "Ary, indro, efa mipetraka ao amin'ny fototry ny hazo sahady ny famaky; koa ny hazo rehetra izay tsy mamoa voa tsara dia hokapaina ka hatsipy any anaty afo."
+  },
+  {
+    "id": 25231,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 7,
+    "verse_number": 39,
+    "corrected_verse": "Ary nony nahita izany ilay Fariseo nanasa Azy, dia nanao anakampo hoe: Raha mpaminany Ity, dia ho nahalala io vehivavy manendry Azy io sy ny toetrany; fa mpanota io."
+  },
+  {
+    "id": 25323,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 9,
+    "verse_number": 25,
+    "corrected_verse": "Fa inona no soa azon'ny olona, raha mahazo izao tontolo izao aza, kanefa very ny ainy, na maty antoka izy? "
+  },
+  {
+    "id": 25341,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 9,
+    "verse_number": 43,
+    "corrected_verse": "Dia talanjona izy rehetra noho ny fiandrianan'Andriamanitra. #Ny nilazan'i Jesoa fanindroany ny hahafatesany sy ny hitsanganany indray.# Fa raha talanjona izy rehetra tamin'izay rehetra nataon'i Jesoa, dia hoy Izy tamin'ny mpianany:"
+  },
+  {
+    "id": 25456,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 11,
+    "verse_number": 54,
+    "corrected_verse": "Dia nikendry Azy izy ireo hamandrihany Azy tamin'ny teny naloaky ny vavany."
+  },
+  {
+    "id": 25514,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 12,
+    "verse_number": 58,
+    "corrected_verse": "Fa raha miara-mandeha amin'ny manana ady aminao ianao hanatrika ny mpanapaka, raha mbola any an-dàlana dia mazotoa manao izay ahafahanao aminy, fandrao hitondra anao any amin'ny mpitsara izy, ary ny mpitsara hanolotra anao amin'ny mpamatotra, ary ny mpamatotra hanao anao ao an-tranomaizina."
+  },
+  {
+    "id": 25676,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 17,
+    "verse_number": 28,
+    "corrected_verse": "Ary tahaka ny tamin'ny andron'i Lota koa: nihinana izy, nisotro izy, nividy izy, nivarotra izy, namboly izy, nanao trano izy;"
+  },
+  {
+    "id": 25764,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 19,
+    "verse_number": 36,
+    "corrected_verse": "Ary raha nandeha Jesoa, dia namelatra ny lambany teny an-dàlana izy ireo."
+  },
+  {
+    "id": 25822,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 20,
+    "verse_number": 46,
+    "corrected_verse": "Mitandrema ny amin'ny mpanora-dalàna, izay mazoto mandehandeha miakanjo akanjo lava, ary te-hoharabain'ny olona eny an-tsena, sady tia ny fipetrahana aloha eo amin'ny synagoga sy ny fitoerana aloha eo amin'ny fanasana,"
+  },
+  {
+    "id": 25823,
+    "book_number": 42,
+    "book_name": "Lioka",
+    "chapter": 20,
+    "verse_number": 47,
+    "corrected_verse": "ary mandany ny tranon'ny mpitondratena sy manao vavaka lavareny mba ho fiolahana; ireo dia hahazo fanamelohana mafimafy kokoa."
+  },
+  {
+    "id": 26530,
+    "book_number": 43,
+    "book_name": "Jaona",
+    "chapter": 11,
+    "verse_number": 10,
+    "corrected_verse": "Fa raha misy kosa mandeha amin'ny alina, dia ho tafintohina izy, satria tsy misy mazava ao aminy."
+  },
+  {
+    "id": 26573,
+    "book_number": 43,
+    "book_name": "Jaona",
+    "chapter": 11,
+    "verse_number": 53,
+    "corrected_verse": "Koa hatramin'izany andro izany dia nikendry hahafaty Azy ireo."
+  },
+  {
+    "id": 26587,
+    "book_number": 43,
+    "book_name": "Jaona",
+    "chapter": 12,
+    "verse_number": 10,
+    "corrected_verse": "Fa nikendry hahafaty an'i Lazarosy koa ny lohan'ny mpisorona,"
+  },
+  {
+    "id": 26720,
+    "book_number": 43,
+    "book_name": "Jaona",
+    "chapter": 15,
+    "verse_number": 24,
+    "corrected_verse": "Raha tsy nataoko teo aminy Izay asa tsy nataon'olona, dia tsy nanan-keloka izy; fa ankehitriny efa hitany sady efa halany Aho sy ny Raiko koa;"
+  },
+  {
+    "id": 26822,
+    "book_number": 43,
+    "book_name": "Jaona",
+    "chapter": 18,
+    "verse_number": 40,
+    "corrected_verse": "Ary ireo niantso indray ka nanao hoe: Tsy Ilehio, fa Barabasy; koa nefa jiolahy Barabasy."
+  },
+  {
+    "id": 27089,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 5,
+    "verse_number": 33,
+    "corrected_verse": "Ary raha nandre izany izy, dia lotika ny fony, ka nikendry hamono azy izy."
+  },
+  {
+    "id": 27099,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 6,
+    "verse_number": 1,
+    "corrected_verse": "Ary tamin'izany andro izany, rehefa nihamaro ny isan'ny mpianatra, dia nimonomonona tamin'ny Hebreo ny Helenista, satria tsy mba henina tamin'ny fiantrana isan'andro ny mpitondratenany."
+  },
+  {
+    "id": 27232,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 9,
+    "verse_number": 19,
+    "corrected_verse": "ary nihinan-kanina izy ka dia natanjaka. #Ny nitorian'i Saoly tany Damaskosy sy Jerosalema# Ary Saoly nitoetra andro vitsivitsy teo amin'ny mpianatra tany Damaskosy."
+  },
+  {
+    "id": 27236,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 9,
+    "verse_number": 23,
+    "corrected_verse": "Ary rehefa afaka andro maromaro, dia nikendry hamono azy ny Jiosy;"
+  },
+  {
+    "id": 27343,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 12,
+    "verse_number": 9,
+    "corrected_verse": "Dia nivoaka izy ka nanaraka azy; ary tsy fantany ho marina izay nataon'ny anjely, fa nataony ho nahita fahitana ihany izy."
+  },
+  {
+    "id": 27344,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 12,
+    "verse_number": 10,
+    "corrected_verse": "Fa rehefa nandalo ny fiambenana voalohany sy faharoa izy, dia tonga teo amin'ny vavahady vy izay mahazo ny lalana ho any an-tanàna; ary nivoha ho azy io mba halehany; ary nony nivoaka izy, dia nandroso tamin'ny lalana iray; ary niaraka tamin'izay dia nandao azy ilay anjely."
+  },
+  {
+    "id": 27413,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 14,
+    "verse_number": 2,
+    "corrected_verse": "Fa ny Jiosy izay tsy nino dia nampitaitra ny jentilisa ka nanome fo azy hanohitra ny rahalahy."
+  },
+  {
+    "id": 27662,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 21,
+    "verse_number": 1,
+    "corrected_verse": "Ary rehefa tafasaraka taminy izahay, dia niondrana an-tsambo ka nizotra nankany Kosy; ary nony ampitso dia tonga tao Rodo, dia niala tao nankany Patara;"
+  },
+  {
+    "id": 27766,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 23,
+    "verse_number": 35,
+    "corrected_verse": "dia hoy izy: Hihaino tsara ny teninao aho, rehefa tonga ny mpiampanga anao. Dia nasainy nambenana tao an-dapan'i Heroda izy. "
+  },
+  {
+    "id": 27871,
+    "book_number": 44,
+    "book_name": "Asan’ny Apostoly",
+    "chapter": 27,
+    "verse_number": 19,
+    "corrected_verse": "ary nony ampitson'io indray dia narian'ny tanany ihany ny fanaka teo amin'ny sambo;"
+  },
+  {
+    "id": 27931,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 1,
+    "verse_number": 4,
+    "corrected_verse": "ary naseho tamin-kery ho Zanak'Andriamanitra araka ny fanahin'ny fahamasinana tamin'ny fitsanganany tamin'ny maty, - dia Jesoa Kristy Tompontsika,  "
+  },
+  {
+    "id": 28197,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 10,
+    "verse_number": 12,
+    "corrected_verse": "Fa tsy misy hafa, na Jiosy na jentilisa, fa iray ihany no Tompon'izy rehetra, sady manan-karena homeny izay rehetra miantso Azy Izy. "
+  },
+  {
+    "id": 28279,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 14,
+    "verse_number": 2,
+    "corrected_verse": "Ny anankiray mino fa mahazo mihinana ny zavatra rehetra izy, fa ny anankiray kosa malemy finoana, ka dia mihinana zava-maniry ihany."
+  },
+  {
+    "id": 28280,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 14,
+    "verse_number": 3,
+    "corrected_verse": "Aoka ny mihinana tsy hanamavo ny tsy mihinana; ary aoka kosa ny tsy mihinana tsy hitsara ny mihinana; fa Andriamanitra no efa nandray azy."
+  },
+  {
+    "id": 28314,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 15,
+    "verse_number": 14,
+    "corrected_verse": "Fa izaho koa, ry rahalahiko, dia matoky ny aminareo fa feno fahatsarana ianareo, dia feno ny fahalalana rehetra sady mahay mifananatra koa."
+  },
+  {
+    "id": 28326,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 15,
+    "verse_number": 26,
+    "corrected_verse": "Fa efa sitrapon'i Makedonia sy Akaia ny hamory vola hiantrana ny malahelo amin'ny olona masina any Jerosalema."
+  },
+  {
+    "id": 28337,
+    "book_number": 45,
+    "book_name": "Romana",
+    "chapter": 16,
+    "verse_number": 4,
+    "corrected_verse": "izy mivady dia nanolotra ny tenany hamonjy ny aiko; nefa tsy izaho ihany no misaotra azy, fa ny fiangonana rehetra any amin'ny jentilisa koa."
+  },
+  {
+    "id": 28452,
+    "book_number": 46,
+    "book_name": "1 Korintiana",
+    "chapter": 5,
+    "verse_number": 1,
+    "corrected_verse": "Efa re marina fa misy fijangajangana aty aminareo, eny, dia fijangajangana izay tsy misy tahaka azy na dia amin'ny jentilisa aza, fa misy anankiray manambady ny vadin-drainy."
+  },
+  {
+    "id": 28708,
+    "book_number": 46,
+    "book_name": "1 Korintiana",
+    "chapter": 14,
+    "verse_number": 33,
+    "corrected_verse": "Fa Andriamanitra tsy tompon'ny fikotranana, fa tompon'ny fiadanana. Araka ny fanaon'ny fiangonan'ny olona masina rehetra, "
+  },
+  {
+    "id": 28769,
+    "book_number": 46,
+    "book_name": "1 Korintiana",
+    "chapter": 15,
+    "verse_number": 54,
+    "corrected_verse": "Fa rehefa mitafy ny tsy fahalovana ity mety lo ity ary mitafy ny tsy fahafatesana ity mety maty ity, dia ho tanteraka ny teny voasoratra hoe: Ny fahafatesana noresena ka levona (Isaia 25:8). "
+  },
+  {
+    "id": 28854,
+    "book_number": 47,
+    "book_name": "2 Korintiana",
+    "chapter": 3,
+    "verse_number": 16,
+    "corrected_verse": "Kanefa rehefa miverina amin'ny Tompo izy, dia hesorina ihany ny fisalobonana."
+  },
+  {
+    "id": 28975,
+    "book_number": 47,
+    "book_name": "2 Korintiana",
+    "chapter": 10,
+    "verse_number": 7,
+    "corrected_verse": "Mijery zavatra araka ny fisehony ihany va ianareo? Raha misy olona matoky ny tenany fa an'i Kristy, aoka izy hisaintsaina izao indray, fa tahaka ny mah'an'i Kristy azy no mah'an'i Kristy anay koa. "
+  },
+  {
+    "id": 28985,
+    "book_number": 47,
+    "book_name": "2 Korintiana",
+    "chapter": 10,
+    "verse_number": 17,
+    "corrected_verse": "Fa izay mirehareha, dia aoka Jehovah no ho reharehany (Jeremia 9:23)"
+  },
+  {
+    "id": 29176,
+    "book_number": 48,
+    "book_name": "Galatiana",
+    "chapter": 5,
+    "verse_number": 17,
+    "corrected_verse": "Fa ny nofo manohitra ny Fanahy, ary ny Fanahy manohitra ny nofo; ary mifanohitra izy roroa, mba tsy hahazoanareo manao izay zavatra tianareo."
+  },
+  {
+    "id": 29183,
+    "book_number": 48,
+    "book_name": "Galatiana",
+    "chapter": 5,
+    "verse_number": 24,
+    "corrected_verse": "Fa izay an'i Kristy Jesoa dia efa nanombo ny nofony mbamin'ny faniriany sy ny filany tamin'ny hazo fijaliana."
+  },
+  {
+    "id": 29217,
+    "book_number": 49,
+    "book_name": "Efesiana",
+    "chapter": 1,
+    "verse_number": 14,
+    "corrected_verse": "Izany Fanahy izany no santatry ny lovantsika ho amin'ny fanavotana ny olona izay nalainy ho an'ny tenany, ho fiderana ny voninahiny."
+  },
+  {
+    "id": 29266,
+    "book_number": 49,
+    "book_name": "Efesiana",
+    "chapter": 3,
+    "verse_number": 18,
+    "corrected_verse": "mba hahaizanareo mbamin'ny olona masina rehetra ny hahafantatra tsara izay sakany sy lavany ary hahavony sy halaliny."
+  },
+  {
+    "id": 29449,
+    "book_number": 50,
+    "book_name": "Filipiana",
+    "chapter": 4,
+    "verse_number": 10,
+    "corrected_verse": "Ary faly indrindra ao amin'ny Tompo aho, satria nampitsimohinareo indray ankehitriny ny fiheverana ahy, izay efa noheverinareo rahateo, saingy tsy mbola nahita andro hanaovana ianareo."
+  },
+  {
+    "id": 29454,
+    "book_number": 50,
+    "book_name": "Filipiana",
+    "chapter": 4,
+    "verse_number": 15,
+    "corrected_verse": "Ary fantatrareo koa, ry Filipiana, fa tamin'ny niandohan'ny filazantsara, rehefa niala tany Makedonia aho, tsy nisy fiangonana nanan-draharaha tamiko ny amin'ny fanomezana sy fandraisana, afa-tsy ianareo ihany. [Grika: eklesia#"
+  },
+  {
+    "id": 29456,
+    "book_number": 50,
+    "book_name": "Filipiana",
+    "chapter": 4,
+    "verse_number": 17,
+    "corrected_verse": "Nefa tsy toy ny mitady ny fanomezana noho izany; fa mitady ny vokatra izay hitombo ho voninahitrareo aho."
+  },
+  {
+    "id": 29458,
+    "book_number": 50,
+    "book_name": "Filipiana",
+    "chapter": 4,
+    "verse_number": 19,
+    "corrected_verse": "Fa Andriamanitro hahatanteraka izay rehetra tokony ho anareo araka ny hareny amin'ny voninahitra ao amin'i Kristy Jesoa."
+  },
+  {
+    "id": 29531,
+    "book_number": 51,
+    "book_name": "Kolosiana",
+    "chapter": 3,
+    "verse_number": 17,
+    "corrected_verse": "Ary na inona na inona no ataonareo, na amin'ny teny, na amin'ny asa, dia ataovy amin'ny anaran'i Jesoa Tompo izany rehetra izany, ka misaora an'Andriamanitra Ray amin'ny alalany."
+  },
+  {
+    "id": 29618,
+    "book_number": 52,
+    "book_name": "1 Tesaloniana",
+    "chapter": 4,
+    "verse_number": 18,
+    "corrected_verse": "Koa dia mifampionòna ianareo amin'izany teny izany."
+  },
+  {
+    "id": 29649,
+    "book_number": 53,
+    "book_name": "2 Tesaloniana",
+    "chapter": 1,
+    "verse_number": 3,
+    "corrected_verse": "Tsy maintsy misaotra an'Andriamanitra mandrakariva izahay noho ny aminareo. ry rahalahy, fa mahamendrika izany, satria mitombo fatratra ny finoanareo, ary be ny fifankatiavanareo rehetra,"
+  },
+  {
+    "id": 29796,
+    "book_number": 54,
+    "book_name": "1 Timoty",
+    "chapter": 6,
+    "verse_number": 11,
+    "corrected_verse": "Fa ianao kosa, ry lehilahin'Andriamanitra, mandosira izany zavatra izany, ka miezaha mitady fahamarinana, toe-panahy araka an'Andriamanitra, finoana, fitiavana, faharetana, fahalemem-panahy."
+  },
+  {
+    "id": 29819,
+    "book_number": 55,
+    "book_name": "2 Timoty",
+    "chapter": 1,
+    "verse_number": 13,
+    "corrected_verse": "Tano amin'ny finoana sy ny fitiavana ao amin'i Kristy Jesoa ny mariky ny teny tsy misy kilema, izay efa renao tamiko."
+  },
+  {
+    "id": 29833,
+    "book_number": 55,
+    "book_name": "2 Timoty",
+    "chapter": 2,
+    "verse_number": 9,
+    "corrected_verse": "izay iaretako fahoriana hatramin'ny fatorana aza, ohatra ny mpanao ratsy; nefa ny tenin'Andriamanitra dia tsy mba voafatotra."
+  },
+  {
+    "id": 29874,
+    "book_number": 55,
+    "book_name": "2 Timoty",
+    "chapter": 4,
+    "verse_number": 7,
+    "corrected_verse": "Efa niady ny ady tsara aho; nahatanteraka ny fihazakazahako aho; nitahiry ny finoana aho;"
+  },
+  {
+    "id": 29924,
+    "book_number": 56,
+    "book_name": "Titosy",
+    "chapter": 3,
+    "verse_number": 4,
+    "corrected_verse": "Fa rehefa niseho ny fahamoram-panahin'Andriamanitra, Mpamonjy antsika, sy ny fitiavany ny olona,"
+  },
+  {
+    "id": 29936,
+    "book_number": 57,
+    "book_name": "Filemona",
+    "chapter": 1,
+    "verse_number": 1,
+    "corrected_verse": "Paoly, mpifatotra an'i Kristy Jesoa, ary Timoty rahalahy, mamangy an'i Filemona, ilay malalanay sy mpiara-miasa aminay,"
+  },
+  {
+    "id": 29982,
+    "book_number": 58,
+    "book_name": "Hebreo",
+    "chapter": 2,
+    "verse_number": 8,
+    "corrected_verse": "Ny zavatra rehetra dia efa nampanekenao ho eo ambanin'ny tongony\" (Salamo 8:4-6). Fa tamin'ny nampanekeny azy ny zavatra rehetra, dia tsy nisy izay tsy nampanekeny azy. Nefa ankehitriny tsy mbola hitantsika fa efa ampanekena azy ny zavatra rehetra."
+  },
+  {
+    "id": 30112,
+    "book_number": 58,
+    "book_name": "Hebreo",
+    "chapter": 9,
+    "verse_number": 10,
+    "corrected_verse": "(fa naman'ny zavatra hohanina sy ny zavatra hosotroina sy ny fanasana samy hafa), dia fitsipika araka ny nofo, voatendry hatao mandra-pihavin'ny andro fanovana."
+  },
+  {
+    "id": 30166,
+    "book_number": 58,
+    "book_name": "Hebreo",
+    "chapter": 10,
+    "verse_number": 36,
+    "corrected_verse": "Fa tokony hanana faharetana ianareo mba hahazoanareo izay lazain'ny teny fikasana, rehefa vitanareo ny sitrapon'Andriamanitra."
+  },
+  {
+    "id": 30255,
+    "book_number": 58,
+    "book_name": "Hebreo",
+    "chapter": 13,
+    "verse_number": 17,
+    "corrected_verse": "Manekà ny mpitondra anareo, ka manoava azy; fa izy miambina ny fanahinareo araka izay tokony hataon'ny olona mbola hampamoahina, mba hanaovany izany amin'ny fifaliana, fa tsy amin'ny fisentoana; fa tsy hahasoa anareo izany."
+  },
+  {
+    "id": 30279,
+    "book_number": 59,
+    "book_name": "Jakoba",
+    "chapter": 1,
+    "verse_number": 16,
+    "corrected_verse": "Aza mety hofitahina ianareo, ry rahalahy malalako."
+  },
+  {
+    "id": 30309,
+    "book_number": 59,
+    "book_name": "Jakoba",
+    "chapter": 2,
+    "verse_number": 19,
+    "corrected_verse": "Ianao mino fa iray ihany no Andriamanitra; koa tsara izany ataonao izany,- ny demonia koa mba mino izany ka dia mangovitra."
+  },
+  {
+    "id": 30397,
+    "book_number": 60,
+    "book_name": "1 Petera",
+    "chapter": 2,
+    "verse_number": 1,
+    "corrected_verse": "Koa esory ny lolompo rehetra sy ny fitaka rehetra sy ny fihatsaram-belatsihy sy ny fialonana ary ny fanaratsiana rehetra,"
+  },
+  {
+    "id": 30516,
+    "book_number": 61,
+    "book_name": "2 Petera",
+    "chapter": 2,
+    "verse_number": 19,
+    "corrected_verse": "fahafahana no ampanantenainy ireny, kanjo ny tenany aza dia andevon'ny fahalotoana; fa izay maharesy ny olona dia mahandevo azy ."
+  },
+  {
+    "id": 30533,
+    "book_number": 61,
+    "book_name": "2 Petera",
+    "chapter": 3,
+    "verse_number": 14,
+    "corrected_verse": "Koa amin'izany, ry malala, satria manantena izany zavatra izany ianareo, dia mazotoa mba ho hita tsy manan-tsiny amam-pondro eo anatrehan'ny Tompo amin'ny fihavanana."
+  },
+  {
+    "id": 30577,
+    "book_number": 62,
+    "book_name": "1 Jaona",
+    "chapter": 3,
+    "verse_number": 1,
+    "corrected_verse": "Endrey! manao ahoana ny fitiavana nasehon'ny Ray ho antsika, dia ny niantsoana antsika hoe zanak'Andriamanitra, sady izany tokoa isika! Koa noho izany dia tsy mahalala antsika izao tontolo izao, satria tsy nahalala Azy izy. "
+  },
+  {
+    "id": 30585,
+    "book_number": 62,
+    "book_name": "1 Jaona",
+    "chapter": 3,
+    "verse_number": 9,
+    "corrected_verse": "Izay rehetra naterak'Andriamanitra no tsy manota, satria ny voany mitoetra ao anatiny, ary tsy mahay manota izy, satria naterak'Andriamanitra."
+  },
+  {
+    "id": 30631,
+    "book_number": 62,
+    "book_name": "1 Jaona",
+    "chapter": 5,
+    "verse_number": 10,
+    "corrected_verse": "Izay mino ny Zanak'Andriamanitra no manana ny fanambarana ao anatiny; izay tsy mino an'Andriamanitra dia efa nampandainga Azy, satria tsy mino ny fanambarana izay nanambaran'Andriamanitra ny Zanany izy."
+  },
+  {
+    "id": 30656,
+    "book_number": 64,
+    "book_name": "3 Jaona",
+    "chapter": 1,
+    "verse_number": 1,
+    "corrected_verse": "Izaho loholona mamangy an'i Gaio, ilay malala, izay tiako amin'ny fahamarinana. "
+  },
+  {
+    "id": 30662,
+    "book_number": 64,
+    "book_name": "3 Jaona",
+    "chapter": 1,
+    "verse_number": 7,
+    "corrected_verse": "fa noho ny Anarana no niaingany, ka tsy naka na inona na inona tamin'ny jentilisa izy."
+  },
+  {
+    "id": 30698,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 1,
+    "verse_number": 3,
+    "corrected_verse": "Sambatra izay mamaky sy ny mihaino ny tenin'ity faminaniana ity ka mitandrina izay voasoratra ato anatiny; fa antomotra ny andro."
+  },
+  {
+    "id": 30710,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 1,
+    "verse_number": 15,
+    "corrected_verse": "ary ny tongony tahaka ny varahina manganohano, ohatra ilay voadio teo amin'ny fandrendrehana iny; ary ny feony toy ny firohondrohon'ny rano be."
+  },
+  {
+    "id": 30716,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 2,
+    "verse_number": 1,
+    "corrected_verse": "Soraty ho amin'ny anjelin'ny fiangonana any Efesosy. Izao no lazain'ilay mihazona ny kintana fito eny an-tanany ankavanana sady mandeha eo afovoan'ny fanaovan-jiro volamena fito: "
+  },
+  {
+    "id": 30763,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 3,
+    "verse_number": 19,
+    "corrected_verse": "Izay rehetra tiako no anariko sy faiziko; koa dia mazotoa ianao, ka mibebaha. "
+  },
+  {
+    "id": 30810,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 7,
+    "verse_number": 2,
+    "corrected_verse": "Ary hitako fa, indro, nisy anjely hafa koa niakatra avy tany amin'ny fiposahan'ny masoandro, nanana ny fanombohan-kasen'Andriamanitra velona; ary izy niantso ny anjely efatra izay navela hanimba ny tany sy ny ranomasina tamin'ny feo mahery nanao hoe:"
+  },
+  {
+    "id": 30823,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 7,
+    "verse_number": 15,
+    "corrected_verse": "Ary noho izany dia mitoetra eo anoloan'ny seza fiandrianan'Andriamanitra izy ka manompo Azy andro aman'alina eo amin'ny tempoliny; ary Ilay mipetraka eo ambonin'ny seza fiandrianana dia hamelatra ny trano-lainy handrakotra ary."
+  },
+  {
+    "id": 30832,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 8,
+    "verse_number": 7,
+    "corrected_verse": "Ary ny voalohany nitsoka, dia nisy havandra sy afo miharoharo rà, ka nararaka tamin'ny tany izany; ary may ny ampahatelon'ny tany, ary may ny ampahatelon'ny hazo, ary may koa ny ahi-maitso rehetra."
+  },
+  {
+    "id": 30840,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 9,
+    "verse_number": 2,
+    "corrected_verse": "Ary nanokatra ny lavaka tsy hita noanoa izy, dia nisy setroka niakatra avy tamin'ny lavaka, tahaka ny setroka avy amin'ny lafaoro lehibe, ary tonga maizina ny masoandro sy ny habahabaka noho ny setroka avy tao amin'ny lavaka."
+  },
+  {
+    "id": 30843,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 9,
+    "verse_number": 5,
+    "corrected_verse": "Nefa tsy navela hahafaty azy izy, fa ny hampanaintaina azy dimy volana; ary ny fampanaintainany dia tahaka ny fampanaintainan'ny maingoka, raha mamely olona."
+  },
+  {
+    "id": 30844,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 9,
+    "verse_number": 6,
+    "corrected_verse": "Ary amin'izany andro izany dia hitady fahafatesana ny olona, fa tsy hahita; ary haniry ho faty izy, fa mandositra azy ny fahafatesana."
+  },
+  {
+    "id": 30855,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 9,
+    "verse_number": 17,
+    "corrected_verse": "Ary toy izao no nahitako ny soavaly teo amin'ny fahitana sy izay nitaingina azy: manam-piarovan-tratra tahaka ny afo sy ny setroka ary ny solifara izy; ary ny lohan'ny soavaly dia tahaka ny lohan'ny liona; ary misy afo sy setroka ary solifara mivoaka avy amin'ny vavany."
+  },
+  {
+    "id": 30860,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 10,
+    "verse_number": 1,
+    "corrected_verse": "Ary hitako fa, indro, nisy anjely mahery anankiray koa, nidina avy tany an-danitra sady nitafy rahona; ary ny avana dia teo amin'ny lohany, ary ny tavany dia tahaka ny masoandro, ary ny tongony tahaka ny andry afo,"
+  },
+  {
+    "id": 30904,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 12,
+    "verse_number": 15,
+    "corrected_verse": "Ary ilay menarana namoaka rano tamin'ny vavany, toy ny riaka, hanaraka an-dravehivavy, mba hindaosin'ny riaka izy."
+  },
+  {
+    "id": 30958,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 16,
+    "verse_number": 6,
+    "corrected_verse": "fa ny ran'ny olona masina sy ny mpaminany no nalatsany, ka dia rà kosa no nomenao hosotroiny; ary tandrifiny ho azy izany."
+  },
+  {
+    "id": 30960,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 16,
+    "verse_number": 8,
+    "corrected_verse": "Ary ny fahefatra nampidina ny tao an-doviany tamin'ny masoandro; dia nasaina nandoro ny olona tamin'ny afo izy."
+  },
+  {
+    "id": 30961,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 16,
+    "verse_number": 9,
+    "corrected_verse": "Ary main'ny hafanana be ny olona, dia niteny ratsy ny anaran'Andriamanitra, Izay manam-pahefana amin'ireny loza ireny, izy sady tsy nibebaka mba hanome voninahitra Azy. "
+  },
+  {
+    "id": 30982,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 17,
+    "verse_number": 9,
+    "corrected_verse": "Indro ny hevitra izay misy fahendrena: Ny loha fito dia tendrombohitra fito, izay ipetrahan-dravehivavy."
+  },
+  {
+    "id": 30988,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 17,
+    "verse_number": 15,
+    "corrected_verse": "Ary hoy izy tamiko: Ny rano efa hitanao, izay ipetrahan'ilay vehivavy janga, dia olona sy vahoaka betsaka sy firenena maro ary samy hafa fiteny."
+  },
+  {
+    "id": 30992,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 18,
+    "verse_number": 1,
+    "corrected_verse": "Rehefa afaka izany, dia hitako fa indro, nisy anjely iray koa nidina avy tany an-danitra, nanana fahefana lehibe; ary ny tany nohazavain'ny voninahiny."
+  },
+  {
+    "id": 30998,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 18,
+    "verse_number": 7,
+    "corrected_verse": "Toraka izay niderany tena sy nivelomany tamin'ny zava-mahafinaritra ny tena, dia omeo fanaintainana sy alahelo toraka izany koa izy, satria hoy izy anakampo: Mipetraka ho mpanjakavavy aho, fa tsy mpitondratena, ary tsy mba hahita alahelo mihitsy aho;"
+  },
+  {
+    "id": 31018,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 19,
+    "verse_number": 3,
+    "corrected_verse": "Dia niteny fanindroany ireo hoe: Haleloia! Ary ny setroky ny tanàna dia miakatra mandrakizay mandrakizay."
+  },
+  {
+    "id": 31021,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 19,
+    "verse_number": 6,
+    "corrected_verse": "Dia nahare feo tahaka ny an'ny vahoaka betsaka aho, sy tahaka ny firohondrohon'ny rano be, ary tahaka ny fikotroky ny kotrokorana mafy, nanao hoe: Haleloia! Fa ny Tompo Andriamanitsika, dia ny Tsitoha, no Mpanjaka."
+  },
+  {
+    "id": 31022,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 19,
+    "verse_number": 7,
+    "corrected_verse": "Aoka isika hifaly sy ho ravoravo ka hanome voninahitra Azy; fa tonga ny fampakaram-badin'ny Zanak'ondry. Ka efa niomana ny vadiny."
+  },
+  {
+    "id": 31030,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 19,
+    "verse_number": 15,
+    "corrected_verse": "Ary misy sabatra maranitra mivoaka avy amin'ny vavany mba hamelezany ny firenena; ary Izy hanapaka azy amin'ny tehim-by; ary Izy no manitsaka ny famiazana ny divain'ny firehetan'ny fahatezeran'Andriamanitra Tsitoha."
+  },
+  {
+    "id": 31038,
+    "book_number": 66,
+    "book_name": "Apokalypsy",
+    "chapter": 20,
+    "verse_number": 2,
+    "corrected_verse": "dia nisambotra ilay dragona izy (dia ilay menarana ela, ny devoly sy Satana izany) ka namatotra azy arivo taona,"
+  }
+]

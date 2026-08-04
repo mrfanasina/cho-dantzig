@@ -1,0 +1,275 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "timestamp": "2026-06-13T21:01:01.836Z",
+    "optimizationType": "min"
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "label": "A",
+      "x": 50,
+      "y": 200
+    },
+    {
+      "id": "b",
+      "label": "B",
+      "x": 120,
+      "y": 120
+    },
+    {
+      "id": "c",
+      "label": "C",
+      "x": 120,
+      "y": 200
+    },
+    {
+      "id": "d",
+      "label": "D",
+      "x": 120,
+      "y": 280
+    },
+    {
+      "id": "e",
+      "label": "E",
+      "x": 200,
+      "y": 120
+    },
+    {
+      "id": "f",
+      "label": "F",
+      "x": 200,
+      "y": 200
+    },
+    {
+      "id": "g",
+      "label": "G",
+      "x": 200,
+      "y": 280
+    },
+    {
+      "id": "h",
+      "label": "H",
+      "x": 280,
+      "y": 300
+    },
+    {
+      "id": "i",
+      "label": "I",
+      "x": 300,
+      "y": 100
+    },
+    {
+      "id": "j",
+      "label": "J",
+      "x": 300,
+      "y": 180
+    },
+    {
+      "id": "k",
+      "label": "K",
+      "x": 300,
+      "y": 260
+    },
+    {
+      "id": "l",
+      "label": "L",
+      "x": 380,
+      "y": 100
+    },
+    {
+      "id": "m",
+      "label": "M",
+      "x": 380,
+      "y": 300
+    },
+    {
+      "id": "n",
+      "label": "N",
+      "x": 420,
+      "y": 200
+    },
+    {
+      "id": "o",
+      "label": "O",
+      "x": 480,
+      "y": 200
+    },
+    {
+      "id": "p",
+      "label": "P",
+      "x": 550,
+      "y": 200
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "a",
+      "to": "b",
+      "weight": 5
+    },
+    {
+      "id": "e2",
+      "from": "a",
+      "to": "c",
+      "weight": 9
+    },
+    {
+      "id": "e3",
+      "from": "a",
+      "to": "d",
+      "weight": 4
+    },
+    {
+      "id": "e4",
+      "from": "b",
+      "to": "e",
+      "weight": 3
+    },
+    {
+      "id": "e5",
+      "from": "b",
+      "to": "f",
+      "weight": 2
+    },
+    {
+      "id": "e6",
+      "from": "c",
+      "to": "f",
+      "weight": 1
+    },
+    {
+      "id": "e7",
+      "from": "c",
+      "to": "d",
+      "weight": 4
+    },
+    {
+      "id": "e8",
+      "from": "d",
+      "to": "g",
+      "weight": 7
+    },
+    {
+      "id": "e9",
+      "from": "e",
+      "to": "i",
+      "weight": 9
+    },
+    {
+      "id": "e10",
+      "from": "e",
+      "to": "j",
+      "weight": 2
+    },
+    {
+      "id": "e11",
+      "from": "e",
+      "to": "f",
+      "weight": 4
+    },
+    {
+      "id": "e12",
+      "from": "f",
+      "to": "i",
+      "weight": 9
+    },
+    {
+      "id": "e13",
+      "from": "f",
+      "to": "j",
+      "weight": 5
+    },
+    {
+      "id": "e14",
+      "from": "f",
+      "to": "g",
+      "weight": 3
+    },
+    {
+      "id": "e15",
+      "from": "g",
+      "to": "h",
+      "weight": 7
+    },
+    {
+      "id": "e16",
+      "from": "i",
+      "to": "j",
+      "weight": 1
+    },
+    {
+      "id": "e17",
+      "from": "i",
+      "to": "l",
+      "weight": 5
+    },
+    {
+      "id": "e18",
+      "from": "j",
+      "to": "l",
+      "weight": 10
+    },
+    {
+      "id": "e19",
+      "from": "j",
+      "to": "k",
+      "weight": 3
+    },
+    {
+      "id": "e20",
+      "from": "k",
+      "to": "n",
+      "weight": 5
+    },
+    {
+      "id": "e21",
+      "from": "h",
+      "to": "m",
+      "weight": 5
+    },
+    {
+      "id": "e22",
+      "from": "h",
+      "to": "n",
+      "weight": 4
+    },
+    {
+      "id": "e23",
+      "from": "l",
+      "to": "n",
+      "weight": 3
+    },
+    {
+      "id": "e24",
+      "from": "l",
+      "to": "o",
+      "weight": 4
+    },
+    {
+      "id": "e25",
+      "from": "l",
+      "to": "p",
+      "weight": 2
+    },
+    {
+      "id": "e26",
+      "from": "m",
+      "to": "o",
+      "weight": 2
+    },
+    {
+      "id": "e27",
+      "from": "n",
+      "to": "o",
+      "weight": 1
+    },
+    {
+      "id": "e28",
+      "from": "o",
+      "to": "p",
+      "weight": 3
+    }
+  ]
+}

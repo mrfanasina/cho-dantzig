@@ -30,7 +30,7 @@ class DantzigService {
   }
 
   // =====================================================
-  // MINIMISATION (version proche de ton code actuel)
+  // MINIMISATION 
   // =====================================================
 
   executeShortestPath(graph, nodes, source) {

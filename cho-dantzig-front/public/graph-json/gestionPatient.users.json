@@ -1,0 +1,64 @@
+[{
+  "_id": {
+    "$oid": "68177e1612e34854762ba022"
+  },
+  "pseudo": "adolph",
+  "email": "adolph@gmail.com",
+  "mdp": "$2b$10$mjALM7F9cW5SQD4VlKUsEu1nvPczw8eUrOb4/ktC/8Mq0JNXv0mBu",
+  "picture": "./user/profil/random-user.png",
+  "createdAt": {
+    "$date": "2025-05-04T14:47:50.526Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T14:47:50.526Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68177f4112e34854762ba02b"
+  },
+  "pseudo": "jules",
+  "email": "jules@gmail.com",
+  "mdp": "$2b$10$fMpyiGOSoZmcvMzBScg61OVvheaxiaSOORBGcduEXT0xyCPtRX1ui",
+  "picture": "./user/profil/random-user.png",
+  "createdAt": {
+    "$date": "2025-05-04T14:52:49.117Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T14:52:49.117Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68177f6712e34854762ba02e"
+  },
+  "pseudo": "socrate",
+  "email": "socrate@gmail.com",
+  "mdp": "$2b$10$DI4FPMA8Klmj8xuatpyIbeoIxEGzd1r3gWaFZGLFIrFSvzrJ4W2JO",
+  "picture": "./user/profil/random-user.png",
+  "createdAt": {
+    "$date": "2025-05-04T14:53:27.859Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T14:53:27.859Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68177fa812e34854762ba032"
+  },
+  "pseudo": "aina",
+  "email": "aina@gmail.com",
+  "mdp": "$2b$10$WJvSmoCXEr9vGPoZp6cQAufOlewxHb0Q.LbBThnsvyiIe.5TbLqWm",
+  "picture": "./user/profil/random-user.png",
+  "createdAt": {
+    "$date": "2025-05-04T14:54:32.094Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-04T14:54:32.094Z"
+  },
+  "__v": 0
+}]

@@ -280,6 +280,7 @@ export default function GraphControls() {
         case "-":            dispatch("graph-zoom-out"); break;
         case "Home": case "ArrowDown": goToFirstStep(); break;
         case "End": case "ArrowUp": goToLastStep(); break;
+        case "g" : case "G":   arrangeGraph(); break
       }
     };
     window.addEventListener("keydown", onKey);
